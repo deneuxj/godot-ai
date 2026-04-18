@@ -1,0 +1,8 @@
+[gdscript_format]
+version=4
+
+[gd_resource type="ProjectSettings" format=3]
+
+config_sections_enabled = [ "ai/openai" ]
+
+config_settings = {}
