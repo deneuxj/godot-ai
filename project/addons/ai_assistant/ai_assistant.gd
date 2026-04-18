@@ -1,5 +1,5 @@
 ## AIAssistantPlugin - Plugin entry point.
-## Registers the AgentAssisted3D node type, editor dock, and AI project settings.
+## Registers the AgentAssisted3D node type and editor dock.
 
 @tool
 extends EditorPlugin
@@ -45,10 +45,8 @@ func _register_project_settings() -> void:
 
 
 func _register_node_type() -> void:
-	var script = load(AI_ASSISTED_3D_NODE)
-	if script:
-		ClassDB.register_class(script)
+	pass
 
 
 func _create_dock() -> void:
-	_dock = load(PANEL_SCENE).instantiate()
+	_dock = Control.new()
