@@ -170,6 +170,26 @@ Rules:
         
         return messages
     
+    static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary) -> Array[Dictionary]:
+        """Append error details to the conversation to ask the AI to fix the script."""
+        var fix_instruction := """
+The previous script had the following error:
+
+Error: %s
+File: %s
+Line: %s
+
+Please provide a corrected version of the script that resolves this error.
+Output ONLY valid GDScript code, no markdown fences.
+""" % [error_result.error, error_result.file, error_result.line]
+        
+        messages.append({
+            "role": "user",
+            "content": fix_instruction
+        })
+        
+        return messages
+    
     static func _get_system_prompt() -> String:
         return ProjectSettings.get_setting(
             "ai/openai/system_prompt", DEFAULT_SYSTEM_PROMPT
@@ -237,3 +257,4 @@ func _enter_tree():
 | REQ-AIINTG-0002 | `OpenAIClient` implements OpenAI chat completions API (POST `/v1/chat/completions`), SSE streaming support |
 | REQ-AIINTG-0003 | `PromptBuilder` constructs system prompt instructing GDScript output, user message with prompt + textures |
 | REQ-AIINTG-0004 | `AISettings` class manages all project settings, auto-creates them on plugin enable, supports `system_prompt` override |
+| REQ-AIINTG-0005 | `PromptBuilder.build_error_correction()` appends error details as user messages, `generate()` in `design/0001-node3d.md` loops until success or `MAX_RETRIES` |

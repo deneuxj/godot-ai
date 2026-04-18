@@ -16,6 +16,10 @@ REQ-NODE3D-0003: Textures can be added as attachments to the prompt for visual c
 
 REQ-NODE3D-0004: When added to a scene, the node shall use AI to process the prompt and generate a subtree of Godot nodes.
 
+REQ-NODE3D-0008: The generated GDScript shall be syntactically valid and compile without errors.
+
+REQ-NODE3D-0009: If the generated script fails to compile or run, the plugin shall append the error details to the chat history and re-send the request to the AI for correction. This loop shall repeat until the script executes successfully or the maximum retry count is reached.
+
 REQ-NODE3D-0005: The generated hierarchy shall be persisted and reused across editor sessions.
 
 REQ-NODE3D-0006: A new hierarchy shall be generated automatically when the prompt changes.
@@ -29,6 +33,8 @@ REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends
 REQ-AIINTG-0002: The plugin shall use an **OpenAI-compatible API** protocol (works with LM Studio, Ollama, OpenAI, etc.).
 
 REQ-AIINTG-0003: The AI shall output GDScript code that programmatically creates the node tree at runtime.
+
+REQ-AIINTG-0005: When a compilation or runtime error occurs, the error message (including file, line number, and description) shall be appended as a new user message to the conversation history, instructing the AI to correct the script. The AI shall then return a revised script. This process shall repeat until success or the maximum retry limit is reached.
 
 REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/openai/base_url` - API endpoint URL
