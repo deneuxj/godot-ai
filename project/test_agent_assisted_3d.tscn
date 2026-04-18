@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://jbxwojtkucw0"]
+
+[ext_resource type="Script" uid="uid://fltqr6krppck" path="res://addons/ai_assistant/agent_assisted_3d.gd" id="1_d8ypf"]
+
+[node name="TestAgentAssisted3D" type="Node3D" unique_id=2084474840]
+
+[node name="AgentAssisted3D" type="Node3D" parent="." unique_id=423421973]
+script = ExtResource("1_d8ypf")
+metadata/_custom_type_script = "uid://fltqr6krppck"

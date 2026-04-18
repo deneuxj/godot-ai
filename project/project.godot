@@ -17,6 +17,10 @@ config/features=PackedStringArray("4.6")
 
 project/assembly_name="UnnamedProject"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/ai_assistant/plugin.cfg")
+
 [gd_resource type="ProjectSettings" format=3]
 
 config_sections_enabled=["ai/openai"]

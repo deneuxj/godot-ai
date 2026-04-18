@@ -4,7 +4,7 @@
 
 1. ~~**Create `plugin.cfg`** — Plugin manifest with name, version, description, and entry point~~ ✅
 2. ~~**Create `ai_assistant.gd`** — Plugin entry point extending `EditorPlugin`, implements `_enter_tree()` / `_exit_tree()`, registers the `AgentAssisted3D` node type via `ClassDB`~~ ✅
-3. **Register `AgentAssisted3D` as a custom node** — Ensure it appears in the "Add Node" dialog under a plugin category
+3. ~~**Register `AgentAssisted3D` as a custom node** — Ensure it appears in the "Add Node" dialog under a plugin category~~ ✅
 
 ## Phase 2: AI Settings
 
