@@ -5,6 +5,7 @@
 extends EditorPlugin
 
 
+const AI_SETTINGS = "res://addons/ai_assistant/settings/ai_settings.gd"
 const AI_ASSISTED_3D_NODE = "res://agent_assisted_3d.gd"
 const PANEL_SCENE = "res://agent_assisted_3d_panel.tscn"
 
@@ -12,6 +13,11 @@ var _dock: Control = null
 
 
 func _enter_tree() -> void:
+	# Ensure AI project settings exist before anything reads them.
+	var settings = load(AI_SETTINGS)
+	if settings:
+		settings.call("ensure_settings_exist")
+
 	_register_project_settings()
 	_register_node_type()
 	_create_dock()

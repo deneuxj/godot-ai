@@ -8,8 +8,8 @@
 
 ## Phase 2: AI Settings
 
-4. **Create `settings/ai_settings.gd`** — `AISettings` class with defaults for `base_url`, `api_key`, `model`, `max_tokens`, `timeout_ms`, `system_prompt`
-5. **Auto-configure project settings** — `ensure_settings_exist()` called from plugin `_enter_tree()`, saves settings if missing
+4. ~~**Create `settings/ai_settings.gd`** — `AISettings` class with defaults for `base_url`, `api_key`, `model`, `max_tokens`, `timeout_ms`, `system_prompt`~~ ✅
+5. ~~**Auto-configure project settings** — `ensure_settings_exist()` called from plugin `_enter_tree()`, saves settings if missing~~ ✅
 
 ## Phase 3: AI Client
 
