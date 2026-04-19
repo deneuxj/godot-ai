@@ -1,3 +1,4 @@
 project/.godot
 .qwen/settings.json
 .qwen/settings.json.orig
+.qwen/skills/godot-lsp/scripts/__pycache__/*.pyc
