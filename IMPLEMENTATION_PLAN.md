@@ -13,9 +13,9 @@
 
 ## Phase 3: AI Client
 
-6. **Create `ai_client/ai_client.gd`** — Abstract base class defining `chat()`, `chat_stream()`, `set_endpoint()`, `set_api_key()`, `set_model()`, `set_max_tokens()` interface
-7. **Create `ai_client/openai_client.gd`** — `OpenAIClient` implementing `chat()` via `HTTPRequest` POST to `/v1/chat/completions`, parses JSON response for `choices[0].message.content`
-8. **Implement `chat_stream()` in `OpenAIClient`** — SSE parsing, emits `progress` signal per chunk
+6. ~~**Create `ai_client/ai_client.gd`** — Abstract base class (`extends Node`) defining `chat()`, `chat_stream()`, `set_endpoint()`, `set_api_key()`, `set_model()`, `set_max_tokens()` interface with method-chaining setters~~ ✅
+7. ~~**Create `ai_client/openai_client.gd`** — `OpenAIClient` (`extends AIClient`) implementing `chat()` via `HTTPRequest` POST to `/v1/chat/completions`, parses JSON response for `choices[0].message.content`~~ ✅
+8. ~~**Implement `chat_stream()` in `OpenAIClient`** — SSE parsing, emits `progress` signal per chunk, returns concatenated response~~ ✅
 
 ## Phase 4: Prompt Builder
 

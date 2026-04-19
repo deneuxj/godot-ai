@@ -4,83 +4,113 @@
 
 ### Architecture
 
-The `AIClient` abstract class defines the interface. `OpenAIClient` implements it for OpenAI-compatible APIs (LM Studio, Ollama, OpenAI, etc.).
+The `AIClient` abstract class (extends `Node`) defines the interface. `OpenAIClient` implements it for OpenAI-compatible APIs (LM Studio, Ollama, OpenAI, etc.). Both classes extend `Node` to participate in the scene tree — `AIClient` for the `progress` signal lifecycle, `OpenAIClient` to host an `HTTPRequest` child node.
 
 ```
 ┌──────────────┐
-│   AIClient   │ (abstract)
+│   AIClient   │ (abstract, extends Node)
 │   (base)     │
 └──────┬───────┘
        │ extends
        ▼
 ┌──────────────┐
-│ OpenAIClient │ (implement)
+│ OpenAIClient │ (extends Node, hosts HTTPRequest)
 └──────────────┘
 ```
 
 ### Interface (`ai_client/ai_client.gd`)
 
 ```gdscript
-class AIClient:
-    var endpoint: String
-    var api_key: String
-    var model: String
-    var max_tokens: int
-    
-    # Non-streaming: returns full response
-    func chat(messages: Array[Dictionary]) -> String:
-        push_error("Override in subclass")
-        return ""
-    
-    # Streaming: yields chunks as they arrive
-    func chat_stream(messages: Array[Dictionary]) -> Signal:
-        push_error("Override in subclass")
-        return Signal()
-    
-    # Set request parameters
-    func set_endpoint(url: String) -> void: pass
-    func set_api_key(key: String) -> void: pass
-    func set_model(model_name: String) -> void: pass
-    func set_max_tokens(tokens: int) -> void: pass
+class_name AIClient
+extends Node
+
+signal progress(chunks: Array[String])
+
+var endpoint: String = "http://localhost:1234/v1"
+var api_key: String = ""
+var model: String = "local-model"
+var max_tokens: int = 4096
+
+# Non-streaming: returns full response
+func chat(messages: Array[Dictionary]) -> String:
+	push_error("Override in subclass")
+	return ""
+
+# Streaming: yields chunks via [signal progress], returns full content
+func chat_stream(messages: Array[Dictionary]) -> String:
+	push_error("Override in subclass")
+	return ""
+
+# Set request parameters (returns self for method chaining)
+func set_endpoint(url: String) -> AIClient:
+	endpoint = url
+	return self
+
+func set_api_key(key: String) -> AIClient:
+	api_key = key
+	return self
+
+func set_model(model_name: String) -> AIClient:
+	model = model_name
+	return self
+
+func set_max_tokens(tokens: int) -> AIClient:
+	max_tokens = tokens
+	return self
+
+# Factory: creates OpenAIClient configured from project settings
+static func create_openai_client() -> OpenAIClient:
+	var client := OpenAIClient.new()
+	client.set_endpoint(AISettings.get_string("base_url"))
+	client.set_api_key(AISettings.get_string("api_key"))
+	client.set_model(AISettings.get_string("model"))
+	client.set_max_tokens(AISettings.get_int("max_tokens"))
+	return client
 ```
 
 ### Implementation (`ai_client/openai_client.gd`)
 
-Uses Godot's `HTTPRequest` node to call the OpenAI-compatible API.
+Uses Godot's `HTTPRequest` node (created in `_ready()`) to call the OpenAI-compatible API.
 
 ```gdscript
-class OpenAIClient:
-    extends AIClient
-    
-    var _http_request: HTTPRequest
-    
-    func chat(messages: Array[Dictionary]) -> String:
-        var body = {
-            "model": model,
-            "messages": messages,
-            "max_tokens": max_tokens
-        }
-        
-        var headers = ["Content-Type: application/json"]
-        if api_key != "":
-            headers.append("Authorization: Bearer " + api_key)
-        
-        var error = _http_request.request(
-            endpoint + "/v1/chat/completions",
-            headers,
-            HTTPClient.METHOD_POST,
-            JSON.stringify(body)
-        )
-        
-        # Wait for request_completed signal
-        var response = await _http_request.request_completed
-        var result = JSON.parse_string(response[3])
-        return result["choices"][0]["message"]["content"]
-    
-    func chat_stream(messages: Array[Dictionary]) -> Signal:
-        # Similar to chat(), but parses SSE stream chunks
-        # Emits progress signal with each chunk
-        pass
+class_name OpenAIClient
+extends AIClient
+
+var _http_request: HTTPRequest
+
+func _ready() -> void:
+	_http_request = HTTPRequest.new()
+	add_child(_http_request)
+
+func chat(messages: Array[Dictionary]) -> String:
+	var body = {
+		"model": model,
+		"messages": messages,
+		"max_tokens": max_tokens
+	}
+
+	var headers = ["Content-Type: application/json"]
+	if api_key != "":
+		headers.append("Authorization: Bearer " + api_key)
+
+	var error = _http_request.request(
+		endpoint + "/v1/chat/completions",
+		headers,
+		HTTPClient.METHOD_POST,
+		JSON.stringify(body)
+	)
+
+	# Wait for request_completed signal
+	var response = await _http_request.request_completed
+	var result = JSON.parse_string(response[3])
+	return result["choices"][0]["message"]["content"]
+
+func chat_stream(messages: Array[Dictionary]) -> String:
+	# Similar to chat(), but sets "stream": true in the body
+	# Parses SSE stream chunks from response[2] (raw string)
+	# Emits progress signal with each chunk
+	# Returns the full concatenated content string
+	pass
 ```
 
 ### Configuration
