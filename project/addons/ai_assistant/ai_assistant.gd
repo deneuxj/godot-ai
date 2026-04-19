@@ -6,8 +6,8 @@ extends EditorPlugin
 
 
 const AI_SETTINGS = "res://addons/ai_assistant/settings/ai_settings.gd"
-const AI_ASSISTED_3D_NODE = "res://agent_assisted_3d.gd"
-const PANEL_SCENE = "res://agent_assisted_3d_panel.tscn"
+const AI_ASSISTED_3D_NODE = "res://addons/ai_assistant/agent_assisted_3d.gd"
+const PANEL_SCENE = "res://addons/ai_assistant/agent_assisted_3d_panel.tscn"
 
 var _dock: Control = null
 

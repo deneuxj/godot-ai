@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://agent_assisted_3d_panel.gd" id="1_panel"]
+[ext_resource type="Script" path="res://addons/ai_assistant/agent_assisted_3d_panel.gd" id="1_panel"]
 
 [node name="AgentAssisted3DPanel" type="Control"]
 layout_mode = 3
