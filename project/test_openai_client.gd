@@ -27,13 +27,13 @@ extends Node2D
 ## Internal UI references.
 @onready var _status_label: Label = $UI/MainVBox/StatusRow/StatusLabel
 @onready var _progress_bar: ProgressBar = $UI/MainVBox/StatusRow/ProgressBar
-@onready var _response_text_edit: TextEdit = $UI/MainVBox/OutputContainer/ResponsePanel/ResponseVBox/Response
-@onready var _streaming_text_edit: TextEdit = $UI/MainVBox/OutputContainer/StreamingPanel/StreamingVBox/StreamingResponse
-@onready var _endpoint_line: LineEdit = $UI/MainVBox/ConfigPanel/ConfigVBox/EndpointRow/Endpoint
-@onready var _api_key_line: LineEdit = $UI/MainVBox/ConfigPanel/ConfigVBox/ApiKeyRow/ApiKey
-@onready var _model_line: LineEdit = $UI/MainVBox/ConfigPanel/ConfigVBox/ModelRow/Model
-@onready var _max_tokens_spin: SpinBox = $UI/MainVBox/ConfigPanel/ConfigVBox/MaxTokensRow/MaxTokens
-@onready var _user_message_line: LineEdit = $UI/MainVBox/ConfigPanel/ConfigVBox/UserMessageRow/UserMessage
+@onready var _response_text_edit: TextEdit = $UI/MainVBox/OutputContainer/ResponseVBox/Response
+@onready var _streaming_text_edit: TextEdit = $UI/MainVBox/OutputContainer/StreamingVBox/StreamingResponse
+@onready var _endpoint_line: LineEdit = $UI/MainVBox/ConfigVBox/EndpointRow/Endpoint
+@onready var _api_key_line: LineEdit = $UI/MainVBox/ConfigVBox/ApiKeyRow/ApiKey
+@onready var _model_line: LineEdit = $UI/MainVBox/ConfigVBox/ModelRow/Model
+@onready var _max_tokens_spin: SpinBox = $UI/MainVBox/ConfigVBox/MaxTokensRow/MaxTokens
+@onready var _user_message_line: LineEdit = $UI/MainVBox/ConfigVBox/UserMessageRow/UserMessage
 
 
 func _ready() -> void:
@@ -50,8 +50,8 @@ func _ready() -> void:
 	_user_message_line.text = user_message
 
 	# Connect button signals.
-	$UI/MainVBox/ConfigPanel/ConfigVBox/ButtonsRow/TestChatBtn.pressed.connect(_on_test_chat_pressed)
-	$UI/MainVBox/ConfigPanel/ConfigVBox/ButtonsRow/TestStreamBtn.pressed.connect(_on_test_stream_pressed)
+	$UI/MainVBox/ConfigVBox/ButtonsRow/TestChatBtn.pressed.connect(_on_test_chat_pressed)
+	$UI/MainVBox/ConfigVBox/ButtonsRow/TestStreamBtn.pressed.connect(_on_test_stream_pressed)
 
 	# Sync UI changes back to inspector-exposed vars.
 	_endpoint_line.text_changed.connect(_on_endpoint_changed)

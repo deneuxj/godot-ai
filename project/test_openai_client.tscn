@@ -26,107 +26,95 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
 
-[node name="ConfigPanel" type="Panel" parent="UI/MainVBox" unique_id=100002]
+[node name="ConfigVBox" type="VBoxContainer" parent="UI/MainVBox" unique_id=100003]
 layout_mode = 2
-
-[node name="ConfigVBox" type="VBoxContainer" parent="UI/MainVBox/ConfigPanel" unique_id=100003]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="ConfigTitle" type="Label" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100004]
+[node name="ConfigTitle" type="Label" parent="UI/MainVBox/ConfigVBox" unique_id=100004]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Configuration"
 
-[node name="EndpointRow" type="HBoxContainer" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100005]
+[node name="EndpointRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100005]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="EndpointLabel" type="Label" parent="UI/MainVBox/ConfigPanel/ConfigVBox/EndpointRow" unique_id=100006]
+[node name="EndpointLabel" type="Label" parent="UI/MainVBox/ConfigVBox/EndpointRow" unique_id=100006]
 layout_mode = 2
 text = "Endpoint:"
 
-[node name="Endpoint" type="LineEdit" parent="UI/MainVBox/ConfigPanel/ConfigVBox/EndpointRow" unique_id=100007]
+[node name="Endpoint" type="LineEdit" parent="UI/MainVBox/ConfigVBox/EndpointRow" unique_id=100007]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "http://localhost:1234/v1"
 
-[node name="ApiKeyRow" type="HBoxContainer" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100008]
+[node name="ApiKeyRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100008]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="ApiKeyLabel" type="Label" parent="UI/MainVBox/ConfigPanel/ConfigVBox/ApiKeyRow" unique_id=100009]
+[node name="ApiKeyLabel" type="Label" parent="UI/MainVBox/ConfigVBox/ApiKeyRow" unique_id=100009]
 layout_mode = 2
 text = "API Key:"
 
-[node name="ApiKey" type="LineEdit" parent="UI/MainVBox/ConfigPanel/ConfigVBox/ApiKeyRow" unique_id=100010]
+[node name="ApiKey" type="LineEdit" parent="UI/MainVBox/ConfigVBox/ApiKeyRow" unique_id=100010]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ModelRow" type="HBoxContainer" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100011]
+[node name="ModelRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100011]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="ModelLabel" type="Label" parent="UI/MainVBox/ConfigPanel/ConfigVBox/ModelRow" unique_id=100012]
+[node name="ModelLabel" type="Label" parent="UI/MainVBox/ConfigVBox/ModelRow" unique_id=100012]
 layout_mode = 2
 text = "Model:"
 
-[node name="Model" type="LineEdit" parent="UI/MainVBox/ConfigPanel/ConfigVBox/ModelRow" unique_id=100013]
+[node name="Model" type="LineEdit" parent="UI/MainVBox/ConfigVBox/ModelRow" unique_id=100013]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "local-model"
 
-[node name="MaxTokensRow" type="HBoxContainer" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100014]
+[node name="MaxTokensRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100014]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="MaxTokensLabel" type="Label" parent="UI/MainVBox/ConfigPanel/ConfigVBox/MaxTokensRow" unique_id=100015]
+[node name="MaxTokensLabel" type="Label" parent="UI/MainVBox/ConfigVBox/MaxTokensRow" unique_id=100015]
 layout_mode = 2
 text = "Max Tokens:"
 
-[node name="MaxTokens" type="SpinBox" parent="UI/MainVBox/ConfigPanel/ConfigVBox/MaxTokensRow" unique_id=100016]
+[node name="MaxTokens" type="SpinBox" parent="UI/MainVBox/ConfigVBox/MaxTokensRow" unique_id=100016]
 layout_mode = 2
 min_value = 1.0
 max_value = 131072.0
 step = 256.0
-value = 100.0
+value = 4097.0
 
-[node name="UserMessageRow" type="HBoxContainer" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100017]
+[node name="UserMessageRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100017]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="UserMessageLabel" type="Label" parent="UI/MainVBox/ConfigPanel/ConfigVBox/UserMessageRow" unique_id=100018]
+[node name="UserMessageLabel" type="Label" parent="UI/MainVBox/ConfigVBox/UserMessageRow" unique_id=100018]
 layout_mode = 2
 text = "User Message:"
 
-[node name="UserMessage" type="LineEdit" parent="UI/MainVBox/ConfigPanel/ConfigVBox/UserMessageRow" unique_id=100019]
+[node name="UserMessage" type="LineEdit" parent="UI/MainVBox/ConfigVBox/UserMessageRow" unique_id=100019]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Hello, what can you do?"
 
-[node name="ButtonsRow" type="HBoxContainer" parent="UI/MainVBox/ConfigPanel/ConfigVBox" unique_id=100020]
+[node name="ButtonsRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100020]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TestChatBtn" type="Button" parent="UI/MainVBox/ConfigPanel/ConfigVBox/ButtonsRow" unique_id=100021]
+[node name="TestChatBtn" type="Button" parent="UI/MainVBox/ConfigVBox/ButtonsRow" unique_id=100021]
 layout_mode = 2
 text = "Test Chat"
 
-[node name="TestStreamBtn" type="Button" parent="UI/MainVBox/ConfigPanel/ConfigVBox/ButtonsRow" unique_id=100022]
+[node name="TestStreamBtn" type="Button" parent="UI/MainVBox/ConfigVBox/ButtonsRow" unique_id=100022]
 layout_mode = 2
 text = "Test Stream"
 
@@ -149,56 +137,32 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="ResponsePanel" type="Panel" parent="UI/MainVBox/OutputContainer" unique_id=100027]
+[node name="ResponseVBox" type="VBoxContainer" parent="UI/MainVBox/OutputContainer" unique_id=100028]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ResponseVBox" type="VBoxContainer" parent="UI/MainVBox/OutputContainer/ResponsePanel" unique_id=100028]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="ResponseTitle" type="Label" parent="UI/MainVBox/OutputContainer/ResponsePanel/ResponseVBox" unique_id=100029]
+[node name="ResponseTitle" type="Label" parent="UI/MainVBox/OutputContainer/ResponseVBox" unique_id=100029]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Non-streaming Response"
 
-[node name="Response" type="TextEdit" parent="UI/MainVBox/OutputContainer/ResponsePanel/ResponseVBox" unique_id=100030]
-layout_mode = 2
-placeholder_text = "Response will appear here..."
-
-[node name="StreamingPanel" type="Panel" parent="UI/MainVBox/OutputContainer" unique_id=100031]
+[node name="Response" type="TextEdit" parent="UI/MainVBox/OutputContainer/ResponseVBox" unique_id=100030]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+placeholder_text = "Response will appear here..."
 
-[node name="StreamingVBox" type="VBoxContainer" parent="UI/MainVBox/OutputContainer/StreamingPanel" unique_id=100032]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = -12.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="StreamingVBox" type="VBoxContainer" parent="UI/MainVBox/OutputContainer" unique_id=100032]
+layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="StreamingTitle" type="Label" parent="UI/MainVBox/OutputContainer/StreamingPanel/StreamingVBox" unique_id=100033]
+[node name="StreamingTitle" type="Label" parent="UI/MainVBox/OutputContainer/StreamingVBox" unique_id=100033]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Streaming Response"
 
-[node name="StreamingResponse" type="TextEdit" parent="UI/MainVBox/OutputContainer/StreamingPanel/StreamingVBox" unique_id=100034]
+[node name="StreamingResponse" type="TextEdit" parent="UI/MainVBox/OutputContainer/StreamingVBox" unique_id=100034]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 placeholder_text = "Streaming output will appear here..."
