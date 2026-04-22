@@ -52,27 +52,39 @@ func chat(messages: Array[Dictionary]) -> String:
 		return ""
 
 	# Wait for the request to complete.
+	# request_completed(result: int, status_code: int, headers: PackedStringArray, body: PackedByteArray)
 	var result: Array = await _http_request.request_completed
+	var error_code_param: int = result[0]
+	var response_code: int = result[1]
+	var response_body: String = result[3].get_string_from_utf8()
 
-	# result[0] = error code
-	# result[3] = response body (Dictionary after JSON parse)
-	var response_code: int = result[0]
-	var response_body: Dictionary = result[3]
-
-	if response_code != 200:
-		push_error("API error: HTTP %d — %s" % [
-			response_code,
-			str(response_body),
-		])
+	if error_code_param != OK:
+		push_error("HTTP request failed: %d" % error_code_param)
 		return ""
 
+	if response_code != 200:
+		var err_json: Variant = JSON.parse_string(response_body)
+		var err_msg: String = "Unknown error"
+		if typeof(err_json) == TYPE_DICTIONARY:
+			err_msg = (err_json as Dictionary).get("error", {}).get("message", "Unknown error") as String
+		push_error("API error: HTTP %d — %s" % [response_code, err_msg])
+		return ""
+
+	# Parse JSON response body.
+	var parsed: Variant = JSON.parse_string(response_body)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		push_error("Failed to parse JSON response")
+		return ""
+
+	var response_body_dict: Dictionary = parsed as Dictionary
+
 	# Extract the first choice's message content.
-	var choices: Array = response_body.get("choices", [])
+	var choices: Array = response_body_dict.get("choices", [])
 	if choices.is_empty():
 		push_error("Empty choices in API response")
 		return ""
 
-	var content: String = choices[0].get("message", {}).get("content", "")
+	var content: String = (choices[0] as Dictionary).get("message", {}).get("content", "")
 	return content
 
 
@@ -107,16 +119,22 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 		return ""
 
 	# Wait for the request to complete.
+	# request_completed(result: int, status_code: int, headers: PackedStringArray, body: PackedByteArray)
 	var result: Array = await _http_request.request_completed
-	var response_code: int = result[0]
-	var response_body: String = result[2]
+	var http_error: int = result[0]
+	var response_code: int = result[1]
+	var response_body: String = result[3].get_string_from_utf8()
+
+	if http_error != OK:
+		push_error("HTTP request failed: %d" % http_error)
+		return ""
 
 	if response_code != 200:
 		push_error("API error: HTTP %d" % response_code)
 		return ""
 
 	# Parse SSE stream: each line starting with "data: " contains JSON.
-	var chunks: Array[String] = []
+	var chunks: PackedStringArray = []
 	var full_content: String = ""
 	var lines: PackedStringArray = response_body.split("\n")
 
@@ -133,7 +151,7 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 		if typeof(parsed) != TYPE_DICTIONARY:
 			continue
 
-		var choice: Dictionary = parsed.get("choices", [{}])[0]
+		var choice: Dictionary = (parsed as Dictionary).get("choices", [{}])[0]
 		var delta: Dictionary = choice.get("delta", {})
 		var chunk_content: String = delta.get("content", "")
 		if chunk_content != "":
