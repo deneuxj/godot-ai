@@ -14,8 +14,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 277.0
-offset_bottom = 334.0
+offset_right = 1012.0
+offset_bottom = 626.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
@@ -41,7 +41,7 @@ text = "Endpoint:"
 [node name="Endpoint" type="LineEdit" parent="UI/MainVBox/ConfigVBox/EndpointRow" unique_id=100007]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "http://localhost:1234/v1"
+text = "http://localhost:1234"
 
 [node name="ApiKeyRow" type="HBoxContainer" parent="UI/MainVBox/ConfigVBox" unique_id=100008]
 layout_mode = 2
@@ -141,6 +141,7 @@ theme_override_font_sizes/font_size = 12
 text = "Non-streaming Response"
 
 [node name="Response" type="TextEdit" parent="UI/MainVBox/OutputContainer/ResponseVBox" unique_id=100030]
+custom_minimum_size = Vector2(500, 300)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -156,6 +157,7 @@ theme_override_font_sizes/font_size = 12
 text = "Streaming Response"
 
 [node name="StreamingResponse" type="TextEdit" parent="UI/MainVBox/OutputContainer/StreamingVBox" unique_id=100034]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
