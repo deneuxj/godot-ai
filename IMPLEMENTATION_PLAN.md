@@ -19,11 +19,11 @@
 
 ## Phase 4: Prompt Builder
 
-9. **Create `generator/prompt_builder.gd`** — `PromptBuilder` class with `DEFAULT_SYSTEM_PROMPT` constant
-10. **Implement `build()` method** — Constructs `[system, user]` message array, appends "Visual references attached" when textures present
-11. **Handle multimodal content** — Convert `texture_attachments` to base64, build multi-part content array for multimodal models
-12. **System prompt override** — Check `ai/openai/system_prompt` project setting, fall back to built-in default
-13. **Implement `build_error_correction()`** — Appends error details (message, file, line) as a new user message to the conversation history, instructing the AI to correct the script
+9. ~~**Create `generator/prompt_builder.gd`** — `PromptBuilder` class with `DEFAULT_SYSTEM_PROMPT` constant~~ ✅
+10. ~~**Implement `build()` method** — Constructs `[system, user]` message array, appends "Visual references attached" when textures present~~ ✅
+11. ~~**Handle multimodal content** — Convert `texture_attachments` to base64, build multi-part content array for multimodal models~~ ✅
+12. ~~**System prompt override** — Check `ai/openai/system_prompt` project setting, fall back to built-in default~~ ✅
+13. ~~**Implement `build_error_correction()`** — Appends error details (message, file, line) as a new user message to the conversation history, instructing the AI to correct the script~~ ✅
 
 ## Phase 5: Script Executor (Safety)
 
