@@ -117,9 +117,9 @@ static func _get_system_prompt() -> String:
 
 ## Append error details to the conversation history for the error-correction loop.
 ##
-## The AI receives the error message, file, and line number, then is instructed
-## to provide a corrected version of the script.
-static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary) -> Array[Dictionary]:
+## The AI receives the error message, file, line number, and the generated code
+## that caused the error, then is instructed to provide a corrected version.
+static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary, generated_code: String) -> Array[Dictionary]:
 	var fix_instruction := """\
 The previous script had the following error:
 
@@ -127,12 +127,16 @@ Error: %s
 File: %s
 Line: %s
 
+Generated code:
+%s
+
 Please provide a corrected version of the script that resolves this error.
 Output ONLY valid GDScript code, no markdown fences.
 """ % [
 	error_result.get("error", "Unknown error"),
 	error_result.get("file", "unknown"),
 	error_result.get("line", 0),
+	generated_code,
 ]
 
 	messages.append({
