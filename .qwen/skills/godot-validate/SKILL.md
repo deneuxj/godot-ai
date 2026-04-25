@@ -39,7 +39,7 @@ Run Godot in headless editor mode against the project. Use `timeout` to prevent 
 ### Recommended approach (works in all environments)
 
 ```bash
-timeout 60 <godot-path> --headless --path <project-dir> -e 2>&1
+timeout 15 <godot-path> --headless --path <project-dir> -e 2>&1
 ```
 
 This captures all output (stdout + stderr) and exits after 60 seconds if Godot hasn't finished. Godot will emit `[ DONE ] loading_editor_layout` / `Editor layout ready.` within seconds of completing initialization, so the effective runtime is usually well under 10 seconds.
@@ -49,7 +49,7 @@ This captures all output (stdout + stderr) and exits after 60 seconds if Godot h
 - `--path <project-dir>` — points to the directory containing `project.godot`
 - `-e` — runs in editor mode (loads plugins, parses scripts, registers classes)
 - `2>&1` — captures stderr where all parse errors are emitted
-- `timeout 60` — prevents Godot from hanging indefinitely
+- `timeout 15` — prevents Godot from hanging indefinitely
 
 ### Why NOT the background + pipe approach (deprecated)
 
@@ -75,7 +75,7 @@ If you need to capture output to a file for later analysis, use a simple redirec
 
 **Completion signal:** `[ DONE ] loading_editor_layout` / `Editor layout ready.` — this means all scripts, plugins, and resources have been loaded and parsed. Errors will have already been emitted in the output by this point.
 
-**Fallback:** The `timeout 60` wrapper handles this automatically. Godot exits with code 124 when killed by timeout.
+**Fallback:** The `timeout 15` wrapper handles this automatically. Godot exits with code 124 when killed by timeout.
 
 ## Step 3: Capture and Report Errors
 
