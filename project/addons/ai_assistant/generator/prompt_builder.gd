@@ -21,6 +21,8 @@ Rules:
 - The root node should be a Node3D with the script attached
 - Use standard Godot 4 API (no deprecated methods)
 - Keep the scene performant and well-organized
+
+Safety: Generated code must NOT access the filesystem, make network requests, or call OS.execute.
 """
 
 
