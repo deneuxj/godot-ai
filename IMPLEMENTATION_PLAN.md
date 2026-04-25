@@ -43,15 +43,15 @@
 
 ## Phase 7: Editor Dock
 
-25. **Create `agent_assisted_3d_panel.tscn`** — UI scene with: title label, `TextEdit` for prompt, attachments container, generate/clear buttons, status row (label + ProgressBar), node tree `Tree` view
-26. **Create `agent_assisted_3d_panel.gd`** — Dock controller extending `Control`
-27. **Implement selection tracking** — `_on_selection_changed()` connects to editor selection, `_update_for_selected_node()` binds to `AgentAssisted3D` properties
-28. **Implement prompt sync** — `TextEdit` ↔ `prompt` property two-way binding via `_on_prompt_text_edit_text_changed()`
-29. **Implement generate button** — `_on_generate_pressed()` calls `_current_node.generate()`
-30. **Implement progress display** — `_on_node_progress()` updates status label with token count and progress bar
-31. **Implement drag & drop** — `_can_drop_data()` / `_drop_data()` for texture attachments (png, jpg, jpeg, bmp, webp)
-32. **Implement node tree preview** — `_refresh_node_tree()` populates `Tree` from generated children
-33. **Register dock in plugin** — Add dock container in `ai_assistant.gd` `_enter_tree()`, remove in `_exit_tree()`
+25. ~~**Create `agent_assisted_3d_panel.tscn`** — UI scene with: title label, `TextEdit` for prompt, attachments container, generate/clear buttons, status row (label + ProgressBar), node tree `Tree` view~~ ✅
+26. ~~**Create `agent_assisted_3d_panel.gd`** — Dock controller extending `Control`~~ ✅
+27. ~~**Implement selection tracking** — `_on_selection_changed()` connects to editor selection, `_update_for_selected_node()` binds to `AgentAssisted3D` properties~~ ✅
+28. ~~**Implement prompt sync** — `TextEdit` ↔ `prompt` property two-way binding via `_on_prompt_text_edit_text_changed()`~~ ✅
+29. ~~**Implement generate button** — `_on_generate_pressed()` calls `_current_node.generate()`~~ ✅
+30. ~~**Implement progress display** — `_on_node_progress()` updates status label with token count and progress bar~~ ✅
+31. ~~**Implement drag & drop** — `_can_drop_data()` / `_drop_data()` for texture attachments (png, jpg, jpeg, bmp, webp)~~ ✅
+32. ~~**Implement node tree preview** — `_refresh_node_tree()` populates `Tree` from generated children~~ ✅
+33. ~~**Register dock in plugin** — Add dock container in `ai_assistant.gd` `_enter_tree()`, remove in `_exit_tree()`~~ ✅
 
 ## Phase 8: Persistence & Caching
 

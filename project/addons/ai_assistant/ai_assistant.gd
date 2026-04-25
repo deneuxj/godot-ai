@@ -51,8 +51,15 @@ func _register_project_settings() -> void:
 
 
 func _register_node_type() -> void:
-	pass
+	add_custom_type(
+		"AgentAssisted3D",
+		"Node3D",
+		preload(AI_ASSISTED_3D_NODE),
+		Resource.new(),  # No icon available
+	)
 
 
 func _create_dock() -> void:
-	_dock = Control.new()
+	var dock_scene = load(PANEL_SCENE)
+	_dock = dock_scene.instantiate()
+	_dock.call("_init_editor", get_editor_interface())
