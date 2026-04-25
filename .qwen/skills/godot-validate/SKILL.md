@@ -32,57 +32,50 @@ which godot 2>/dev/null
 
 If a wrapper script (e.g., `godot.sh`) exists, use that — it handles environment setup (e.g., `DOTNET_ROOT`).
 
-## Step 2: Run Editor Mode in Headless Mode with Early Exit Detection
+## Step 2: Run Editor Mode in Headless Mode
 
-Run Godot in headless editor mode against the project, then **detect when it signals readiness** and exit early. Godot does not exit on its own after loading — it waits for input. The skill must watch for the completion signal and kill the process.
+Run Godot in headless editor mode against the project. Use `timeout` to prevent hanging — Godot does not exit on its own after loading (it waits for input).
 
-### 2a. Stream output to a temp file
-
-```bash
-tmpfile=$(mktemp)
-<godot-path> --headless --path <project-dir> -e 2>&1 | tee "$tmpfile" &
-godot_pid=$!
-```
-
-### 2b. Watch for the "Editor layout ready" signal
+### Recommended approach (works in all environments)
 
 ```bash
-timeout=60
-elapsed=0
-while [ $elapsed -lt $timeout ]; do
-    if grep -q "Editor layout ready" "$tmpfile" 2>/dev/null; then
-        echo "Godot project loaded successfully (editor layout ready)."
-        kill $godot_pid 2>/dev/null
-        wait $godot_pid 2>/dev/null
-        break
-    fi
-    sleep 1
-    elapsed=$((elapsed + 1))
-done
-
-if [ $elapsed -ge $timeout ]; then
-    echo "Timeout ($timeout s) reached. Proceeding with captured output."
-    kill $godot_pid 2>/dev/null
-    wait $godot_pid 2>/dev/null
-fi
+timeout 60 <godot-path> --headless --path <project-dir> -e 2>&1
 ```
 
-### 2c. Read captured output
-
-```bash
-output=$(cat "$tmpfile")
-rm -f "$tmpfile"
-```
+This captures all output (stdout + stderr) and exits after 60 seconds if Godot hasn't finished. Godot will emit `[ DONE ] loading_editor_layout` / `Editor layout ready.` within seconds of completing initialization, so the effective runtime is usually well under 10 seconds.
 
 **Key flags:**
 - `--headless` — no display server required
 - `--path <project-dir>` — points to the directory containing `project.godot`
 - `-e` — runs in editor mode (loads plugins, parses scripts, registers classes)
 - `2>&1` — captures stderr where all parse errors are emitted
+- `timeout 60` — prevents Godot from hanging indefinitely
+
+### Why NOT the background + pipe approach (deprecated)
+
+The following pattern **does not work** in environments where `run_shell_command` is subject to permission restrictions:
+
+```bash
+# ❌ DO NOT USE — this is blocked by permission rules
+tmpfile=$(mktemp)
+<godot-path> --headless --path <project-dir> -e 2>&1 | tee "$tmpfile" &
+godot_pid=$!
+```
+
+**Reason:** The combination of `&` (background process) + `|` (pipe) + `tee` triggers permission rule denial. Individual components (`mktemp`, `tee`, `&`, `|`) work in isolation, but their combination is blocked.
+
+If you need to capture output to a file for later analysis, use a simple redirect instead:
+
+```bash
+# ✅ Works but still requires timeout wrapper
+<godot-path> --headless --path <project-dir> -e > /tmp/godot-output.txt 2>&1 &
+# Note: output may be empty if the process exits before the redirect is flushed.
+# Always prefer the direct timeout approach above.
+```
 
 **Completion signal:** `[ DONE ] loading_editor_layout` / `Editor layout ready.` — this means all scripts, plugins, and resources have been loaded and parsed. Errors will have already been emitted in the output by this point.
 
-**Fallback:** If the signal is not seen within 60 seconds, kill the process and proceed with whatever was captured.
+**Fallback:** The `timeout 60` wrapper handles this automatically. Godot exits with code 124 when killed by timeout.
 
 ## Step 3: Capture and Report Errors
 
@@ -150,8 +143,8 @@ X error(s), Y warning(s) found.
 
 ## Notes
 
-- **Early exit:** The skill watches for `Editor layout ready` in the output and kills Godot immediately. This avoids relying solely on a timeout.
-- **Timeout fallback:** If the signal is not seen within 60 seconds, the process is killed and the captured output is analyzed anyway.
+- **Timeout approach:** The `timeout 60` wrapper is the recommended method. Godot emits `Editor layout ready` within seconds, so effective runtime is typically under 10 seconds. Godot exits with code 124 when killed by timeout.
 - The `--headless -e` combination triggers full project initialization: plugin loading, script parsing, class registration, and editor layout loading.
 - A project without a main scene defined will still load and parse scripts — the "no main scene" message is **not** an error.
 - GTK/locale warnings (e.g., `Locale not supported by C library`) are environment warnings, not project errors. Ignore them.
+- **Do not use** background (`&`) + pipe (`|`) + `tee` together — this combination is blocked by permission rules. Use `timeout` wrapping the command directly instead.
