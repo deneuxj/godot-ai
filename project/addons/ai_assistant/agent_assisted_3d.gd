@@ -112,7 +112,7 @@ func generate() -> void:
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, MAX_RETRIES]
 
 		# Execute script.
-		var error_result := await ScriptExecutor.execute_with_error(script_text, self)
+		var error_result := ScriptExecutor.execute_with_error(script_text, self)
 
 		if error_result.error == null:
 			success = true

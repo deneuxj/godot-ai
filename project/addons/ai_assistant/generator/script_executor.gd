@@ -8,10 +8,6 @@
 class_name ScriptExecutor
 
 
-## Maximum execution time in milliseconds.
-const EXECUTION_TIMEOUT_MS: int = 10000
-
-
 ## Classes explicitly allowed in generated scripts.
 static var ALLOWED_CLASSES := PackedStringArray([
 	"Node3D", "Node", "Spatial", "MeshInstance3D",
@@ -71,7 +67,7 @@ static func _validate_script(script_text: String) -> Dictionary:
 
 ## Execute an AI-generated script safely and return structured error info.
 ##
-## The script is pre-validated, compiled, and run with a timeout.
+## The script is pre-validated, compiled, and executed.
 ## Returns `{"error": null}` on success, or
 ## `{"error": String, "file": String, "line": int}` on failure.
 static func execute_with_error(script_text: String, parent: Node3D) -> Dictionary:
@@ -89,17 +85,7 @@ static func execute_with_error(script_text: String, parent: Node3D) -> Dictionar
 	if compile_error != OK:
 		return {"error": "Compilation failed (error code: %d)" % compile_error, "file": "n/a", "line": 0}
 
-	# 4. Execute with timeout
-	return _execute_with_timeout(gdscript, parent)
-
-
-## Run a compiled GDScript.
-##
-## Calls `_build_scene()` if present, otherwise `run()`.
-## Returns `{"error": null}` on success, or
-## `{"error": String, "file": String, "line": int}` on failure.
-static func _execute_with_timeout(gdscript: GDScript, parent: Node3D) -> Dictionary:
-	# Execute the script
+	# 4. Execute the script
 	var instance = gdscript.new()
 	if instance:
 		if instance.has_method("_build_scene"):

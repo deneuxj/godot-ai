@@ -30,7 +30,6 @@
 14. ~~**Create `generator/script_executor.gd`** — `ScriptExecutor` class with `ALLOWED_CLASSES` and `DENIED_METHODS` lists~~ ✅
 15. ~~**Implement `_validate_script()`** — Regex-based pre-validation blocking `File`, `FileAccess`, `DirAccess`, `OS.execute`, `HTTPRequest`, `ResourceSaver`, `ResourceLoader`; returns `{"error": String, "file": String, "line": int}`~~ ✅
 16. ~~**Implement `execute_with_error()`** — Creates `GDScript` resource, compiles with error capturing, executes `_build_scene()` or `run()`, returns structured error info (null error on success)~~ ✅
-17. ~~**Implement `_execute_with_timeout()`** — Calls `_build_scene()` or `run()` on the compiled instance~~ ✅
 
 ## Phase 6: AgentAssisted3D Node
 
@@ -69,7 +68,7 @@
 41. **Verify with LM Studio** — Test local LLM integration, confirm node tree generation
 42. **Test edge cases** — Empty prompt, invalid API response, network timeout, script validation failure
 43. **Test cache lifecycle** — Prompt change invalidation, force-regenerate, cross-session reuse
-44. **Test safety sandbox** — Verify denied patterns are blocked, timeout enforcement works
+44. **Test safety sandbox** — Verify denied patterns are blocked
 45. **Test editor dock UX** — Drag & drop, selection switching, progress feedback, tree preview
 46. **Test error correction loop** — Verify compilation errors feed back into conversation, AI produces corrected script on retry, MAX_RETRIES limit enforced, status updates per attempt
 

@@ -77,20 +77,22 @@ class ScriptExecutor:
     static func execute(script_text: String, parent: Node3D) -> Array[Node]:
         # 1. Pre-validation
         _validate_script(script_text)
-        
+
         # 2. Create isolated GDScript resource
         var gdscript = GDScript.new()
         gdscript.source_code = script_text
-        
-        # 3. Compile with timeout
+
+        # 3. Compile
         var compile_error = gdscript.compile()
         if compile_error != OK:
             push_error("GDScript compilation error: " + str(compile_error))
             return []
-        
-        # 4. Execute with timeout
-        var result = await _execute_with_timeout(gdscript, parent)
-        return result
+
+        # 4. Execute the script
+        var instance = gdscript.new()
+        if instance:
+            return instance.call("_build_scene", parent)
+        return []
     
     static func execute_with_error(script_text: String, parent: Node3D) -> Dictionary:
         """Execute script and return error info (null if no error) for the correction loop."""
@@ -109,77 +111,14 @@ class ScriptExecutor:
             var error_info = _get_compile_error_details(gdscript)
             push_error("GDScript compilation error: " + str(compile_error))
             return error_info
-        
-        # 4. Execute with timeout
-        var exec_result = await _execute_with_timeout(gdscript, parent)
-        if exec_result.has("error"):
-            return exec_result
-        
-        return {"error": null}
-    
-    static func _get_compile_error_details(gdscript: GDScript) -> Dictionary:
-        """Extract file, line, and description from compilation error."""
-        # GDScript.compile() returns an error code; we extract details via
-        # the compiled script's internal error info
-        return {"error": "Compilation failed (error code: %d)" % gdscript.compile(), "file": "n/a", "line": 0}
-    
-    static func _validate_script(script_text: String) -> Dictionary:
-        # Check for dangerous patterns
-        var dangerous_patterns = [
-            r"\bFile\b",
-            r"\bFileAccess\b",
-            r"\bDirAccess\b",
-            r"\bOS\.execute\b",
-            r"\bHTTPRequest\b",
-            r"\bHTTPClient\b",
-            r"\bload\s*\(",
-            r"\bsave\s*\(",
-            r"\bResourceSaver\b",
-            r"\bResourceLoader\b"
-        ]
-        
-        for pattern in dangerous_patterns:
-            var regex = RegEx.new()
-            regex.compile(pattern)
-            if regex.search(script_text):
-                push_error("Script contains disallowed pattern: " + pattern)
-                return {"error": "Script validation failed: disallowed pattern detected (" + pattern + ")", "file": "n/a", "line": 0}
-        
-        return {"error": null}
-    
-    static func _execute_with_timeout(gdscript: GDScript, parent: Node3D) -> Dictionary:
-        var timeout_ms = 10000  # 10 second timeout
-        var timer = Timer.new()
-        timer.wait_time = timeout_ms / 1000.0
-        timer.one_shot = true
-        parent.add_child(timer)
-        
-        var finished = false
-        var result_nodes = []
-        var error_msg = ""
-        
-        timer.timeout.connect(func():
-            if not finished:
-                error_msg = "Script execution timed out after %dms" % timeout_ms
-        )
-        
-        timer.start()
-        
-        # Execute the script
+
+        # 4. Execute the script
         var instance = gdscript.new()
         if instance and instance.has_method("_build_scene"):
-            result_nodes = instance._build_scene(parent)
+            instance.call("_build_scene", parent)
         elif instance and instance.has_method("run"):
-            result_nodes = instance.run()
-        
-        finished = true
-        timer.stop()
-        timer.queue_free()
-        
-        if error_msg != "":
-            push_error(error_msg)
-            return {"error": error_msg, "file": "n/a", "line": 0}
-        
+            instance.call("run")
+
         return {"error": null}
 ```
 
@@ -217,7 +156,6 @@ The sandbox permits operations that are safe for scene building:
 | Script validation fails | Reject before execution, return error info for correction loop |
 | Compilation error | Report line/column via `_get_compile_error_details()`, return error info for correction loop |
 | Runtime error | Catch exception, report message, return error info for correction loop |
-| Timeout | Kill execution, return timeout message for correction loop |
 | Disallowed method call | Caught by validation, return error info for correction loop |
 
 ### Error Correction Loop Integration
@@ -235,4 +173,4 @@ Errors from `execute_with_error()` are returned as `{"error": String, "file": St
 
 | Requirement | Covered By |
 |---|---|
-| REQ-SAFE-0001 | `ScriptExecutor._validate_script()` blocks dangerous patterns, `_execute_with_timeout()` enforces execution timeout, allowed/denied operation lists restrict AI-generated code to safe node manipulation only, `execute_with_error()` returns structured error info for the correction loop |
+| REQ-SAFE-0001 | `ScriptExecutor._validate_script()` blocks dangerous patterns, allowed/denied operation lists restrict AI-generated code to safe node manipulation only, `execute_with_error()` returns structured error info for the correction loop |
