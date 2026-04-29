@@ -20,11 +20,11 @@ REQ-NODE3D-0008: The generated GDScript shall be syntactically valid and compile
 
 REQ-NODE3D-0009: If the generated script fails to compile or run, the plugin shall append the error details to the chat history and re-send the request to the AI for correction. This loop shall repeat until the script executes successfully or the maximum retry count is reached.
 
-REQ-NODE3D-0005: The generated hierarchy shall be persisted and reused across editor sessions.
+REQ-NODE3D-0005: The generated hierarchy shall be persisted in the scene file.
 
-REQ-NODE3D-0006: A new hierarchy shall be generated automatically when the prompt changes.
+REQ-NODE3D-0006: Generation shall only be triggered by explicit user action via the "Send" button in the editor dock.
 
-REQ-NODE3D-0007: The user shall be able to force re-generation with the same prompt via a button in the editor dock.
+REQ-NODE3D-0007: The user shall be able to trigger re-generation with the same or modified prompt via the "Send" button.
 
 ### AI Integration
 
@@ -32,7 +32,7 @@ REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends
 
 REQ-AIINTG-0002: The plugin shall use an **OpenAI-compatible API** protocol (works with LM Studio, Ollama, OpenAI, etc.).
 
-REQ-AIINTG-0003: The AI shall output GDScript code that programmatically creates the node tree at runtime.
+REQ-AIINTG-0003: The AI shall output GDScript code that programmatically creates the node tree.
 
 REQ-AIINTG-0005: When a compilation or runtime error occurs, the error message (including file, line number, and description) shall be appended as a new user message to the conversation history, instructing the AI to correct the script. The AI shall then return a revised script. This process shall repeat until success or the maximum retry limit is reached.
 
@@ -50,21 +50,19 @@ REQ-EDITOR-0001: The plugin shall provide real-time progress feedback in the God
 REQ-EDITOR-0002: The plugin shall provide a custom editor dock for the AgentAssisted3D node showing:
   - Prompt text editor
   - Texture attachment list (drag & drop support)
-  - Generate button
+  - Send button (triggers generation)
   - Status/progress indicator
   - Generated node tree preview
 
 REQ-EDITOR-0003: Generation status shall be exposed as a node property (idle, generating, success, error).
 
-### Caching & Persistence
+### Persistence
 
-REQ-PERSIST-0001: Generated GDScript shall be cached as a `.gd` resource on disk.
+REQ-PERSIST-0001: The result of a successful generation (GDScript) shall be saved to disk as a `.gd` file for reference and debugging.
 
 REQ-PERSIST-0002: The node tree shall be persisted in the scene file as child nodes.
 
-REQ-PERSIST-0003: The cached script shall be reused when the prompt hasn't changed.
-
-REQ-PERSIST-0004: The cache shall be invalidated when the prompt changes or force-regenerate is triggered.
+REQ-PERSIST-0003: No automatic generation shall occur behind the scenes (e.g., on prompt change or scene load).
 
 ### Safety
 

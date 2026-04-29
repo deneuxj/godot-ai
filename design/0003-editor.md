@@ -91,7 +91,7 @@ The editor dock shows:
 │  │ [texture1.png  ✕]            │  │
 │  └───────────────────────────────┘  │
 │                                     │
-│  [⟳ Generate]  [Clear]              │
+│  [ Send ]  [ Clear ]              │
 │                                     │
 │  Status:  Generating... ████████░░  │
 │                                     │
@@ -157,7 +157,7 @@ func _update_for_selected_node():
         prompt_text_edit.text = ""
         status_label.text = "No AgentAssisted3D selected"
 
-func _on_generate_pressed():
+func _on_send_pressed():
     if _current_node:
         _current_node.generate()
 
