@@ -13,7 +13,7 @@ var _editor_interface: EditorInterface
 
 # UI node references (set in _ready)
 var _prompt_text_edit: TextEdit
-var _generate_button: Button
+var _send_button: Button
 var _clear_button: Button
 var _status_label: Label
 var _progress_bar: ProgressBar
@@ -29,7 +29,7 @@ func _init_editor(editor_interface: EditorInterface) -> void:
 func _ready() -> void:
 	# Cache references to UI nodes by name.
 	_prompt_text_edit = $VBoxContainer/PromptTextEdit as TextEdit
-	_generate_button = $VBoxContainer/GenerateRow/GenerateButton as Button
+	_send_button = $VBoxContainer/GenerateRow/SendButton as Button
 	_clear_button = $VBoxContainer/GenerateRow/ClearButton as Button
 	_status_label = $VBoxContainer/StatusRow/StatusLabel as Label
 	_progress_bar = $VBoxContainer/StatusRow/ProgressBar as ProgressBar
@@ -45,7 +45,7 @@ func _ready() -> void:
 
 	# Connect UI signals.
 	_prompt_text_edit.text_changed.connect(_on_prompt_text_edit_text_changed)
-	_generate_button.pressed.connect(_on_generate_pressed)
+	_send_button.pressed.connect(_on_send_pressed)
 	_clear_button.pressed.connect(_on_clear_pressed)
 
 	# Connect to the editor's selection system and initialize.
@@ -109,9 +109,9 @@ func _on_prompt_text_edit_text_changed() -> void:
 
 # --- Generate / Clear ---
 
-func _on_generate_pressed() -> void:
+func _on_send_pressed() -> void:
 	if is_instance_valid(_current_node):
-		_current_node.force_generate()
+		_current_node.generate()
 
 
 func _on_clear_pressed() -> void:

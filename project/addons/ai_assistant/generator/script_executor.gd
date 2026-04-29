@@ -81,7 +81,7 @@ static func execute_with_error(script_text: String, parent: Node3D) -> Dictionar
 	gdscript.source_code = script_text
 
 	# 3. Compile and capture errors
-	var compile_error: int = gdscript.compile()
+	var compile_error: int = gdscript.reload()
 	if compile_error != OK:
 		return {"error": "Compilation failed (error code: %d)" % compile_error, "file": "n/a", "line": 0}
 

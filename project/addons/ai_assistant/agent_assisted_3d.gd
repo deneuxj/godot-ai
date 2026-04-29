@@ -3,7 +3,7 @@
 ## When added to a scene with a non-empty [member prompt], the node sends the
 ## prompt (and optional [member texture_attachments]) to an AI backend,
 ## executes the generated GDScript, and applies the resulting node hierarchy
-## as direct children. Results are cached in `res://generated/<instance_id>/`.
+## as direct children. Results are saved to `res://generated/`.
 
 @tool
 extends Node3D
@@ -31,13 +31,7 @@ signal progress(chunks: Array[String])
 @export_group("AI Assistant")
 
 @export_multiline
-var prompt: String = "":
-	set(val):
-		prompt = val
-		if _prompt_changed():
-			_on_prompt_changed()
-	get:
-		return prompt
+var prompt: String = ""
 
 @export
 var texture_attachments: Array[Texture2D] = []
@@ -60,10 +54,6 @@ var model: String = ""
 
 # --- Internal state ---
 
-var _prompt_hash: int = 0
-var _instance_id: String = ""
-var _current_script_text: String = ""
-
 
 # --- Lifecycle ---
 
@@ -74,15 +64,6 @@ func _ready() -> void:
 		status_message = "Using cached scene nodes"
 		return
 
-	# Check for cached generation.
-	if _has_valid_cache():
-		_load_from_cache()
-		return
-
-	# Auto-generate if prompt is non-empty.
-	if prompt != "":
-		generate()
-
 
 # --- Generation pipeline ---
 
@@ -90,14 +71,6 @@ func generate() -> void:
 	generation_status = GenerationStatus.GENERATING
 	status_message = "Generating..."
 	generation_started.emit()
-
-	# Check cache first.
-	if _has_valid_cache():
-		_load_from_cache()
-		generation_status = GenerationStatus.SUCCESS
-		status_message = "Loaded from cache"
-		generation_finished.emit()
-		return
 
 	# Build initial prompt.
 	var messages := PromptBuilder.build(prompt, texture_attachments)
@@ -108,7 +81,6 @@ func generate() -> void:
 	for attempt in range(MAX_RETRIES):
 		# Call AI.
 		script_text = await _call_ai(messages)
-		_current_script_text = script_text
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, MAX_RETRIES]
 
 		# Execute script.
@@ -123,8 +95,8 @@ func generate() -> void:
 		messages = PromptBuilder.build_error_correction(messages, error_result, script_text)
 
 	if success:
-		_save_cache(script_text)
-		_apply_generated_nodes()
+		_save_generated_script(script_text)
+		_apply_generated_nodes(script_text)
 		generation_status = GenerationStatus.SUCCESS
 		status_message = "Generation complete"
 	else:
@@ -132,11 +104,6 @@ func generate() -> void:
 		status_message = "Generation failed after %d attempts" % MAX_RETRIES
 
 	generation_finished.emit()
-
-
-func force_generate() -> void:
-	_invalidate_cache()
-	generate()
 
 
 # --- AI call ---
@@ -161,101 +128,45 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 
 # --- Cache helpers ---
 
-func _get_instance_id() -> String:
-	if _instance_id == "":
-		_instance_id = _get_scene_path_hash()
-	return _instance_id
+# --- Persistence helpers ---
 
+func _save_generated_script(script_text: String) -> void:
+	var dir := "res://generated/"
+	if not DirAccess.dir_exists_absolute(dir):
+		DirAccess.make_dir_recursive_absolute(dir)
 
-func _get_scene_path_hash() -> String:
-	var scene_path: String = ""
-	var edited_root := get_tree().edited_scene_root
-	if edited_root:
-		scene_path = edited_root.get_path().get_concatenated_names()
-	var full_path: String = scene_path + "/" + get_path().get_concatenated_names()
-	return str(hash(full_path))
-
-
-func _get_cache_path() -> String:
-	return "res://generated/%s/current.gd" % _get_instance_id()
-
-
-func _has_valid_cache() -> bool:
-	var cache_path := _get_cache_path()
-	if not ResourceLoader.exists(cache_path):
-		return false
-
-	var cached_script = load(cache_path) as GDScript
-	if cached_script == null:
-		return false
-
-	var cached_hash: int = cached_script.get_meta("prompt_hash", 0)
-	var current_hash: int = hash(prompt)
-	return cached_hash == current_hash
-
-
-func _save_cache(script_text: String) -> void:
-	var cache_dir := "res://generated/%s/" % _get_instance_id()
-	DirAccess.make_dir_recursive_absolute(cache_dir)
-
-	var cache_path := _get_cache_path()
-
-	var gdscript := GDScript.new()
-	gdscript.source_code = script_text
-	gdscript.set_meta("prompt_hash", hash(prompt))
-	gdscript.set_meta("generated_at", Time.get_datetime_string_from_system())
-
-	ResourceSaver.save(gdscript, cache_path, ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
-
-
-func _load_from_cache() -> void:
-	var cache_path := _get_cache_path()
-	var cached_script = load(cache_path) as GDScript
-
-	if cached_script == null:
-		generate()
-		return
-
-	_current_script_text = cached_script.source_code
-	_apply_generated_nodes()
-
-
-func _invalidate_cache() -> void:
-	var cache_path := _get_cache_path()
-	var da := DirAccess.open("res://")
-	if da and da.file_exists(cache_path):
-		da.remove(cache_path)
+	var path := "res://generated/%s_last_generation.gd" % name
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file:
+		file.store_string(script_text)
+		file.close()
 
 
 # --- Node application ---
 
-func _apply_generated_nodes() -> void:
+func _apply_generated_nodes(script_text: String) -> void:
 	# Clear existing generated children.
 	for child in get_children():
 		child.queue_free()
 
-	# Re-execute the cached/last script to rebuild the node tree.
-	if _current_script_text != "":
-		var error_result := ScriptExecutor.execute_with_error(_current_script_text, self)
+	# Execute the script to build the node tree.
+	if script_text != "":
+		var error_result := ScriptExecutor.execute_with_error(script_text, self)
 		if error_result.error != null:
-			push_error("Failed to apply cached script: %s" % error_result.error)
+			push_error("Failed to apply generated script: %s" % error_result.error)
 			return
 
-
-# --- Prompt change detection ---
-
-func _prompt_changed() -> bool:
-	var new_hash: int = hash(prompt)
-	if new_hash != _prompt_hash:
-		_prompt_hash = new_hash
-		return true
-	return false
+		# Set owner for all new children to ensure they are saved with the scene.
+		var edited_root := get_tree().get_edited_scene_root()
+		if edited_root:
+			for child in get_children():
+				_set_owner_recursive(child, edited_root)
 
 
-func _on_prompt_changed() -> void:
-	if generation_status != GenerationStatus.GENERATING:
-		_invalidate_cache()
-		generate()
+func _set_owner_recursive(node: Node, owner: Node) -> void:
+	node.owner = owner
+	for child in node.get_children():
+		_set_owner_recursive(child, owner)
 
 
 # --- Helpers ---

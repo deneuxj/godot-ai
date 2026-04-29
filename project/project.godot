@@ -8,10 +8,15 @@
 
 config_version=5
 
+[ai]
+
+openai/api_key="none"
+openai/model="qwen/qwen3.6-35b-a3b"
+
 [application]
 
 config/name="AI Assistant Project"
-config/features=PackedStringArray("4.6")
+config/features=PackedStringArray("4.4")
 
 [dotnet]
 

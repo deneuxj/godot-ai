@@ -6,6 +6,8 @@
 class_name AIClient
 extends Node
 
+const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
+
 
 ## Emitted when streaming chunks arrive during `chat_stream()`.
 signal progress(chunks: Array[String])

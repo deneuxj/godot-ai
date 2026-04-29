@@ -6,4 +6,7 @@
 
 [node name="AgentAssisted3D" type="Node3D" parent="." unique_id=423421973]
 script = ExtResource("1_d8ypf")
+prompt = "Dessine-moi un mouton"
+generation_status = 1
+status_message = "Generating... (attempt 1/5)"
 metadata/_custom_type_script = "uid://fltqr6krppck"

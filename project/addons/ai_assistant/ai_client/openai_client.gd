@@ -10,16 +10,26 @@ extends AIClient
 
 ## Internal HTTPRequest node for making API calls.
 var _http_request: HTTPRequest
+var _http_request_ready: bool = false
 
 
 func _ready() -> void:
 	_http_request = HTTPRequest.new()
 	add_child(_http_request)
+	_http_request_ready = true
 
 
 func _exit_tree() -> void:
 	if is_instance_valid(_http_request):
 		_http_request.queue_free()
+		_http_request_ready = false
+
+
+func _ensure_http_request() -> void:
+	if not _http_request_ready:
+		_http_request = HTTPRequest.new()
+		add_child(_http_request)
+		_http_request_ready = true
 
 
 ## Non-streaming chat: sends [param messages] and returns the full response.
@@ -30,6 +40,7 @@ func _exit_tree() -> void:
 ##
 ## Returns an empty string on failure.
 func chat(messages: Array[Dictionary]) -> String:
+	_ensure_http_request()
 	var body: Dictionary = {
 		"model": model,
 		"messages": messages,
@@ -96,6 +107,7 @@ func chat(messages: Array[Dictionary]) -> String:
 ##
 ## Returns the full concatenated response string when streaming finishes.
 func chat_stream(messages: Array[Dictionary]) -> String:
+	_ensure_http_request()
 	var body: Dictionary = {
 		"model": model,
 		"messages": messages,
