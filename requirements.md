@@ -26,6 +26,8 @@ REQ-NODE3D-0006: Generation shall only be triggered by explicit user action via 
 
 REQ-NODE3D-0007: The user shall be able to trigger re-generation with the same or modified prompt via the "Send" button.
 
+REQ-NODE3D-0010: Ongoing AI generation requests shall be interruptible by the user.
+
 ### AI Integration
 
 REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends.
@@ -41,7 +43,10 @@ REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/openai/api_key` - Authentication key (optional)
   - `ai/openai/model` - Model name to use
   - `ai/openai/max_tokens` - Maximum response tokens
+  - `ai/openai/max_retries` - Maximum number of script correction attempts
   - `ai/openai/system_prompt` - Custom system prompt (optional override)
+
+REQ-AIINTG-0006: The maximum number of attempts to correct a generated script shall be configurable in the project settings.
 
 ### Editor UX
 
@@ -55,6 +60,8 @@ REQ-EDITOR-0002: The plugin shall provide a custom editor dock for the AgentAssi
   - Generated node tree preview
 
 REQ-EDITOR-0003: Generation status shall be exposed as a node property (idle, generating, success, error).
+
+REQ-EDITOR-0004: AI-generated GDScript code shall be accessible and viewable by the user within the editor dock UI.
 
 ### Persistence
 

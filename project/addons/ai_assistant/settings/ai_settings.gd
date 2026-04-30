@@ -10,6 +10,7 @@ static var DEFAULTS := {
 	"api_key": "",
 	"model": "local-model",
 	"max_tokens": 4096,
+	"max_retries": 5,
 	"timeout_ms": 60000,
 }
 

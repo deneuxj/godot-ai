@@ -14,10 +14,13 @@ var _editor_interface: EditorInterface
 # UI node references (set in _ready)
 var _prompt_text_edit: TextEdit
 var _send_button: Button
+var _cancel_button: Button
 var _clear_button: Button
 var _status_label: Label
 var _progress_bar: ProgressBar
-var _node_tree_view: Tree
+var _tab_container: TabContainer
+var _node_tree: Tree
+var _code_view: CodeEdit
 var _drop_label: Label
 
 
@@ -30,10 +33,13 @@ func _ready() -> void:
 	# Cache references to UI nodes by name.
 	_prompt_text_edit = $VBoxContainer/PromptTextEdit as TextEdit
 	_send_button = $VBoxContainer/GenerateRow/SendButton as Button
+	_cancel_button = $VBoxContainer/GenerateRow/CancelButton as Button
 	_clear_button = $VBoxContainer/GenerateRow/ClearButton as Button
 	_status_label = $VBoxContainer/StatusRow/StatusLabel as Label
 	_progress_bar = $VBoxContainer/StatusRow/ProgressBar as ProgressBar
-	_node_tree_view = $VBoxContainer/NodeTreeView as Tree
+	_tab_container = $VBoxContainer/TabContainer as TabContainer
+	_node_tree = $"VBoxContainer/TabContainer/Node Tree" as Tree
+	_code_view = $"VBoxContainer/TabContainer/Generated Code" as CodeEdit
 	_drop_label = $VBoxContainer/AttachmentsContainer/DropLabel as Label
 
 	# Enable drag-and-drop on the attachments container.
@@ -46,6 +52,7 @@ func _ready() -> void:
 	# Connect UI signals.
 	_prompt_text_edit.text_changed.connect(_on_prompt_text_edit_text_changed)
 	_send_button.pressed.connect(_on_send_pressed)
+	_cancel_button.pressed.connect(_on_cancel_pressed)
 	_clear_button.pressed.connect(_on_clear_pressed)
 
 	# Connect to the editor's selection system and initialize.
@@ -71,6 +78,8 @@ func _update_for_selected_node() -> void:
 	# Disconnect signals from the old node.
 	if is_instance_valid(_current_node):
 		_current_node.disconnect("progress", _on_node_progress)
+		if _current_node.is_connected("code_updated", _on_node_code_updated):
+			_current_node.disconnect("code_updated", _on_node_code_updated)
 
 	var selection := _editor_interface.get_selection()
 	var selected_nodes: Array = []
@@ -85,18 +94,21 @@ func _update_for_selected_node() -> void:
 		# Two-way prompt binding.
 		_prompt_text_edit.text = _current_node.prompt
 
-		# Connect progress signal from the node.
+		# Connect signals from the node.
 		_current_node.connect("progress", _on_node_progress)
+		_current_node.connect("code_updated", _on_node_code_updated)
 
 		# Refresh UI state.
 		_refresh_attachments()
 		_refresh_node_tree()
+		_code_view.text = _current_node.generated_code
 		_update_status()
 	else:
 		_prompt_text_edit.text = ""
 		_status_label.text = "No AgentAssisted3D selected"
 		_progress_bar.value = 0.0
-		_node_tree_view.clear()
+		_node_tree.clear()
+		_code_view.text = ""
 		_drop_label.visible = true
 
 
@@ -107,11 +119,18 @@ func _on_prompt_text_edit_text_changed() -> void:
 		_current_node.prompt = _prompt_text_edit.text
 
 
-# --- Generate / Clear ---
+# --- Send / Cancel / Clear ---
 
 func _on_send_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.generate()
+		_update_status()
+
+
+func _on_cancel_pressed() -> void:
+	if is_instance_valid(_current_node):
+		_current_node.cancel_generation()
+		_update_status()
 
 
 func _on_clear_pressed() -> void:
@@ -120,7 +139,7 @@ func _on_clear_pressed() -> void:
 		_prompt_text_edit.text = ""
 
 
-# --- Progress display ---
+# --- Progress / Code display ---
 
 func _on_node_progress(_chunks: Array[String]) -> void:
 	if not is_instance_valid(_current_node):
@@ -137,6 +156,10 @@ func _on_node_progress(_chunks: Array[String]) -> void:
 	_update_status()
 
 
+func _on_node_code_updated(code: String) -> void:
+	_code_view.text = code
+
+
 # --- Status binding ---
 
 func _update_status() -> void:
@@ -145,6 +168,12 @@ func _update_status() -> void:
 
 	var status: AgentAssisted3D.GenerationStatus = _current_node.generation_status
 	var message: String = _current_node.status_message
+
+	# Toggle button states
+	var generating := (status == AgentAssisted3D.GenerationStatus.GENERATING)
+	_send_button.disabled = generating
+	_cancel_button.disabled = not generating
+	_clear_button.disabled = generating
 
 	match status:
 		AgentAssisted3D.GenerationStatus.IDLE:
@@ -158,6 +187,7 @@ func _update_status() -> void:
 			_status_label.text = "Status: " + message
 			_status_label.add_theme_color_override("font_color", Color.GREEN)
 			_progress_bar.value = 100.0
+			_refresh_node_tree()
 		AgentAssisted3D.GenerationStatus.ERROR:
 			_status_label.text = "Status: " + message
 			_status_label.add_theme_color_override("font_color", Color.RED)
@@ -248,12 +278,12 @@ func _refresh_attachments() -> void:
 # --- Node tree preview ---
 
 func _refresh_node_tree() -> void:
-	_node_tree_view.clear()
+	_node_tree.clear()
 
 	if not is_instance_valid(_current_node):
 		return
 
-	var root := _node_tree_view.create_item()
+	var root := _node_tree.create_item()
 	root.set_text(0, "AgentAssisted3D")
 
 	for child in _current_node.get_children():
@@ -261,7 +291,7 @@ func _refresh_node_tree() -> void:
 
 
 func _add_node_to_tree(node: Node, parent_item: TreeItem) -> void:
-	var item := _node_tree_view.create_item(parent_item)
+	var item := _node_tree.create_item(parent_item)
 	var node_name: String = node.name
 	var node_type: String = node.get_class()
 	item.set_text(0, "%s (%s)" % [node_name, node_type])

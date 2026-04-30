@@ -32,6 +32,12 @@ func _ensure_http_request() -> void:
 		_http_request_ready = true
 
 
+## Interrupt the ongoing AI request.
+func cancel() -> void:
+	if is_instance_valid(_http_request):
+		_http_request.cancel_request()
+
+
 ## Non-streaming chat: sends [param messages] and returns the full response.
 ##
 ## Uses [HTTPRequest] to POST to the configured endpoint's `/v1/chat/completions`

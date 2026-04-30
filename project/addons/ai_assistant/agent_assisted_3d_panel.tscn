@@ -57,6 +57,11 @@ theme_override_constants/separation = 8
 layout_mode = 2
 text = "Send"
 
+[node name="CancelButton" type="Button" parent="VBoxContainer/GenerateRow" unique_id=2147483647]
+layout_mode = 2
+disabled = true
+text = "Cancel"
+
 [node name="ClearButton" type="Button" parent="VBoxContainer/GenerateRow" unique_id=655103514]
 layout_mode = 2
 text = "Clear"
@@ -72,9 +77,23 @@ text = "Status: Idle"
 [node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/StatusRow" unique_id=1788238256]
 layout_mode = 2
 
-[node name="TreeLabel" type="Label" parent="VBoxContainer" unique_id=664340046]
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer" unique_id=3000000000]
 layout_mode = 2
-text = "Node Tree:"
+size_flags_vertical = 3
+current_tab = 0
 
-[node name="NodeTreeView" type="Tree" parent="VBoxContainer" unique_id=2064561218]
+[node name="Node Tree" type="Tree" parent="VBoxContainer/TabContainer" unique_id=2064561218]
 layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Generated Code" type="CodeEdit" parent="VBoxContainer/TabContainer" unique_id=4000000000]
+visible = false
+layout_mode = 2
+editable = false
+syntax_highlighter = null
+highlight_all_occurrences = true
+symbol_lookup_on_click = true
+line_folding = true
+gutters/line_numbers_draw = true
+gutters/line_folding_draw = true
+metadata/_tab_index = 1

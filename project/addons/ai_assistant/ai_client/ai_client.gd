@@ -82,6 +82,13 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 	return ""
 
 
+## Interrupt the ongoing AI request.
+##
+## Subclasses must override this method to stop the network request.
+func cancel() -> void:
+	push_error("AIClient.cancel() not implemented. Override in subclass.")
+
+
 ## Factory method that creates an [OpenAIClient] configured with project settings.
 ##
 ## Reads configuration from [member AISettings] defaults under the

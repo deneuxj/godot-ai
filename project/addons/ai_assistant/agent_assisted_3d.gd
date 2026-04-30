@@ -12,9 +12,6 @@ extends Node3D
 class_name AgentAssisted3D
 
 
-const MAX_RETRIES: int = 5
-
-
 enum GenerationStatus {
 	IDLE = 0,
 	GENERATING = 1,
@@ -26,6 +23,7 @@ enum GenerationStatus {
 signal generation_started()
 signal generation_finished()
 signal progress(chunks: Array[String])
+signal code_updated(code: String)
 
 
 @export_group("AI Assistant")
@@ -42,6 +40,9 @@ var generation_status: GenerationStatus = GenerationStatus.IDLE
 @export
 var status_message: String = ""
 
+@export_multiline
+var generated_code: String = ""
+
 @export
 var api_endpoint: String = ""
 
@@ -53,6 +54,8 @@ var model: String = ""
 
 
 # --- Internal state ---
+
+var _active_client: AIClient = null
 
 
 # --- Lifecycle ---
@@ -76,12 +79,23 @@ func generate() -> void:
 	var messages := PromptBuilder.build(prompt, texture_attachments)
 	var script_text: String = ""
 	var success: bool = false
+	
+	var max_retries: int = _get_project_setting("max_retries", 5)
 
 	# Error-correction loop.
-	for attempt in range(MAX_RETRIES):
+	for attempt in range(max_retries):
 		# Call AI.
 		script_text = await _call_ai(messages)
-		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, MAX_RETRIES]
+		
+		# Immediately update the code property so the user can see it (even on error).
+		generated_code = script_text
+		code_updated.emit(generated_code)
+		
+		if generation_status == GenerationStatus.IDLE:
+			# Cancelled.
+			return
+		
+		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 
 		# Execute script.
 		var error_result := ScriptExecutor.execute_with_error(script_text, self)
@@ -89,9 +103,13 @@ func generate() -> void:
 		if error_result.error == null:
 			success = true
 			break
+		
+		if generation_status == GenerationStatus.IDLE:
+			# Cancelled during execution (unlikely but possible if async).
+			return
 
 		# Append error to chat history.
-		status_message = "Fixing error on attempt %d/%d: %s" % [attempt + 1, MAX_RETRIES, error_result.error]
+		status_message = "Fixing error on attempt %d/%d: %s" % [attempt + 1, max_retries, error_result.error]
 		messages = PromptBuilder.build_error_correction(messages, error_result, script_text)
 
 	if success:
@@ -99,10 +117,19 @@ func generate() -> void:
 		_apply_generated_nodes(script_text)
 		generation_status = GenerationStatus.SUCCESS
 		status_message = "Generation complete"
-	else:
+	elif generation_status != GenerationStatus.IDLE:
 		generation_status = GenerationStatus.ERROR
-		status_message = "Generation failed after %d attempts" % MAX_RETRIES
+		status_message = "Generation failed after %d attempts" % max_retries
 
+	generation_finished.emit()
+
+
+func cancel_generation() -> void:
+	if is_instance_valid(_active_client):
+		_active_client.cancel()
+	
+	generation_status = GenerationStatus.IDLE
+	status_message = "Generation cancelled"
 	generation_finished.emit()
 
 
@@ -116,6 +143,7 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 
 	var client := AIClient.create_openai_client()
 	add_child(client)
+	_active_client = client
 	
 	# Relay progress signal to the editor dock
 	client.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
@@ -128,7 +156,13 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 	client.set_max_tokens(max_tokens)
 
 	var response := await client.chat_stream(messages)
-	client.queue_free()
+	
+	if is_instance_valid(client):
+		client.queue_free()
+	
+	if _active_client == client:
+		_active_client = null
+		
 	return response
 
 
