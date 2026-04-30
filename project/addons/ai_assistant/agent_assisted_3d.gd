@@ -115,6 +115,11 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 	var max_tokens: int = _get_project_setting("max_tokens", 4096)
 
 	var client := AIClient.create_openai_client()
+	add_child(client)
+	
+	# Relay progress signal to the editor dock
+	client.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
+	
 	client.set_endpoint(endpoint)
 	if key != "":
 		client.set_api_key(key)
@@ -122,7 +127,8 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 		client.set_model(model_name)
 	client.set_max_tokens(max_tokens)
 
-	var response := await client.chat(messages)
+	var response := await client.chat_stream(messages)
+	client.queue_free()
 	return response
 
 
@@ -163,10 +169,10 @@ func _apply_generated_nodes(script_text: String) -> void:
 				_set_owner_recursive(child, edited_root)
 
 
-func _set_owner_recursive(node: Node, owner: Node) -> void:
-	node.owner = owner
+func _set_owner_recursive(node: Node, scene_owner: Node) -> void:
+	node.owner = scene_owner
 	for child in node.get_children():
-		_set_owner_recursive(child, owner)
+		_set_owner_recursive(child, scene_owner)
 
 
 # --- Helpers ---

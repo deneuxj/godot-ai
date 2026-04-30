@@ -12,11 +12,16 @@ config_version=5
 
 openai/api_key="none"
 openai/model="qwen/qwen3.6-35b-a3b"
+openai/base_url="http://localhost:1234"
+
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
 config/name="AI Assistant Project"
-config/features=PackedStringArray("4.4")
+config/features=PackedStringArray("4.6")
 
 [dotnet]
 
