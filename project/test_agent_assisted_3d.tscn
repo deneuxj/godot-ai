@@ -1,101 +1,11 @@
 [gd_scene format=3 uid="uid://jbxwojtkucw0"]
 
 [ext_resource type="Script" uid="uid://fltqr6krppck" path="res://addons/ai_assistant/agent_assisted_3d.gd" id="1_d8ypf"]
-[ext_resource type="Script" uid="uid://dla6orwy77847" path="res://generated/AgentAssisted3D_last_generation.gd" id="2_t8jrp"]
 
 [node name="TestAgentAssisted3D" type="Node3D" unique_id=2084474840]
 
 [node name="AgentAssisted3D" type="Node3D" parent="." unique_id=423421973]
 script = ExtResource("1_d8ypf")
 prompt = "Dessine-moi un mouton"
-generation_status = 2
-status_message = "Generation complete"
-generated_code = "extends Node3D
-
-func _ready():
-	# Créer le corps du mouton (sphère)
-	var corps = MeshInstance3D.new()
-	var corps_mesh = SphereMesh.new()
-	corps_mesh.subdivide_depth = 4
-	corps_mesh.subdivide_radius = 4
-	corps.mesh = corps_mesh
-	corps.scale = Vector3(1, 0.8, 0.6)
-	corps.position = Vector3(0, 0.5, 0)
-	add_child(corps)
-	
-	# Créer la tête du mouton (sphère plus petite)
-	var tete = MeshInstance3D.new()
-	var tete_mesh = SphereMesh.new()
-	tete_mesh.subdivide_depth = 4
-	tete_mesh.subdivide_radius = 4
-	tete.mesh = tete_mesh
-	tete.scale = Vector3(0.5, 0.5, 0.5)
-	tete.position = Vector3(0, 1.2, 0.4)
-	add_child(tete)
-	
-	# Créer les yeux
-	var oeil_gauche = MeshInstance3D.new()
-	var oeil_gauche_mesh = SphereMesh.new()
-	oeil_gauche_mesh.subdivide_depth = 2
-	oeil_gauche_mesh.subdivide_radius = 2
-	oeil_gauche.mesh = oeil_gauche_mesh
-	oeil_gauche.scale = Vector3(0.05, 0.05, 0.05)
-	oeil_gauche.position = Vector3(-0.15, 1.25, 0.6)
-	add_child(oeil_gauche)
-	
-	var oeil_droit = MeshInstance3D.new()
-	var oeil_droit_mesh = SphereMesh.new()
-	oeil_droit_mesh.subdivide_depth = 2
-	oeil_droit_mesh.subdivide_radius = 2
-	oeil_droit.mesh = oeil_droit_mesh
-	oeil_droit.scale = Vector3(0.05, 0.05, 0.05)
-	oeil_droit.position = Vector3(0.15, 1.25, 0.6)
-	add_child(oeil_droit)
-	
-	# Créer les pattes (cylindres)
-	var patte_gauche_avant = MeshInstance3D.new()
-	patte_gauche_avant.mesh = CylinderMesh.new()
-	patte_gauche_avant.scale = Vector3(0.1, 0.5, 0.1)
-	patte_gauche_avant.position = Vector3(-0.3, 0.25, 0.3)
-	add_child(patte_gauche_avant)
-	
-	var patte_droite_avant = MeshInstance3D.new()
-	patte_droite_avant.mesh = CylinderMesh.new()
-	patte_droite_avant.scale = Vector3(0.1, 0.5, 0.1)
-	patte_droite_avant.position = Vector3(0.3, 0.25, 0.3)
-	add_child(patte_droite_avant)
-	
-	var patte_gauche_arriere = MeshInstance3D.new()
-	patte_gauche_arriere.mesh = CylinderMesh.new()
-	patte_gauche_arriere.scale = Vector3(0.1, 0.5, 0.1)
-	patte_gauche_arriere.position = Vector3(-0.3, 0.25, -0.3)
-	add_child(patte_gauche_arriere)
-	
-	var patte_droite_arriere = MeshInstance3D.new()
-	patte_droite_arriere.mesh = CylinderMesh.new()
-	patte_droite_arriere.scale = Vector3(0.1, 0.5, 0.1)
-	patte_droite_arriere.position = Vector3(0.3, 0.25, -0.3)
-	add_child(patte_droite_arriere)
-	
-	# Créer une lumière pour éclairer le mouton
-	var lumiere = DirectionalLight3D.new()
-	lumiere.position = Vector3(2, 5, 2)
-	lumiere.rotation_degrees = Vector3(-45, -45, 0)
-	add_child(lumiere)
-
-	# Ajouter un matériau blanc au mouton
-	var material = StandardMaterial3D.new()
-	material.albedo_color = Color(0.95, 0.95, 0.95)
-	
-	corps.set_surface_override_material(0, material)
-	tete.set_surface_override_material(0, material)
-	oeil_gauche.set_surface_override_material(0, material)
-	oeil_droit.set_surface_override_material(0, material)
-	patte_gauche_avant.set_surface_override_material(0, material)
-	patte_droite_avant.set_surface_override_material(0, material)
-	patte_gauche_arriere.set_surface_override_material(0, material)
-	patte_droite_arriere.set_surface_override_material(0, material)"
+status_message = "Generation cancelled"
 metadata/_custom_type_script = "uid://fltqr6krppck"
-
-[node name="Node3D" type="Node3D" parent="." unique_id=317562327]
-script = ExtResource("2_t8jrp")

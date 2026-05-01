@@ -73,12 +73,6 @@ func _ready() -> void:
 		generation_status = GenerationStatus.SUCCESS
 		status_message = "Using cached scene nodes"
 		return
-	
-	# If a script is already attached (besides this tool script), assume success.
-	if get_script() != null and get_script().resource_path != "res://addons/ai_assistant/agent_assisted_3d.gd":
-		generation_status = GenerationStatus.SUCCESS
-		status_message = "Using attached script"
-		return
 
 
 # --- Generation pipeline ---
@@ -219,12 +213,22 @@ func _apply_generated_output(path: String, mode: GenerationMode) -> void:
 				_set_owner_recursive(instance, edited_root)
 	
 	elif mode == GenerationMode.NODE_SCRIPT:
-		# Load and attach the script to this node.
+		# Clear existing generated children.
+		for child in get_children():
+			child.queue_free()
+		
+		# Load and attach the script to a new child node.
 		var script = load(path) as Script
 		if script:
-			# Note: In Godot 4, set_script() might not be enough in @tool mode
-			# if we want the node to instantly change behavior in editor.
-			set_script(script)
+			var instance = Node3D.new()
+			instance.name = "GeneratedNode"
+			instance.set_script(script)
+			add_child(instance)
+			
+			# Set owner so it is saved with the scene.
+			var edited_root := get_tree().get_edited_scene_root()
+			if edited_root:
+				instance.owner = edited_root
 
 
 func _set_owner_recursive(node: Node, scene_owner: Node) -> void:
