@@ -42,11 +42,18 @@ static func build(prompt: String, textures: Array[Texture2D], mode: GenerationMo
 
 ## REQ-AIINTG-0005: Error Correction Loop
 
-The loop is triggered by **Validation Errors** (parse errors) rather than runtime execution errors.
+The loop is triggered by **Validation Errors** (parse/load errors) captured via high-fidelity engine feedback.
 
-### Validation (`AgentAssisted3D._validate_output`)
-1. **Scene Mode**: Check if `TSCN` content starts with `[gd_scene` and has valid syntax.
-2. **Node Script Mode**: Check if `GDScript` content parses correctly using `gdscript.reload()`.
+### Validation (`ScriptExecutor.validate_output`)
+1. **Scene Mode**: 
+    - Rejects markdown blocks.
+    - Uses `ResourceLoader.load()` to attempt a resource load.
+    - Captures detailed engine errors using a `CustomLogger`.
+    - Falls back to headless Godot editor validation (`godot --headless -e`) for granular error diagnostics if loading fails.
+2. **Node Script Mode**: 
+    - Rejects markdown blocks.
+    - Uses the **Godot Language Server (LSP)** via a helper script for full pipeline diagnostics (parse errors, type errors, warnings).
+    - Falls back to `GDScript.reload()` if the LSP is unavailable.
 
 ### Conversation Structure
 When an error occurs, the conversation history is updated as follows:

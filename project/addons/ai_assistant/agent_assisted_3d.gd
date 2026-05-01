@@ -42,6 +42,9 @@ var generated_node_name: String = "GeneratedNode"
 var generated_script: Script = null
 
 @export_multiline
+var last_error: String = ""
+
+@export_multiline
 var prompt: String = ""
 
 @export
@@ -114,6 +117,7 @@ func generate() -> void:
 		var error_result := ScriptExecutor.validate_output(content, generation_mode)
 
 		if error_result.error == null:
+			last_error = ""
 			success = true
 			break
 		
@@ -122,6 +126,7 @@ func generate() -> void:
 			return
 
 		# 4. Error correction: Append error to chat history.
+		last_error = error_result.error
 		status_message = "Fixing error on attempt %d/%d: %s" % [attempt + 1, max_retries, error_result.error]
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
 

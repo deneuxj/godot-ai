@@ -24,6 +24,8 @@ REQ-NODE3D-0012: The user shall be able to specify the name of the generated chi
 
 REQ-NODE3D-0013: The generated GDScript (in Node Script mode) shall be accessible as a Script resource property on the AIAgentAssisted3D node.
 
+REQ-NODE3D-0014: Detailed error messages from the validation loop shall be accessible via a readonly property on the AIAgentAssisted3D node.
+
 REQ-NODE3D-0008: The generated output shall be a syntactically valid Godot resource (.tscn or .gd).
 
 REQ-NODE3D-0009: If the generated output fails to load or parse, the plugin shall append the error details to the chat history and re-send the request to the AI for correction. This loop shall repeat until the resource loads successfully or the maximum retry count is reached.
