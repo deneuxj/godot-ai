@@ -4,11 +4,7 @@
 
 [node name="AgentAssisted3DPanel" type="Control" unique_id=1573999600]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
 script = ExtResource("1_panel")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=962632458]
@@ -75,9 +71,11 @@ layout_mode = 2
 text = "Status: Idle"
 
 [node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/StatusRow" unique_id=1788238256]
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer" unique_id=3000000000]
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer" unique_id=-1294967296]
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 current_tab = 0
@@ -86,14 +84,11 @@ current_tab = 0
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Generated Code" type="CodeEdit" parent="VBoxContainer/TabContainer" unique_id=4000000000]
+[node name="Generated Code" type="CodeEdit" parent="VBoxContainer/TabContainer" unique_id=-294967296]
 visible = false
 layout_mode = 2
 editable = false
-syntax_highlighter = null
 highlight_all_occurrences = true
 symbol_lookup_on_click = true
 line_folding = true
-gutters/line_numbers_draw = true
-gutters/line_folding_draw = true
 metadata/_tab_index = 1
