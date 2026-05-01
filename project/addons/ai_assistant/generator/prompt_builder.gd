@@ -7,32 +7,43 @@
 class_name PromptBuilder
 
 
-## Default system prompt instructing the AI to generate Godot 4 GDScript scenes.
-const DEFAULT_SYSTEM_PROMPT := """\
-You are a Godot 4 scene generation assistant.
+## System prompt for generating Godot .tscn files.
+const SCENE_SYSTEM_PROMPT := """\
+You are a Godot 4 scene generator assistant.
 Given a user prompt and optional visual references,
-generate GDScript code that creates a node hierarchy.
+output a raw Godot 4 .tscn file content.
 
 Rules:
-- Output ONLY valid GDScript code, no markdown fences
-- Use Node3D, MeshInstance3D, DirectionalLight3D, etc.
-- Set reasonable default properties (position, scale, material)
-- Use clear variable names and add helpful comments
-- The root node should be a Node3D with the script attached
-- Use standard Godot 4 API (no deprecated methods)
-- Keep the scene performant and well-organized
+- Output ONLY valid .tscn content, no markdown fences.
+- Use [gd_scene ...], [node ...], [sub_resource ...], and [resource ...] tags correctly.
+- The root node should be a Node3D.
+- Include standard properties (mesh, material, transform).
+- Ensure all resources referenced are defined or use built-in types.
+- Do NOT output any explanation, just the raw .tscn text.
+"""
 
-Safety: Generated code must NOT access the filesystem, make network requests, or call OS.execute.
+## System prompt for generating Godot .gd scripts.
+const NODE_SCRIPT_SYSTEM_PROMPT := """\
+You are a Godot 4 GDScript generator assistant.
+Given a user prompt and optional visual references,
+output a raw GDScript that extends Node3D.
+
+Rules:
+- Output ONLY valid GDScript code, no markdown fences.
+- The script MUST start with 'extends Node3D'.
+- Use clear variable names and add helpful comments.
+- Use standard Godot 4 API (no deprecated methods).
+- Focus on implementing the specific logic requested (e.g., animation, interaction).
+- Do NOT output any explanation, just the raw GDScript text.
 """
 
 
 ## Build a [param messages] array for the AI chat API.
 ##
-## Returns an array of two dictionaries: [code]system[/code] and [code]user[/code] messages.
-## If [param textures] is non-empty, the user message uses multimodal content
-## (base64-encoded images) instead of plain text.
-static func build(user_prompt: String, textures: Array[Texture2D]) -> Array[Dictionary]:
-	var system_prompt: String = _get_system_prompt()
+## Returns an array of dictionaries: [code]system[/code] and [code]user[/code] messages.
+## [param mode] corresponds to [enum AgentAssisted3D.GenerationMode].
+static func build(user_prompt: String, textures: Array[Texture2D], mode: int) -> Array[Dictionary]:
+	var system_prompt: String = _get_system_prompt(mode)
 
 	var messages: Array[Dictionary] = [
 		{"role": "system", "content": system_prompt},
@@ -51,9 +62,6 @@ static func build(user_prompt: String, textures: Array[Texture2D]) -> Array[Dict
 
 
 ## Build a multi-part content array for multimodal models.
-##
-## The first part is the user prompt text. Subsequent parts are base64-encoded
-## images extracted from the provided [param textures].
 static func _build_multimodal_content(user_prompt: String, textures: Array[Texture2D]) -> Array:
 	var content: Array = [
 		{"type": "text", "text": user_prompt}
@@ -64,7 +72,7 @@ static func _build_multimodal_content(user_prompt: String, textures: Array[Textu
 			continue
 
 		var image: Image = _texture_to_image(texture)
-		if image.is_empty():
+		if image == null or image.is_empty():
 			continue
 
 		# Compress to JPEG for smaller payload; fall back to PNG if JPEG fails.
@@ -88,57 +96,45 @@ static func _build_multimodal_content(user_prompt: String, textures: Array[Textu
 
 ## Convert a [Texture2D] to an [Image] for base64 encoding.
 static func _texture_to_image(texture: Texture2D) -> Image:
-	var image: Image = null
-
-	if texture is ImageTexture:
-		image = texture.get_image()
-	elif texture is CompressedTexture2D:
-		image = texture.get_image()
-	else:
-		# Fallback: try to get the underlying image data
-		var img_resource: Variant = texture.get("resource")
-		if img_resource is Image:
-			image = img_resource
-		else:
-			var img_format: StringName = texture.get("image_format")
-			# Try to create an Image from the texture's internal format
-			var size: Vector2i = texture.get_size()
-			if size.x > 0 and size.y > 0:
-				image = Image.create_from_data(size.x, size.y, false, Image.FORMAT_RGBA8, texture.get_data())
-
-	return image
+	if texture is ImageTexture or texture is CompressedTexture2D:
+		return texture.get_image()
+	
+	# Fallback: try to get the underlying image data
+	var img_resource: Variant = texture.get("resource")
+	if img_resource is Image:
+		return img_resource as Image
+	
+	return null
 
 
 ## Get the system prompt, checking the project setting override first.
-static func _get_system_prompt() -> String:
+static func _get_system_prompt(mode: int) -> String:
 	var custom: String = ProjectSettings.get_setting("ai/openai/system_prompt", "")
 	if custom != "":
 		return custom
-	return DEFAULT_SYSTEM_PROMPT
+	
+	# Enum mapping (must match AgentAssisted3D.GenerationMode)
+	if mode == 0: # SCENE
+		return SCENE_SYSTEM_PROMPT
+	else: # NODE_SCRIPT
+		return NODE_SCRIPT_SYSTEM_PROMPT
 
 
 ## Append error details to the conversation history for the error-correction loop.
-##
-## The AI receives the error message, file, line number, and the generated code
-## that caused the error, then is instructed to provide a corrected version.
-static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary, generated_code: String) -> Array[Dictionary]:
+static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary, last_content: String) -> Array[Dictionary]:
 	var fix_instruction := """\
-The previous script had the following error:
+The previous output failed validation:
 
 Error: %s
-File: %s
-Line: %s
 
-Generated code:
+Previous output:
 %s
 
-Please provide a corrected version of the script that resolves this error.
-Output ONLY valid GDScript code, no markdown fences.
+Please provide a corrected version that resolves this error.
+Output ONLY raw text content, no markdown fences.
 """ % [
 	error_result.get("error", "Unknown error"),
-	error_result.get("file", "unknown"),
-	error_result.get("line", 0),
-	generated_code,
+	last_content,
 ]
 
 	messages.append({

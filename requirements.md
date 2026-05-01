@@ -14,13 +14,17 @@ REQ-NODE3D-0002: The node shall be parameterized with a text prompt (multiline t
 
 REQ-NODE3D-0003: Textures can be added as attachments to the prompt for visual context.
 
-REQ-NODE3D-0004: When added to a scene, the node shall use AI to process the prompt and generate a subtree of Godot nodes.
+REQ-NODE3D-0004: When added to a scene, the node shall use AI to process the prompt and generate either a Godot scene file (.tscn) or a GDScript file (.gd).
 
-REQ-NODE3D-0008: The generated GDScript shall be syntactically valid and compile without errors.
+REQ-NODE3D-0011: The user shall be able to choose between two generation modes:
+  - **Scene**: The AI generates a `.tscn` file which is then instantiated as a child of the `AgentAssisted3D` node.
+  - **Node Script**: The AI generates a `.gd` script which is attached directly to the `AgentAssisted3D` node.
 
-REQ-NODE3D-0009: If the generated script fails to compile or run, the plugin shall append the error details to the chat history and re-send the request to the AI for correction. This loop shall repeat until the script executes successfully or the maximum retry count is reached.
+REQ-NODE3D-0008: The generated output shall be a syntactically valid Godot resource (.tscn or .gd).
 
-REQ-NODE3D-0005: The generated hierarchy shall be persisted in the scene file.
+REQ-NODE3D-0009: If the generated output fails to load or parse, the plugin shall append the error details to the chat history and re-send the request to the AI for correction. This loop shall repeat until the resource loads successfully or the maximum retry count is reached.
+
+REQ-NODE3D-0005: The generated hierarchy or script attachment shall be persisted in the scene file.
 
 REQ-NODE3D-0006: Generation shall only be triggered by explicit user action via the "Send" button in the editor dock.
 
@@ -32,51 +36,46 @@ REQ-NODE3D-0010: Ongoing AI generation requests shall be interruptible by the us
 
 REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends.
 
-REQ-AIINTG-0002: The plugin shall use an **OpenAI-compatible API** protocol (works with LM Studio, Ollama, OpenAI, etc.).
+REQ-AIINTG-0002: The plugin shall use an **OpenAI-compatible API** protocol.
 
-REQ-AIINTG-0003: The AI shall output GDScript code that programmatically creates the node tree.
+REQ-AIINTG-0003: The AI shall output either a Godot scene (.tscn) or GDScript code (.gd) depending on the selected mode.
 
-REQ-AIINTG-0005: When a compilation or runtime error occurs, the error message (including file, line number, and description) shall be appended as a new user message to the conversation history, instructing the AI to correct the script. The AI shall then return a revised script. This process shall repeat until success or the maximum retry limit is reached.
+REQ-AIINTG-0005: When a compilation, parse, or load error occurs, the error message shall be appended as a new user message to the conversation history, instructing the AI to correct the output. The AI shall then return a revised version. This process shall repeat until success or the maximum retry limit is reached.
 
 REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/openai/base_url` - API endpoint URL
   - `ai/openai/api_key` - Authentication key (optional)
   - `ai/openai/model` - Model name to use
   - `ai/openai/max_tokens` - Maximum response tokens
-  - `ai/openai/max_retries` - Maximum number of script correction attempts
+  - `ai/openai/max_retries` - Maximum number of correction attempts
   - `ai/openai/system_prompt` - Custom system prompt (optional override)
 
-REQ-AIINTG-0006: The maximum number of attempts to correct a generated script shall be configurable in the project settings.
+REQ-AIINTG-0006: The maximum number of attempts to correct a generated script/scene shall be configurable in the project settings.
 
 ### Editor UX
 
 REQ-EDITOR-0001: The plugin shall provide real-time progress feedback in the Godot editor during AI processing.
 
 REQ-EDITOR-0002: The plugin shall provide a custom editor dock for the AgentAssisted3D node showing:
+  - Generation mode selector (Scene vs. Node Script)
   - Prompt text editor
   - Texture attachment list (drag & drop support)
   - Send button (triggers generation)
+  - Cancel button (interrupts generation)
   - Status/progress indicator
   - Generated node tree preview
 
 REQ-EDITOR-0003: Generation status shall be exposed as a node property (idle, generating, success, error).
 
-REQ-EDITOR-0004: AI-generated GDScript code shall be accessible and viewable by the user within the editor dock UI.
+REQ-EDITOR-0004: AI-generated GDScript or TSCN code shall be accessible and viewable by the user within the editor dock UI.
 
 ### Persistence
 
-REQ-PERSIST-0001: The result of a successful generation (GDScript) shall be saved to disk as a `.gd` file for reference and debugging.
+REQ-PERSIST-0001: The result of a successful generation shall be saved to disk as a `.tscn` or `.gd` file in `res://generated/`.
 
-REQ-PERSIST-0002: The node tree shall be persisted in the scene file as child nodes.
+REQ-PERSIST-0002: The generated scene shall be instantiated as child nodes, or the script shall be attached to the node, and this state shall be persisted in the scene file.
 
 REQ-PERSIST-0003: No automatic generation shall occur behind the scenes (e.g., on prompt change or scene load).
-
-### Safety
-
-REQ-SAFETY-0001: AI-generated GDScript shall run in a sandboxed context:
-  - No arbitrary filesystem access
-  - No network access
-  - Limited to Godot node manipulation APIs only
 
 ## Out of Scope (Future)
 

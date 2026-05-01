@@ -23,6 +23,24 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Agent Assisted 3D"
 
+[node name="ModeRow" type="HBoxContainer" parent="VBoxContainer" unique_id=1000]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ModeLabel" type="Label" parent="VBoxContainer/ModeRow" unique_id=1001]
+layout_mode = 2
+text = "Mode:"
+
+[node name="ModeSelector" type="OptionButton" parent="VBoxContainer/ModeRow" unique_id=1002]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 2
+selected = 0
+popup/item_0/text = "Scene (.tscn)"
+popup/item_0/id = 0
+popup/item_1/text = "Node Script (.gd)"
+popup/item_1/id = 1
+
 [node name="PromptLabel" type="Label" parent="VBoxContainer" unique_id=1787243264]
 layout_mode = 2
 text = "Prompt:"
@@ -84,7 +102,7 @@ current_tab = 0
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Generated Code" type="CodeEdit" parent="VBoxContainer/TabContainer" unique_id=-294967296]
+[node name="Generated Output" type="CodeEdit" parent="VBoxContainer/TabContainer" unique_id=-294967296]
 visible = false
 layout_mode = 2
 editable = false

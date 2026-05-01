@@ -1,9 +1,8 @@
-## AgentAssisted3D - Custom 3D node that generates a scene subtree via AI.
+## AgentAssisted3D - Custom 3D node that generates scenes or scripts via AI.
 ##
-## When added to a scene with a non-empty [member prompt], the node sends the
-## prompt (and optional [member texture_attachments]) to an AI backend,
-## executes the generated GDScript, and applies the resulting node hierarchy
-## as direct children. Results are saved to `res://generated/`.
+## The AI can generate either a full scene (.tscn) to be instantiated as a child,
+## or a GDScript (.gd) to be attached directly to this node.
+## Results are saved to `res://generated/`.
 
 @tool
 extends Node3D
@@ -19,6 +18,11 @@ enum GenerationStatus {
 	ERROR = 3,
 }
 
+enum GenerationMode {
+	SCENE = 0,
+	NODE_SCRIPT = 1,
+}
+
 
 signal generation_started()
 signal generation_finished()
@@ -27,6 +31,9 @@ signal code_updated(code: String)
 
 
 @export_group("AI Assistant")
+
+@export
+var generation_mode: GenerationMode = GenerationMode.SCENE
 
 @export_multiline
 var prompt: String = ""
@@ -66,6 +73,12 @@ func _ready() -> void:
 		generation_status = GenerationStatus.SUCCESS
 		status_message = "Using cached scene nodes"
 		return
+	
+	# If a script is already attached (besides this tool script), assume success.
+	if get_script() != null and get_script().resource_path != "res://addons/ai_assistant/agent_assisted_3d.gd":
+		generation_status = GenerationStatus.SUCCESS
+		status_message = "Using attached script"
+		return
 
 
 # --- Generation pipeline ---
@@ -75,20 +88,20 @@ func generate() -> void:
 	status_message = "Generating..."
 	generation_started.emit()
 
-	# Build initial prompt.
-	var messages := PromptBuilder.build(prompt, texture_attachments)
-	var script_text: String = ""
+	# 1. Build initial prompt.
+	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode)
+	var content: String = ""
 	var success: bool = false
 	
 	var max_retries: int = _get_project_setting("max_retries", 5)
 
-	# Error-correction loop.
+	# 2. AI & Validation Loop
 	for attempt in range(max_retries):
 		# Call AI.
-		script_text = await _call_ai(messages)
+		content = await _call_ai(messages)
 		
 		# Immediately update the code property so the user can see it (even on error).
-		generated_code = script_text
+		generated_code = content
 		code_updated.emit(generated_code)
 		
 		if generation_status == GenerationStatus.IDLE:
@@ -97,24 +110,26 @@ func generate() -> void:
 		
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 
-		# Execute script.
-		var error_result := ScriptExecutor.execute_with_error(script_text, self)
+		# 3. Validate output (Parse check only, no execution)
+		var error_result := ScriptExecutor.validate_output(content, generation_mode)
 
 		if error_result.error == null:
 			success = true
 			break
 		
 		if generation_status == GenerationStatus.IDLE:
-			# Cancelled during execution (unlikely but possible if async).
+			# Cancelled during validation.
 			return
 
-		# Append error to chat history.
+		# 4. Error correction: Append error to chat history.
 		status_message = "Fixing error on attempt %d/%d: %s" % [attempt + 1, max_retries, error_result.error]
-		messages = PromptBuilder.build_error_correction(messages, error_result, script_text)
+		messages = PromptBuilder.build_error_correction(messages, error_result, content)
 
 	if success:
-		_save_generated_script(script_text)
-		_apply_generated_nodes(script_text)
+		# 5. Save and Apply
+		var path := _save_generated_output(content, generation_mode)
+		_apply_generated_output(path, generation_mode)
+		
 		generation_status = GenerationStatus.SUCCESS
 		status_message = "Generation complete"
 	elif generation_status != GenerationStatus.IDLE:
@@ -166,41 +181,50 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 	return response
 
 
-# --- Cache helpers ---
-
 # --- Persistence helpers ---
 
-func _save_generated_script(script_text: String) -> void:
+func _save_generated_output(content: String, mode: GenerationMode) -> String:
 	var dir := "res://generated/"
 	if not DirAccess.dir_exists_absolute(dir):
 		DirAccess.make_dir_recursive_absolute(dir)
 
-	var path := "res://generated/%s_last_generation.gd" % name
+	var ext := ".tscn" if mode == GenerationMode.SCENE else ".gd"
+	var path := "res://generated/%s%s" % [name, ext]
+	
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file:
-		file.store_string(script_text)
+		file.store_string(content)
 		file.close()
+	
+	return path
 
 
-# --- Node application ---
+# --- Result application ---
 
-func _apply_generated_nodes(script_text: String) -> void:
-	# Clear existing generated children.
-	for child in get_children():
-		child.queue_free()
-
-	# Execute the script to build the node tree.
-	if script_text != "":
-		var error_result := ScriptExecutor.execute_with_error(script_text, self)
-		if error_result.error != null:
-			push_error("Failed to apply generated script: %s" % error_result.error)
-			return
-
-		# Set owner for all new children to ensure they are saved with the scene.
-		var edited_root := get_tree().get_edited_scene_root()
-		if edited_root:
-			for child in get_children():
-				_set_owner_recursive(child, edited_root)
+func _apply_generated_output(path: String, mode: GenerationMode) -> void:
+	if mode == GenerationMode.SCENE:
+		# Clear existing generated children.
+		for child in get_children():
+			child.queue_free()
+		
+		# Load and instantiate the scene.
+		var scene = load(path) as PackedScene
+		if scene:
+			var instance = scene.instantiate()
+			add_child(instance)
+			
+			# Set owner for the instance and all its children so they are saved with the scene.
+			var edited_root := get_tree().get_edited_scene_root()
+			if edited_root:
+				_set_owner_recursive(instance, edited_root)
+	
+	elif mode == GenerationMode.NODE_SCRIPT:
+		# Load and attach the script to this node.
+		var script = load(path) as Script
+		if script:
+			# Note: In Godot 4, set_script() might not be enough in @tool mode
+			# if we want the node to instantly change behavior in editor.
+			set_script(script)
 
 
 func _set_owner_recursive(node: Node, scene_owner: Node) -> void:

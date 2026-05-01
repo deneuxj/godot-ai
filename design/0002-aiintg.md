@@ -2,53 +2,51 @@
 
 ## REQ-AIINTG-0001: The plugin shall support both local and remote LLM backends
 
-### Interface (`ai_client/ai_client.gd`)
-
-```gdscript
-class_name AIClient
-extends Node
-
-signal progress(chunks: Array[String])
-
-# ... request methods ...
-
-func cancel() -> void:
-	push_error("Override in subclass")
-```
+The `AIClient` and `OpenAIClient` classes provide the bridge to the LLM. 
 
 ### Implementation (`ai_client/openai_client.gd`)
+Uses standard OpenAI Chat Completions API with streaming support.
 
+---
+
+## REQ-AIINTG-0003: TSCN and GDScript Generation
+
+### Prompt Builder (`generator/prompt_builder.gd`)
+
+The `PromptBuilder` constructs the system prompt based on the selected `GenerationMode`.
+
+#### Scene Mode System Prompt
+```text
+You are a Godot 4 scene generator. 
+Output ONLY a valid Godot .tscn file content. 
+Do not use markdown blocks.
+The scene should be a Node3D root with child nodes (meshes, lights, etc.) describing the user request.
+```
+
+#### Node Script Mode System Prompt
+```text
+You are a Godot 4 GDScript generator.
+Output ONLY valid GDScript code for a single script.
+Do not use markdown blocks.
+The script should extend Node3D and implement logic based on the user request.
+```
+
+### Prompt Construction
 ```gdscript
-class_name OpenAIClient
-extends AIClient
-
-var _http_request: HTTPRequest
-
-func cancel() -> void:
-	if is_instance_valid(_http_request):
-		_http_request.cancel_request()
-
-func chat_stream(messages: Array[Dictionary]) -> String:
-	# ... request setup ...
-	var result = await _http_request.request_completed
-	if result[0] != OK: # Includes RESULT_REQUEST_CANCELLED
-		return ""
-	# ... parse response ...
+static func build(prompt: String, textures: Array[Texture2D], mode: GenerationMode) -> Array[Dictionary]:
+    var system_prompt = _get_system_prompt_for_mode(mode)
+    # ... build messages array ...
 ```
 
 ---
 
-## REQ-AIINTG-0004: Project settings for AI configuration
+## REQ-AIINTG-0005: Error Correction Loop
 
-### Settings (`settings/ai_settings.gd`)
+The loop is triggered by **Validation Errors** (parse errors) rather than runtime execution errors.
 
-| Setting | Default | Description |
-|---|---|---|
-| `ai/openai/base_url` | `http://localhost:1234/v1` | API endpoint URL |
-| `ai/openai/api_key` | `""` | Authentication key |
-| `ai/openai/model` | `local-model` | Model name |
-| `ai/openai/max_tokens` | `4096` | Max response tokens |
-| `ai/openai/max_retries` | `5` | Max correction attempts (REQ-AIINTG-0006) |
+### Validation (`AgentAssisted3D._validate_output`)
+1. **Scene Mode**: Check if `TSCN` content starts with `[gd_scene` and has valid syntax.
+2. **Node Script Mode**: Check if `GDScript` content parses correctly using `gdscript.reload()`.
 
 ---
 
@@ -57,6 +55,8 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 | Requirement | Covered By |
 |---|---|
 | REQ-AIINTG-0001 | `AIClient` abstract class + `OpenAIClient` implementation |
+| REQ-AIINTG-0003 | `PromptBuilder` logic for Mode-specific output (TSCN or GDScript) |
+| REQ-AIINTG-0005 | `AgentAssisted3D` validation loop and `PromptBuilder.build_error_correction()` |
 | REQ-AIINTG-0004 | `AISettings` manages configuration including `max_retries` |
 | REQ-AIINTG-0006 | Configurable `max_retries` in `AISettings` |
 | REQ-NODE3D-0010 | `AIClient.cancel()` method implementation |

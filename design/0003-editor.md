@@ -8,7 +8,9 @@
 ┌─────────────────────────────────────┐
 │  Agent Assisted 3D                  │
 ├─────────────────────────────────────┤
-│  Prompt:                          [x]│
+│  Mode: [ Scene  v ]               [x]│ (REQ-NODE3D-0011)
+│                                     │
+│  Prompt:                            │
 │  ┌───────────────────────────────┐  │
 │  │          (text area)          │  │
 │  └───────────────────────────────┘  │
@@ -17,7 +19,7 @@
 │                                     │
 │  Status:  Generating... ████████░░  │
 │                                     │
-│  [ Node Tree ] [ Generated Code ]   │ (REQ-EDITOR-0004 Tabs)
+│  [ Node Tree ] [ Generated Output ] │ (REQ-EDITOR-0004 Tabs)
 │  ┌───────────────────────────────┐  │
 │  │ └─ Node3D                    │  │
 │  │    ├─ MeshInstance3D         │  │
@@ -27,26 +29,9 @@
 
 ### Dock Controller (`agent_assisted_3d_panel.gd`)
 
-```gdscript
-func _on_send_pressed():
-    if _current_node:
-        _current_node.generate()
-        _update_status()
-
-func _on_cancel_pressed():
-    if _current_node:
-        _current_node.cancel_generation()
-        _update_status()
-
-func _on_node_code_updated(code: String):
-    code_viewer.text = code
-
-func _update_status():
-    var status = _current_node.generation_status
-    var generating = (status == AgentAssisted3D.GenerationStatus.GENERATING)
-    send_button.disabled = generating
-    cancel_button.disabled = not generating
-```
+- Handles the `GenerationMode` selection property.
+- Syncs the mode selector with the selected `AgentAssisted3D` node.
+- "Generated Output" tab shows the raw TSCN or GDScript code.
 
 ---
 
@@ -55,5 +40,6 @@ func _update_status():
 | Requirement | Covered By |
 |---|---|
 | REQ-EDITOR-0002 | `agent_assisted_3d_panel.tscn` dock UI |
+| REQ-NODE3D-0011 | Generation mode selector in the dock |
 | REQ-NODE3D-0010 | "Cancel" button and `_on_cancel_pressed` controller logic |
-| REQ-EDITOR-0004 | TabContainer with `Node Tree` and `Generated Code` (CodeEdit) |
+| REQ-EDITOR-0004 | TabContainer with `Node Tree` and `Generated Output` (CodeEdit) |

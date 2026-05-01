@@ -2,7 +2,7 @@
 ##
 ## Connects to the currently selected AgentAssisted3D node in the editor,
 ## provides two-way prompt binding, progress tracking, texture drag-and-drop,
-## and a live node tree preview of generated children.
+## and a live preview of generated output (TSCN or GDScript).
 
 @tool
 extends Control
@@ -13,6 +13,7 @@ var _editor_interface: EditorInterface
 
 # UI node references (set in _ready)
 var _prompt_text_edit: TextEdit
+var _mode_selector: OptionButton
 var _send_button: Button
 var _cancel_button: Button
 var _clear_button: Button
@@ -32,6 +33,7 @@ func _init_editor(editor_interface: EditorInterface) -> void:
 func _ready() -> void:
 	# Cache references to UI nodes by name.
 	_prompt_text_edit = $VBoxContainer/PromptTextEdit as TextEdit
+	_mode_selector = $VBoxContainer/ModeRow/ModeSelector as OptionButton
 	_send_button = $VBoxContainer/GenerateRow/SendButton as Button
 	_cancel_button = $VBoxContainer/GenerateRow/CancelButton as Button
 	_clear_button = $VBoxContainer/GenerateRow/ClearButton as Button
@@ -39,7 +41,7 @@ func _ready() -> void:
 	_progress_bar = $VBoxContainer/StatusRow/ProgressBar as ProgressBar
 	_tab_container = $VBoxContainer/TabContainer as TabContainer
 	_node_tree = $"VBoxContainer/TabContainer/Node Tree" as Tree
-	_code_view = $"VBoxContainer/TabContainer/Generated Code" as CodeEdit
+	_code_view = $"VBoxContainer/TabContainer/Generated Output" as CodeEdit
 	_drop_label = $VBoxContainer/AttachmentsContainer/DropLabel as Label
 
 	# Enable drag-and-drop on the attachments container.
@@ -51,6 +53,7 @@ func _ready() -> void:
 
 	# Connect UI signals.
 	_prompt_text_edit.text_changed.connect(_on_prompt_text_edit_text_changed)
+	_mode_selector.item_selected.connect(_on_mode_selected)
 	_send_button.pressed.connect(_on_send_pressed)
 	_cancel_button.pressed.connect(_on_cancel_pressed)
 	_clear_button.pressed.connect(_on_clear_pressed)
@@ -91,8 +94,9 @@ func _update_for_selected_node() -> void:
 	if selected_nodes.size() > 0 and selected_nodes[0] is AgentAssisted3D:
 		_current_node = selected_nodes[0] as AgentAssisted3D
 
-		# Two-way prompt binding.
+		# Sync properties.
 		_prompt_text_edit.text = _current_node.prompt
+		_mode_selector.selected = _current_node.generation_mode
 
 		# Connect signals from the node.
 		_current_node.connect("progress", _on_node_progress)
@@ -112,7 +116,12 @@ func _update_for_selected_node() -> void:
 		_drop_label.visible = true
 
 
-# --- Prompt sync ---
+# --- Mode / Prompt sync ---
+
+func _on_mode_selected(index: int) -> void:
+	if is_instance_valid(_current_node):
+		_current_node.generation_mode = index as AgentAssisted3D.GenerationMode
+
 
 func _on_prompt_text_edit_text_changed() -> void:
 	if is_instance_valid(_current_node):
@@ -139,7 +148,7 @@ func _on_clear_pressed() -> void:
 		_prompt_text_edit.text = ""
 
 
-# --- Progress / Code display ---
+# --- Progress / Output display ---
 
 func _on_node_progress(_chunks: Array[String]) -> void:
 	if not is_instance_valid(_current_node):

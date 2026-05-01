@@ -1,96 +1,64 @@
-## ScriptExecutor - Safely loads and runs AI-generated GDScript.
+## ScriptExecutor - Validates AI-generated GDScript or TSCN files.
 ##
-## Provides sandboxed execution with regex-based pre-validation to block
-## dangerous patterns (filesystem access, network requests, OS commands).
-## [method execute_with_error] returns structured error info for the
-## error-correction loop in [class AgentAssisted3D].
+## Performs parse and load validation to ensure generated content is usable
+## by Godot without requiring arbitrary execution.
 
 class_name ScriptExecutor
 
 
-## Classes explicitly allowed in generated scripts.
-static var ALLOWED_CLASSES := PackedStringArray([
-	"Node3D", "Node", "Spatial", "MeshInstance3D",
-	"DirectionalLight3D", "PointLight3D", "Camera3D",
-	"GeometryInstance3D", "CSGCombiner3D", "CSGPrimitive3D",
-	"CSGBox3D", "CSGCylinder3D", "CSGSphere3D", "CSGCone3D",
-	"CSGTorus3D", "CSGCapsule3D", "CSGMesh3D",
-	"RigidBody3D", "CharacterBody3D", "Area3D",
-	"Sprite3D", "Label3D", "Control", "Panel",
-	"Mesh", "StandardMaterial3D", "ShaderMaterial",
-	"AnimationPlayer", "AnimationTree",
-	"AudioStreamPlayer3D", "CPUParticles3D", "GPUParticles3D",
-	"SubViewport", "SubViewportContainer",
-	"ViewportTexture", "Skeleton3D", "BoneAttachment3D",
-	"Marker3D", "Path3D", "PathFollow3D",
-	"CollisionShape3D", "RayCast3D", "VisibleOnScreenNotifier3D",
-	"VisibleOnScreenEnabler3D", "OccluderInstance3D",
-	"World3D", "WorldEnvironment", "Environment",
-	"Transform3D", "Basis", "Vector3", "Color",
-	"Node3DGizmo", "EditorNode3DGizmo",
-	"PackedScene", "Resource", "RefCounted",
-])
-
-
-## Regex patterns that are always denied regardless of context.
-static var DENIED_PATTERNS := PackedStringArray([
-	r"\bFile\b",
-	r"\bFileAccess\b",
-	r"\bDirAccess\b",
-	r"\bOS\s*\.",
-	r"\bResourceSaver\b",
-	r"\bResourceLoader\b",
-])
-
-
-## Validate an AI-generated script against the sandbox policy.
+## Validate AI output based on the generation mode.
 ##
 ## Returns `{"error": null}` on success, or
-## `{"error": String, "file": String, "line": int}` on failure.
-static func _validate_script(script_text: String) -> Dictionary:
-	for pattern in DENIED_PATTERNS:
-		var regex := RegEx.new()
-		regex.compile(pattern)
-		if regex.search(script_text):
-			return {"error": "Script contains disallowed pattern: " + pattern, "file": "n/a", "line": 0}
+## `{"error": String}` on failure.
+static func validate_output(content: String, mode: int) -> Dictionary:
+	# Enum mapping (must match AgentAssisted3D.GenerationMode)
+	if mode == 0: # SCENE
+		return _validate_tscn(content)
+	else: # NODE_SCRIPT
+		return _validate_gdscript(content)
 
-	# Check HTTPRequest only if the project setting allows it.
-	var allow_http := ProjectSettings.get_setting("ai/openai/allow_http_requests", false)
-	if not allow_http:
-		var regex := RegEx.new()
-		regex.compile(r"\bHTTPRequest\b")
-		if regex.search(script_text):
-			return {"error": "Script uses HTTPRequest which is disabled (set ai/openai/allow_http_requests to enable)", "file": "n/a", "line": 0}
 
+## Basic parse validation for Godot TSCN files.
+static func _validate_tscn(content: String) -> Dictionary:
+	if not content.begins_with("[gd_scene") and not content.begins_with("[gd_resource"):
+		return {"error": "Invalid TSCN format: Must start with [gd_scene or [gd_resource"}
+
+	# Attempt to load the scene via a temporary file.
+	var temp_path := "res://generated/temp_validation.tscn"
+	var dir := "res://generated/"
+	if not DirAccess.dir_exists_absolute(dir):
+		DirAccess.make_dir_recursive_absolute(dir)
+	
+	var file := FileAccess.open(temp_path, FileAccess.WRITE)
+	if not file:
+		return {"error": "Failed to create temp file for validation"}
+	
+	file.store_string(content)
+	file.close()
+	
+	# Try to load it as a resource.
+	var scene = ResourceLoader.load(temp_path)
+	
+	# Cleanup immediately.
+	DirAccess.remove_absolute(temp_path)
+	
+	if scene == null:
+		return {"error": "Failed to load TSCN: Godot ResourceLoader returned null"}
+	
 	return {"error": null}
 
 
-## Execute an AI-generated script safely and return structured error info.
-##
-## The script is pre-validated, compiled, and executed.
-## Returns `{"error": null}` on success, or
-## `{"error": String, "file": String, "line": int}` on failure.
-static func execute_with_error(script_text: String, parent: Node3D) -> Dictionary:
-	# 1. Pre-validation
-	var validation_result := _validate_script(script_text)
-	if validation_result.error != null:
-		return validation_result
+## Compilation check for GDScript.
+static func _validate_gdscript(content: String) -> Dictionary:
+	if not content.contains("extends Node3D"):
+		return {"error": "Script must extend Node3D"}
 
-	# 2. Create isolated GDScript resource
 	var gdscript := GDScript.new()
-	gdscript.source_code = script_text
-
-	# 3. Compile and capture errors
-	var compile_error: int = gdscript.reload()
-	if compile_error != OK:
-		return {"error": "Compilation failed (error code: %d)" % compile_error, "file": "n/a", "line": 0}
-
-	# 4. Execute the script
-	var instance = gdscript.new()
-	if instance:
-		if instance.has_method("_build_scene"):
-			instance.call("_build_scene", parent)
-		elif instance.has_method("run"):
-			instance.call("run")
-
+	gdscript.source_code = content
+	
+	# reload() parses the script and checks for syntax errors.
+	var err := gdscript.reload()
+	if err != OK:
+		return {"error": "GDScript parse error (code %d)" % err}
+	
 	return {"error": null}
