@@ -1,11 +1,169 @@
 [gd_scene format=3 uid="uid://jbxwojtkucw0"]
 
 [ext_resource type="Script" uid="uid://fltqr6krppck" path="res://addons/ai_assistant/agent_assisted_3d.gd" id="1_d8ypf"]
+[ext_resource type="Script" uid="uid://e164pxadkju6" path="res://generated/AgentAssisted3D.gd" id="2_t8jrp"]
 
 [node name="TestAgentAssisted3D" type="Node3D" unique_id=2084474840]
 
 [node name="AgentAssisted3D" type="Node3D" parent="." unique_id=423421973]
 script = ExtResource("1_d8ypf")
+generation_mode = 1
+generated_script = ExtResource("2_t8jrp")
 prompt = "Dessine-moi un mouton"
-status_message = "Generation cancelled"
+generation_status = 2
+status_message = "Generation complete"
+generated_code = "extends Node3D
+
+@export var walk_speed: float = 2.0
+@export var idle_amplitude: float = 0.05
+
+var is_moving: bool = false
+var target_position: Vector3 = Vector3.ZERO
+
+var head_node: Node3D
+var body_mesh_instance: MeshInstance3D
+var legs: Array[MeshInstance3D]
+var ears: Array[MeshInstance3D]
+
+func _ready():
+	_setup_sheep_model()
+	_setup_initial_state()
+
+func _setup_sheep_model():
+	# Create Body (Flattened Sphere)
+	body_mesh_instance = MeshInstance3D.new()
+	var body_mesh = SphereMesh.new()
+	body_mesh.size = Vector3(1.2, 0.8, 0.8)
+	body_mesh_instance.mesh = body_mesh
+	var body_mat = StandardMaterial3D.new()
+	body_mat.albedo_color = Color(0.95, 0.95, 0.95) # Wool white
+	body_mesh_instance.material_override = body_mat
+	add_child(body_mesh_instance)
+	
+	# Create Head Container
+	head_node = Node3D.new()
+	head_node.position = Vector3(0.6, 0.2, 0) # Front of body
+	add_child(head_node)
+	
+	var head_geo = MeshInstance3D.new()
+	var head_mesh = SphereMesh.new()
+	head_mesh.size = Vector3(0.5, 0.5, 0.5)
+	head_geo.mesh = head_mesh
+	var head_mat = StandardMaterial3D.new()
+	head_mat.albedo_color = Color(0.85, 0.85, 0.85)
+	head_geo.material_override = head_mat
+	head_node.add_child(head_geo)
+	
+	# Create Face Features (Eyes and Nose)
+	var eye_geo = MeshInstance3D.new()
+	var eye_mesh = SphereMesh.new()
+	eye_mesh.size = Vector3(0.1, 0.1, 0.1)
+	eye_geo.mesh = eye_mesh
+	var eye_mat = StandardMaterial3D.new()
+	eye_mat.albedo_color = Color.BLACK
+	
+	var left_eye = eye_geo.duplicate()
+	left_eye.position = Vector3(0.25, 0.1, 0.2)
+	head_node.add_child(left_eye)
+	
+	var right_eye = eye_geo.duplicate()
+	right_eye.position = Vector3(0.25, 0.1, -0.2)
+	head_node.add_child(right_eye)
+	
+	var nose_geo = MeshInstance3D.new()
+	var nose_mesh = SphereMesh.new()
+	nose_mesh.size = Vector3(0.15, 0.15, 0.15)
+	nose_geo.mesh = nose_mesh
+	var nose_mat = StandardMaterial3D.new()
+	nose_mat.albedo_color = Color(0.3, 0.2, 0.2) # Dark pink/black
+	nose_geo.material_override = nose_mat
+	nose_geo.position = Vector3(0.28, -0.05, 0)
+	head_node.add_child(nose_geo)
+	
+	# Create Legs
+	legs = []
+	var leg_geo = MeshInstance3D.new()
+	var leg_mesh = CylinderMesh.new()
+	leg_mesh.top_radius = 0.08
+	leg_mesh.bottom_radius = 0.08
+	leg_mesh.height = 0.6
+	leg_geo.mesh = leg_mesh
+	var leg_mat = StandardMaterial3D.new()
+	leg_mat.albedo_color = Color(0.6, 0.6, 0.6) # Darker grey for legs
+	leg_geo.material_override = leg_mat
+	
+	var leg_positions = [
+		Vector3(-0.3, -0.4, 0.25),
+		Vector3(0.3, -0.4, 0.25),
+		Vector3(-0.3, -0.4, -0.25),
+		Vector3(0.3, -0.4, -0.25)
+	]
+	
+	for pos in leg_positions:
+		var leg = leg_geo.duplicate()
+		leg.position = pos
+		add_child(leg)
+		legs.append(leg)
+		
+	# Create Ears
+	ears = []
+	var ear_geo = MeshInstance3D.new()
+	var ear_mesh = BoxMesh.new()
+	ear_mesh.size = Vector3(0.15, 0.3, 0.05)
+	ear_geo.mesh = ear_mesh
+	var ear_mat = StandardMaterial3D.new()
+	ear_mat.albedo_color = Color(0.7, 0.7, 0.7)
+	ear_geo.material_override = ear_mat
+	
+	var ear_positions = [
+		Vector3(0.1, 0.3, 0.25),
+		Vector3(0.1, 0.3, -0.25)
+	]
+	
+	for pos in ear_positions:
+		var ear = ear_geo.duplicate()
+		ear.position = pos
+		head_node.add_child(ear)
+		ears.append(ear)
+
+func _setup_initial_state():
+	position = Vector3.ZERO
+	rotation.y = 0
+
+func _process(delta):
+	if is_moving:
+		_move_towards_target(delta)
+	else:
+		_idle_animation(delta)
+
+func _move_towards_target(delta):
+	var direction = target_position - position
+	var distance = direction.length()
+	
+	if distance > 0.1:
+		direction = direction.normalized()
+		position += direction * walk_speed * delta
+		# Rotate towards movement direction
+		var target_rotation = atan2(direction.x, direction.z)
+		rotation.y = lerp_angle(rotation.y, target_rotation, 5.0 * delta)
+	else:
+		is_moving = false
+		# Reset head bobbing to idle state
+		head_node.position.y = 0.2
+
+func _idle_animation(delta):
+	var time = Time.get_ticks_msec() / 1000.0
+	# Bob head slightly
+	head_node.position.y = 0.2 + sin(time * 2) * idle_amplitude
+	# Twitch ears
+	for i in range(ears.size()):
+		ears[i].rotation.z = sin(time * 3 + i * 2) * 0.1
+
+func walk_to(target_pos: Vector3):
+	target_position = target_pos
+	is_moving = true
+	print(\"Mouton se déplace vers: \", target_pos)"
 metadata/_custom_type_script = "uid://fltqr6krppck"
+
+[node name="Node3D" type="Node3D" parent="AgentAssisted3D" unique_id=1055069608]
+script = ExtResource("2_t8jrp")

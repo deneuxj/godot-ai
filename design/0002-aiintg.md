@@ -48,6 +48,11 @@ The loop is triggered by **Validation Errors** (parse errors) rather than runtim
 1. **Scene Mode**: Check if `TSCN` content starts with `[gd_scene` and has valid syntax.
 2. **Node Script Mode**: Check if `GDScript` content parses correctly using `gdscript.reload()`.
 
+### Conversation Structure
+When an error occurs, the conversation history is updated as follows:
+1. **Assistant**: The previous (invalid) output from the AI.
+2. **User**: The validation error message and instruction to provide a corrected version.
+
 ---
 
 ## Requirements Coverage

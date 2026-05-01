@@ -122,20 +122,20 @@ static func _get_system_prompt(mode: int) -> String:
 
 ## Append error details to the conversation history for the error-correction loop.
 static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary, last_content: String) -> Array[Dictionary]:
+	# Add the AI's previous (erroneous) response as an assistant message.
+	messages.append({
+		"role": "assistant",
+		"content": last_content,
+	})
+
+	# Add the validation error and fix instruction as a user message.
 	var fix_instruction := """\
-The previous output failed validation:
-
-Error: %s
-
-Previous output:
+The previous output failed validation with the following error:
 %s
 
 Please provide a corrected version that resolves this error.
 Output ONLY raw text content, no markdown fences.
-""" % [
-	error_result.get("error", "Unknown error"),
-	last_content,
-]
+""" % error_result.get("error", "Unknown error")
 
 	messages.append({
 		"role": "user",
