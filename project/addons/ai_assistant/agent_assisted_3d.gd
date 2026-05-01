@@ -8,7 +8,7 @@
 extends Node3D
 
 
-class_name AgentAssisted3D
+class_name AIAgentAssisted3D
 
 
 enum GenerationStatus {

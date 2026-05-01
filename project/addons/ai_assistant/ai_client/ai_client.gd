@@ -92,7 +92,7 @@ func cancel() -> void:
 ## Factory method that creates an [OpenAIClient] configured with project settings.
 ##
 ## Reads configuration from [member AISettings] defaults under the
-## `ai/openai/` namespace. Call this from [class AgentAssisted3D] or
+## `ai/openai/` namespace. Call this from [class AIAgentAssisted3D] or
 ## the editor dock to get a ready-to-use client.
 static func create_openai_client() -> OpenAIClient:
 	var client := OpenAIClient.new()

@@ -1,6 +1,6 @@
-## AgentAssisted3DPanel - Editor dock UI controller for the AgentAssisted3D node.
+## AIAgentAssisted3DPanel - Editor dock UI controller for the AIAgentAssisted3D node.
 ##
-## Connects to the currently selected AgentAssisted3D node in the editor,
+## Connects to the currently selected AIAgentAssisted3D node in the editor,
 ## provides two-way prompt binding, progress tracking, texture drag-and-drop,
 ## and a live preview of generated output (TSCN or GDScript).
 
@@ -8,7 +8,7 @@
 extends Control
 
 
-var _current_node: AgentAssisted3D = null
+var _current_node: AIAgentAssisted3D = null
 var _editor_interface: EditorInterface
 
 # UI node references (set in _ready)
@@ -91,8 +91,8 @@ func _update_for_selected_node() -> void:
 
 	_current_node = null
 
-	if selected_nodes.size() > 0 and selected_nodes[0] is AgentAssisted3D:
-		_current_node = selected_nodes[0] as AgentAssisted3D
+	if selected_nodes.size() > 0 and selected_nodes[0] is AIAgentAssisted3D:
+		_current_node = selected_nodes[0] as AIAgentAssisted3D
 
 		# Sync properties.
 		_prompt_text_edit.text = _current_node.prompt
@@ -109,7 +109,7 @@ func _update_for_selected_node() -> void:
 		_update_status()
 	else:
 		_prompt_text_edit.text = ""
-		_status_label.text = "No AgentAssisted3D selected"
+		_status_label.text = "No AIAgentAssisted3D selected"
 		_progress_bar.value = 0.0
 		_node_tree.clear()
 		_code_view.text = ""
@@ -120,7 +120,7 @@ func _update_for_selected_node() -> void:
 
 func _on_mode_selected(index: int) -> void:
 	if is_instance_valid(_current_node):
-		_current_node.generation_mode = index as AgentAssisted3D.GenerationMode
+		_current_node.generation_mode = index as AIAgentAssisted3D.GenerationMode
 
 
 func _on_prompt_text_edit_text_changed() -> void:
@@ -175,29 +175,29 @@ func _update_status() -> void:
 	if not is_instance_valid(_current_node):
 		return
 
-	var status: AgentAssisted3D.GenerationStatus = _current_node.generation_status
+	var status: AIAgentAssisted3D.GenerationStatus = _current_node.generation_status
 	var message: String = _current_node.status_message
 
 	# Toggle button states
-	var generating := (status == AgentAssisted3D.GenerationStatus.GENERATING)
+	var generating := (status == AIAgentAssisted3D.GenerationStatus.GENERATING)
 	_send_button.disabled = generating
 	_cancel_button.disabled = not generating
 	_clear_button.disabled = generating
 
 	match status:
-		AgentAssisted3D.GenerationStatus.IDLE:
+		AIAgentAssisted3D.GenerationStatus.IDLE:
 			_status_label.text = "Status: Idle"
 			_status_label.add_theme_color_override("font_color", Color.WHITE)
 			_progress_bar.value = 0.0
-		AgentAssisted3D.GenerationStatus.GENERATING:
+		AIAgentAssisted3D.GenerationStatus.GENERATING:
 			# Already set by _on_node_progress or initial state.
 			_status_label.add_theme_color_override("font_color", Color.YELLOW)
-		AgentAssisted3D.GenerationStatus.SUCCESS:
+		AIAgentAssisted3D.GenerationStatus.SUCCESS:
 			_status_label.text = "Status: " + message
 			_status_label.add_theme_color_override("font_color", Color.GREEN)
 			_progress_bar.value = 100.0
 			_refresh_node_tree()
-		AgentAssisted3D.GenerationStatus.ERROR:
+		AIAgentAssisted3D.GenerationStatus.ERROR:
 			_status_label.text = "Status: " + message
 			_status_label.add_theme_color_override("font_color", Color.RED)
 
@@ -293,7 +293,7 @@ func _refresh_node_tree() -> void:
 		return
 
 	var root := _node_tree.create_item()
-	root.set_text(0, "AgentAssisted3D")
+	root.set_text(0, "AIAgentAssisted3D")
 
 	for child in _current_node.get_children():
 		_add_node_to_tree(child, root)

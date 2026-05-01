@@ -19,7 +19,6 @@ func _enter_tree() -> void:
 		settings.call("ensure_settings_exist")
 
 	_register_project_settings()
-	_register_node_type()
 	_create_dock()
 	add_control_to_bottom_panel(_dock, "Agent Assisted 3D")
 
@@ -48,15 +47,6 @@ func _register_project_settings() -> void:
 	ProjectSettings.set_initial_value("ai/openai/system_prompt", "")
 
 	ProjectSettings.save()
-
-
-func _register_node_type() -> void:
-	add_custom_type(
-		"AgentAssisted3D",
-		"Node3D",
-		preload(AI_ASSISTED_3D_NODE),
-		Resource.new(),  # No icon available
-	)
 
 
 func _create_dock() -> void:

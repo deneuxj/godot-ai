@@ -41,7 +41,7 @@ Rules:
 ## Build a [param messages] array for the AI chat API.
 ##
 ## Returns an array of dictionaries: [code]system[/code] and [code]user[/code] messages.
-## [param mode] corresponds to [enum AgentAssisted3D.GenerationMode].
+## [param mode] corresponds to [enum AIAgentAssisted3D.GenerationMode].
 static func build(user_prompt: String, textures: Array[Texture2D], mode: int) -> Array[Dictionary]:
 	var system_prompt: String = _get_system_prompt(mode)
 
@@ -113,7 +113,7 @@ static func _get_system_prompt(mode: int) -> String:
 	if custom != "":
 		return custom
 	
-	# Enum mapping (must match AgentAssisted3D.GenerationMode)
+	# Enum mapping (must match AIAgentAssisted3D.GenerationMode)
 	if mode == 0: # SCENE
 		return SCENE_SYSTEM_PROMPT
 	else: # NODE_SCRIPT

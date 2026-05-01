@@ -11,7 +11,7 @@ class_name ScriptExecutor
 ## Returns `{"error": null}` on success, or
 ## `{"error": String}` on failure.
 static func validate_output(content: String, mode: int) -> Dictionary:
-	# Enum mapping (must match AgentAssisted3D.GenerationMode)
+	# Enum mapping (must match AIAgentAssisted3D.GenerationMode)
 	if mode == 0: # SCENE
 		return _validate_tscn(content)
 	else: # NODE_SCRIPT
