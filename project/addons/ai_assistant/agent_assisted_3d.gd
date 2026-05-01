@@ -35,6 +35,12 @@ signal code_updated(code: String)
 @export
 var generation_mode: GenerationMode = GenerationMode.SCENE
 
+@export
+var generated_node_name: String = "GeneratedNode"
+
+@export
+var generated_script: Script = null
+
 @export_multiline
 var prompt: String = ""
 
@@ -205,6 +211,7 @@ func _apply_generated_output(path: String, mode: GenerationMode) -> void:
 		var scene = load(path) as PackedScene
 		if scene:
 			var instance = scene.instantiate()
+			instance.name = generated_node_name
 			add_child(instance)
 			
 			# Set owner for the instance and all its children so they are saved with the scene.
@@ -220,8 +227,9 @@ func _apply_generated_output(path: String, mode: GenerationMode) -> void:
 		# Load and attach the script to a new child node.
 		var script = load(path) as Script
 		if script:
+			generated_script = script
 			var instance = Node3D.new()
-			instance.name = "GeneratedNode"
+			instance.name = generated_node_name
 			instance.set_script(script)
 			add_child(instance)
 			
