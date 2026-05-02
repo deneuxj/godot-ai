@@ -87,6 +87,10 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("progress", _on_node_progress)
 		if _current_node.is_connected("code_updated", _on_node_code_updated):
 			_current_node.disconnect("code_updated", _on_node_code_updated)
+		if _current_node.is_connected("generation_finished", _update_status):
+			_current_node.disconnect("generation_finished", _update_status)
+		if _current_node.is_connected("status_updated", _on_node_status_updated):
+			_current_node.disconnect("status_updated", _on_node_status_updated)
 
 
 func _update_for_selected_node() -> void:
@@ -109,6 +113,8 @@ func _update_for_selected_node() -> void:
 		# Connect signals from the node.
 		_current_node.connect("progress", _on_node_progress)
 		_current_node.connect("code_updated", _on_node_code_updated)
+		_current_node.connect("generation_finished", _update_status)
+		_current_node.connect("status_updated", _on_node_status_updated)
 
 		# Refresh UI state.
 		_refresh_attachments()
@@ -167,7 +173,7 @@ func _on_node_progress(_chunks: Array[String]) -> void:
 	var total_text: String = "".join(_chunks)
 	var estimated_tokens: int = _estimate_tokens(total_text)
 
-	_status_label.text = "Generating... (%d tokens)" % estimated_tokens
+	_status_label.text = _current_node.status_message + " (%d tokens)" % estimated_tokens
 	# Rough progress estimate: assume ~40 tokens per progress-bar unit.
 	_progress_bar.value = min(100.0, float(estimated_tokens) / 40.0)
 
@@ -176,6 +182,11 @@ func _on_node_progress(_chunks: Array[String]) -> void:
 
 func _on_node_code_updated(code: String) -> void:
 	_code_view.text = code
+
+
+func _on_node_status_updated(message: String) -> void:
+	_status_label.text = message
+	_update_status()
 
 
 # --- Status binding ---
@@ -202,7 +213,9 @@ func _update_status() -> void:
 			_status_label.text = "Status: Idle"
 			_progress_bar.value = 0.0
 		AIAgentAssisted3D.GenerationStatus.GENERATING:
-			_status_label.text = message
+			# If the label was just "Status: Idle" or empty, set it to the current message.
+			if _status_label.text.begins_with("Status: Idle") or _status_label.text.is_empty():
+				_status_label.text = message
 		AIAgentAssisted3D.GenerationStatus.SUCCESS:
 			_status_label.text = "Status: " + message
 			_progress_bar.value = 100.0

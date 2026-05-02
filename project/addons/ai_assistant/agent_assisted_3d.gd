@@ -28,6 +28,7 @@ signal generation_started()
 signal generation_finished()
 signal progress(chunks: Array[String])
 signal code_updated(code: String)
+signal status_updated(message: String)
 
 
 @export_group("Input")
@@ -79,7 +80,10 @@ var generated_code: String = ""
 # --- Internal status tracking (not exported) ---
 
 var generation_status: GenerationStatus = GenerationStatus.IDLE
-var status_message: String = ""
+var status_message: String = "":
+	set(value):
+		status_message = value
+		status_updated.emit(value)
 var _active_client: AIClient = null
 
 
