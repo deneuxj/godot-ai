@@ -110,35 +110,37 @@ func generate() -> void:
 	# 2. AI & Validation Loop
 	for attempt in range(max_retries):
 		# Call AI.
+		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		content = await _call_ai(messages)
 		
-		# Immediately update the code property so the user can see it (even on error).
+		# Immediately update the code property so the user can see it.
 		var extracted_code := ScriptExecutor.extract_code(content)
 		generated_code = extracted_code
 		code_updated.emit(generated_code)
 		
 		if generation_status == GenerationStatus.IDLE:
-			# Cancelled.
-			return
+			return # Cancelled.
 		
-		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		# Clear previous error before validation.
+		last_error = ""
+		status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		await get_tree().process_frame # Force UI update
 
-		# 3. Validate output (Parse check only, no execution)
+		# 3. Validate output
 		var error_result := ScriptExecutor.validate_output(extracted_code, generation_mode)
 
 		if error_result.error == null:
-			last_error = ""
 			success = true
 			break
 		
 		if generation_status == GenerationStatus.IDLE:
-			# Cancelled during validation.
-			return
+			return # Cancelled during validation.
 
-		# 4. Error correction: Append error to chat history.
+		# 4. Error correction: Update error and loop.
 		last_error = error_result.error
-		status_message = "Fixing error on attempt %d/%d: %s" % [attempt + 1, max_retries, error_result.error]
+		status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
+		await get_tree().process_frame # Force UI update
 
 	if success:
 		# 5. Save and Apply
