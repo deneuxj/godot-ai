@@ -34,8 +34,10 @@ Rules:
   - CylinderMesh: top_radius, bottom_radius, height, radial_segments, rings.
   - BoxMesh: size (Vector3).
   - StandardMaterial3D: albedo_color (Color), metallic (float), roughness (float), shading_mode.
+- Comments: If you must add comments inside the code block, use the semicolon `;` (NOT `#`).
 - Do NOT hallucinate property names.
 - Do NOT output any explanation unless it's outside the code block.
+
 
 Example below of minimal scene:
 ```tscn
