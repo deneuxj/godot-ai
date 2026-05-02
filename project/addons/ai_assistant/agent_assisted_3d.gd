@@ -30,25 +30,21 @@ signal progress(chunks: Array[String])
 signal code_updated(code: String)
 
 
-@export_group("AI Assistant")
-
-@export
-var generation_mode: GenerationMode = GenerationMode.SCENE
-
-@export
-var generated_node_name: String = "GeneratedNode"
-
-@export
-var generated_script: Script = null
-
-@export_multiline
-var last_error: String = ""
+@export_group("Input")
 
 @export_multiline
 var prompt: String = ""
 
 @export
 var texture_attachments: Array[Texture2D] = []
+
+@export_group("Settings")
+
+@export
+var generation_mode: GenerationMode = GenerationMode.SCENE
+
+@export
+var generated_node_name: String = "GeneratedNode"
 
 @export_group("Output Control")
 
@@ -60,16 +56,7 @@ var output_directory: String = "res://generated/"
 @export
 var output_filename: String = ""
 
-@export_group("Status")
-
-@export
-var generation_status: GenerationStatus = GenerationStatus.IDLE
-
-@export
-var status_message: String = ""
-
-@export_multiline
-var generated_code: String = ""
+@export_group("API Overrides (Advanced)")
 
 @export
 var api_endpoint: String = ""
@@ -80,9 +67,19 @@ var api_key: String = ""
 @export
 var model: String = ""
 
+@export_group("Last Result")
 
-# --- Internal state ---
+@export_multiline
+var last_error: String = ""
 
+@export_multiline
+var generated_code: String = ""
+
+
+# --- Internal status tracking (not exported) ---
+
+var generation_status: GenerationStatus = GenerationStatus.IDLE
+var status_message: String = ""
 var _active_client: AIClient = null
 
 
@@ -252,7 +249,6 @@ func _apply_generated_output(path: String, mode: GenerationMode) -> void:
 		# Load and attach the script to a new child node.
 		var script = load(path) as Script
 		if script:
-			generated_script = script
 			var instance = Node3D.new()
 			instance.name = generated_node_name
 			instance.set_script(script)
