@@ -52,7 +52,6 @@ Before validation, the `ScriptExecutor` extracts the raw code from markdown fenc
     - Extracts code from fences.
     - Uses `ResourceLoader.load()` to attempt a resource load.
     - Captures detailed engine errors using a `CustomLogger`.
-    - Falls back to headless Godot editor validation (`godot --headless -e`) for granular error diagnostics if loading fails.
 2. **Node Script Mode**: 
     - Extracts code from fences.
     - Uses the **Godot Language Server (LSP)** via a helper script for full pipeline diagnostics (parse errors, type errors, warnings).

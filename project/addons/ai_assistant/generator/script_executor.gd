@@ -92,47 +92,12 @@ static func _validate_tscn(content: String) -> Dictionary:
 	
 	if scene == null:
 		# Error will be captured by the logger.
-		var err_msg = "Failed to load TSCN: Godot ResourceLoader returned null."
-		
-		# Fallback: Try headless validation if available for more details.
-		var headless_err = _validate_tscn_headless(temp_path)
-		if headless_err != "":
-			err_msg += "\nHeadless Validation Errors:\n" + headless_err
-			
 		DirAccess.remove_absolute(temp_path)
-		return {"error": err_msg}
+		return {"error": "Failed to load TSCN: Godot ResourceLoader returned null."}
 	
 	# Cleanup.
 	DirAccess.remove_absolute(temp_path)
 	return {"error": null}
-
-
-## Headless validation using the Godot editor.
-static func _validate_tscn_headless(tscn_path: String) -> String:
-	var godot_path := "/home/johann/Godot/godot.sh"
-	if not FileAccess.file_exists(godot_path):
-		return ""
-
-	var project_dir = ProjectSettings.globalize_path("res://")
-	var output = []
-	# Use timeout to prevent hanging.
-	var args = ["--headless", "--path", project_dir, "-e"]
-	
-	# We use OS.execute to run godot. Since we want to capture stderr, 
-	# and OS.execute might only capture stdout depending on implementation,
-	# we wrap it in a shell to redirect 2>&1.
-	var command = "timeout 15 %s %s 2>&1" % [godot_path, " ".join(args)]
-	var exit_code = OS.execute("bash", ["-c", command], output, true)
-	
-	var full_output = "".join(output)
-	var errors = []
-	for line in full_output.split("\n"):
-		if line.contains("ERROR:") or line.contains("SCRIPT ERROR:") or line.contains("Parse Error:"):
-			# Filter out irrelevant environment warnings.
-			if not line.contains("Locale not supported"):
-				errors.append(line.strip_edges())
-				
-	return "\n".join(errors)
 
 
 ## Advanced validation for GDScript using the Godot Language Server.
