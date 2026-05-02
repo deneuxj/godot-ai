@@ -5,24 +5,25 @@
 ## and a live preview of generated output (TSCN or GDScript).
 
 @tool
-extends Control
+extends ScrollContainer
 
 
 var _current_node: AIAgentAssisted3D = null
 var _editor_interface: EditorInterface
 
-# UI node references (set in _ready)
-var _prompt_text_edit: TextEdit
-var _mode_selector: OptionButton
-var _send_button: Button
-var _cancel_button: Button
-var _clear_button: Button
-var _status_label: Label
-var _progress_bar: ProgressBar
-var _tab_container: TabContainer
-var _node_tree: Tree
-var _code_view: CodeEdit
-var _drop_label: Label
+# UI node references
+@onready var _prompt_text_edit: TextEdit = find_child("PromptTextEdit")
+@onready var _mode_selector: OptionButton = find_child("ModeSelector")
+@onready var _send_button: Button = find_child("SendButton")
+@onready var _cancel_button: Button = find_child("CancelButton")
+@onready var _clear_button: Button = find_child("ClearButton")
+@onready var _status_label: Label = find_child("StatusLabel")
+@onready var _progress_bar: ProgressBar = find_child("ProgressBar")
+@onready var _tab_container: TabContainer = find_child("TabContainer")
+@onready var _node_tree: Tree = find_child("Node Tree")
+@onready var _code_view: CodeEdit = find_child("Generated Output")
+@onready var _drop_label: Label = find_child("DropLabel")
+@onready var _attachments_container: VBoxContainer = find_child("AttachmentsContainer")
 
 
 # Called by the plugin after instantiation to inject the EditorInterface.
@@ -31,25 +32,13 @@ func _init_editor(editor_interface: EditorInterface) -> void:
 
 
 func _ready() -> void:
-	# Cache references to UI nodes by name.
-	_prompt_text_edit = $VBoxContainer/PromptTextEdit as TextEdit
-	_mode_selector = $VBoxContainer/ModeRow/ModeSelector as OptionButton
-	_send_button = $VBoxContainer/GenerateRow/SendButton as Button
-	_cancel_button = $VBoxContainer/GenerateRow/CancelButton as Button
-	_clear_button = $VBoxContainer/GenerateRow/ClearButton as Button
-	_status_label = $VBoxContainer/StatusRow/StatusLabel as Label
-	_progress_bar = $VBoxContainer/StatusRow/ProgressBar as ProgressBar
-	_tab_container = $VBoxContainer/TabContainer as TabContainer
-	_node_tree = $"VBoxContainer/TabContainer/Node Tree" as Tree
-	_code_view = $"VBoxContainer/TabContainer/Generated Output" as CodeEdit
-	_drop_label = $VBoxContainer/AttachmentsContainer/DropLabel as Label
-
 	# Enable drag-and-drop on the attachments container.
-	$VBoxContainer/AttachmentsContainer.set_drag_forwarding(
-		Callable(self, "_can_drop_data"),
-		Callable(self, "_drop_data"),
-		Callable(self, "_get_drag_data"),
-	)
+	if _attachments_container:
+		_attachments_container.set_drag_forwarding(
+			Callable(self, "_can_drop_data"),
+			Callable(self, "_drop_data"),
+			Callable(self, "_get_drag_data"),
+		)
 
 	# Connect UI signals.
 	_prompt_text_edit.text_changed.connect(_on_prompt_text_edit_text_changed)
@@ -58,10 +47,20 @@ func _ready() -> void:
 	_cancel_button.pressed.connect(_on_cancel_pressed)
 	_clear_button.pressed.connect(_on_clear_pressed)
 
-	# Connect to the editor's selection system and initialize.
-	# Use call_deferred to ensure the editor is fully ready.
+	# Connect to the editor's selection system.
 	if is_instance_valid(_editor_interface):
 		_setup_editor_connection()
+
+
+func _exit_tree() -> void:
+	# Disconnect from the editor's selection system.
+	if is_instance_valid(_editor_interface):
+		var selection := _editor_interface.get_selection()
+		if selection and selection.is_connected("selection_changed", _on_selection_changed):
+			selection.selection_changed.disconnect(_on_selection_changed)
+	
+	# Disconnect from the current node.
+	_disconnect_from_node()
 
 
 func _on_selection_changed() -> void:
@@ -71,18 +70,23 @@ func _on_selection_changed() -> void:
 func _setup_editor_connection() -> void:
 	var selection := _editor_interface.get_selection()
 	if selection:
-		selection.selection_changed.connect(_on_selection_changed)
+		if not selection.is_connected("selection_changed", _on_selection_changed):
+			selection.selection_changed.connect(_on_selection_changed)
 
 	# Initial state.
 	_update_for_selected_node()
 
 
-func _update_for_selected_node() -> void:
-	# Disconnect signals from the old node.
+func _disconnect_from_node() -> void:
 	if is_instance_valid(_current_node):
-		_current_node.disconnect("progress", _on_node_progress)
+		if _current_node.is_connected("progress", _on_node_progress):
+			_current_node.disconnect("progress", _on_node_progress)
 		if _current_node.is_connected("code_updated", _on_node_code_updated):
 			_current_node.disconnect("code_updated", _on_node_code_updated)
+
+
+func _update_for_selected_node() -> void:
+	_disconnect_from_node()
 
 	var selection := _editor_interface.get_selection()
 	var selected_nodes: Array = []
@@ -114,6 +118,7 @@ func _update_for_selected_node() -> void:
 		_node_tree.clear()
 		_code_view.text = ""
 		_drop_label.visible = true
+		_update_theme_colors() # Reset to neutral
 
 
 # --- Mode / Prompt sync ---
@@ -184,22 +189,43 @@ func _update_status() -> void:
 	_cancel_button.disabled = not generating
 	_clear_button.disabled = generating
 
+	_update_theme_colors()
+
 	match status:
 		AIAgentAssisted3D.GenerationStatus.IDLE:
 			_status_label.text = "Status: Idle"
-			_status_label.add_theme_color_override("font_color", Color.WHITE)
 			_progress_bar.value = 0.0
 		AIAgentAssisted3D.GenerationStatus.GENERATING:
-			# Already set by _on_node_progress or initial state.
-			_status_label.add_theme_color_override("font_color", Color.YELLOW)
+			pass # Already set by _on_node_progress
 		AIAgentAssisted3D.GenerationStatus.SUCCESS:
 			_status_label.text = "Status: " + message
-			_status_label.add_theme_color_override("font_color", Color.GREEN)
 			_progress_bar.value = 100.0
 			_refresh_node_tree()
 		AIAgentAssisted3D.GenerationStatus.ERROR:
 			_status_label.text = "Status: " + message
-			_status_label.add_theme_color_override("font_color", Color.RED)
+
+
+func _update_theme_colors() -> void:
+	if not is_instance_valid(_editor_interface):
+		return
+
+	var base := _editor_interface.get_base_control()
+	var theme := base.theme
+	
+	if not is_instance_valid(_current_node):
+		_status_label.remove_theme_color_override("font_color")
+		return
+
+	var status: AIAgentAssisted3D.GenerationStatus = _current_node.generation_status
+	match status:
+		AIAgentAssisted3D.GenerationStatus.GENERATING:
+			_status_label.add_theme_color_override("font_color", theme.get_color("warning_color", "Editor"))
+		AIAgentAssisted3D.GenerationStatus.SUCCESS:
+			_status_label.add_theme_color_override("font_color", theme.get_color("success_color", "Editor"))
+		AIAgentAssisted3D.GenerationStatus.ERROR:
+			_status_label.add_theme_color_override("font_color", theme.get_color("error_color", "Editor"))
+		_:
+			_status_label.remove_theme_color_override("font_color")
 
 
 # --- Drag & drop for texture attachments ---
@@ -210,8 +236,6 @@ var TEXTURE_EXTENSIONS: PackedStringArray = PackedStringArray([
 
 
 func _get_drag_data(position: Vector2) -> Variant:
-	# Return an empty dictionary to enable drop targeting.
-	# Actual file data is provided by _can_drop_data checking.
 	return {}
 
 
@@ -270,9 +294,8 @@ func _refresh_attachments() -> void:
 		_drop_label.visible = true
 		return
 
-	var attachments_container := $VBoxContainer/AttachmentsContainer
 	# Remove any existing texture preview labels (skip DropLabel).
-	for child in attachments_container.get_children():
+	for child in _attachments_container.get_children():
 		if child is Label and child != _drop_label:
 			child.queue_free()
 
@@ -281,7 +304,7 @@ func _refresh_attachments() -> void:
 	for texture in _current_node.texture_attachments:
 		var name_label := Label.new()
 		name_label.text = texture.resource_path.get_file()
-		attachments_container.add_child(name_label)
+		_attachments_container.add_child(name_label)
 
 
 # --- Node tree preview ---
@@ -312,7 +335,6 @@ func _add_node_to_tree(node: Node, parent_item: TreeItem) -> void:
 # --- Helpers ---
 
 func _estimate_tokens(text: String) -> int:
-	# Rough token estimation: ~4 chars per token (English average).
 	if text.is_empty():
 		return 0
 	return int(len(text) / 4.0)

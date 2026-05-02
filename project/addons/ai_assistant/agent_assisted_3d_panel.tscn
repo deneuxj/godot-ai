@@ -1,37 +1,43 @@
-[gd_scene format=3 uid="uid://lnpn0k2q6lvi"]
+[gd_scene load_steps=2 format=3 uid="uid://lnpn0k2q6lvi"]
 
 [ext_resource type="Script" uid="uid://bn3yy00vti35q" path="res://addons/ai_assistant/agent_assisted_3d_panel.gd" id="1_panel"]
 
-[node name="AgentAssisted3DPanel" type="Control" unique_id=1573999600]
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("1_panel")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=962632458]
-layout_mode = 1
+[node name="AgentAssisted3DPanel" type="ScrollContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -852.0
-offset_bottom = -194.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
+script = ExtResource("1_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1858824668]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Agent Assisted 3D"
 
-[node name="ModeRow" type="HBoxContainer" parent="VBoxContainer" unique_id=1000]
+[node name="ModeRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ModeLabel" type="Label" parent="VBoxContainer/ModeRow" unique_id=1001]
+[node name="ModeLabel" type="Label" parent="MarginContainer/VBoxContainer/ModeRow"]
 layout_mode = 2
 text = "Mode:"
 
-[node name="ModeSelector" type="OptionButton" parent="VBoxContainer/ModeRow" unique_id=1002]
+[node name="ModeSelector" type="OptionButton" parent="MarginContainer/VBoxContainer/ModeRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 2
@@ -41,68 +47,71 @@ popup/item_0/id = 0
 popup/item_1/text = "Node Script (.gd)"
 popup/item_1/id = 1
 
-[node name="PromptLabel" type="Label" parent="VBoxContainer" unique_id=1787243264]
+[node name="PromptLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Prompt:"
 
-[node name="PromptTextEdit" type="TextEdit" parent="VBoxContainer" unique_id=2086066648]
-custom_minimum_size = Vector2(300, 200)
+[node name="PromptTextEdit" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 placeholder_text = "Describe the 3D scene you want to generate..."
-autowrap_mode = 4
+wrap_mode = 1
 
-[node name="AttachmentsLabel" type="Label" parent="VBoxContainer" unique_id=67161620]
+[node name="AttachmentsLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Attachments:"
 
-[node name="AttachmentsContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=424878472]
+[node name="AttachmentsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="DropLabel" type="Label" parent="VBoxContainer/AttachmentsContainer" unique_id=1556866206]
+[node name="DropLabel" type="Label" parent="MarginContainer/VBoxContainer/AttachmentsContainer"]
 layout_mode = 2
 text = "Drag textures here"
 
-[node name="GenerateRow" type="HBoxContainer" parent="VBoxContainer" unique_id=1168704171]
+[node name="GenerateRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SendButton" type="Button" parent="VBoxContainer/GenerateRow" unique_id=455269133]
+[node name="SendButton" type="Button" parent="MarginContainer/VBoxContainer/GenerateRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Send"
 
-[node name="CancelButton" type="Button" parent="VBoxContainer/GenerateRow" unique_id=2147483647]
+[node name="CancelButton" type="Button" parent="MarginContainer/VBoxContainer/GenerateRow"]
 layout_mode = 2
 disabled = true
 text = "Cancel"
 
-[node name="ClearButton" type="Button" parent="VBoxContainer/GenerateRow" unique_id=655103514]
+[node name="ClearButton" type="Button" parent="MarginContainer/VBoxContainer/GenerateRow"]
 layout_mode = 2
 text = "Clear"
 
-[node name="StatusRow" type="HBoxContainer" parent="VBoxContainer" unique_id=238684284]
+[node name="StatusRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer/StatusRow" unique_id=1175727124]
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer/StatusRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Status: Idle"
 
-[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/StatusRow" unique_id=1788238256]
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/StatusRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
+size_flags_vertical = 4
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer" unique_id=-1294967296]
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 current_tab = 0
 
-[node name="Node Tree" type="Tree" parent="VBoxContainer/TabContainer" unique_id=2064561218]
+[node name="Node Tree" type="Tree" parent="MarginContainer/VBoxContainer/TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Generated Output" type="CodeEdit" parent="VBoxContainer/TabContainer" unique_id=-294967296]
+[node name="Generated Output" type="CodeEdit" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 editable = false
