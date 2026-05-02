@@ -54,7 +54,7 @@ static func validate_output(content: String, mode: int) -> Dictionary:
 	var code = extract_code(content)
 
 	var result: Dictionary
-	if mode == 1: # SCENE
+	if mode == 0: # SCENE
 		result = _validate_tscn(code)
 	else: # NODE_SCRIPT
 		result = _validate_gdscript(code)
