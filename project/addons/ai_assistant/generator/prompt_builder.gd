@@ -130,11 +130,8 @@ static func build_error_correction(messages: Array[Dictionary], error_result: Di
 
 	# Add the validation error and fix instruction as a user message.
 	var fix_instruction := """\
-The previous output failed validation with the following error:
+error:
 %s
-
-Please provide a corrected version that resolves this error.
-Output ONLY raw text content, no markdown fences.
 """ % error_result.get("error", "Unknown error")
 
 	messages.append({
