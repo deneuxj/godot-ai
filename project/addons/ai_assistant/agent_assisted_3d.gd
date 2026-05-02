@@ -104,7 +104,8 @@ func generate() -> void:
 		content = await _call_ai(messages)
 		
 		# Immediately update the code property so the user can see it (even on error).
-		generated_code = content
+		var extracted_code := ScriptExecutor.extract_code(content)
+		generated_code = extracted_code
 		code_updated.emit(generated_code)
 		
 		if generation_status == GenerationStatus.IDLE:
@@ -114,7 +115,7 @@ func generate() -> void:
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 
 		# 3. Validate output (Parse check only, no execution)
-		var error_result := ScriptExecutor.validate_output(content, generation_mode)
+		var error_result := ScriptExecutor.validate_output(extracted_code, generation_mode)
 
 		if error_result.error == null:
 			last_error = ""
@@ -132,7 +133,7 @@ func generate() -> void:
 
 	if success:
 		# 5. Save and Apply
-		var path := _save_generated_output(content, generation_mode)
+		var path := _save_generated_output(generated_code, generation_mode)
 		_apply_generated_output(path, generation_mode)
 		
 		generation_status = GenerationStatus.SUCCESS

@@ -15,6 +15,33 @@ static func _get_logger() -> Logger:
 	return _logger_instance
 
 
+## Extract code content from markdown code blocks if present.
+static func extract_code(content: String) -> String:
+	if not content.contains("```"):
+		return content.strip_edges()
+	
+	var lines = content.split("\n")
+	var inside_block = false
+	var extracted_lines = []
+	
+	for line in lines:
+		var stripped = line.strip_edges()
+		if stripped.begins_with("```"):
+			if not inside_block:
+				inside_block = true
+				continue # Skip the opening fence
+			else:
+				break # Found the closing fence, we're done
+		
+		if inside_block:
+			extracted_lines.append(line)
+			
+	if extracted_lines.size() > 0:
+		return "\n".join(extracted_lines).strip_edges()
+	
+	return content.strip_edges()
+
+
 ## Validate AI output based on the generation mode.
 ##
 ## Returns `{"error": null}` on success, or
@@ -24,11 +51,13 @@ static func validate_output(content: String, mode: int) -> Dictionary:
 	if logger:
 		logger.call("start_capture")
 
+	var code = extract_code(content)
+
 	var result: Dictionary
 	if mode == 1: # SCENE
-		result = _validate_tscn(content)
+		result = _validate_tscn(code)
 	else: # NODE_SCRIPT
-		result = _validate_gdscript(content)
+		result = _validate_gdscript(code)
 
 	if logger:
 		logger.call("stop_capture")
@@ -42,9 +71,6 @@ static func validate_output(content: String, mode: int) -> Dictionary:
 
 ## Basic parse validation for Godot TSCN files.
 static func _validate_tscn(content: String) -> Dictionary:
-	if content.contains("```"):
-		return {"error": "Invalid format: Output contains markdown code blocks (```). Please output ONLY raw text content."}
-
 	if not content.begins_with("[gd_scene") and not content.begins_with("[gd_resource"):
 		return {"error": "Invalid TSCN format: Must start with [gd_scene or [gd_resource"}
 
@@ -111,9 +137,6 @@ static func _validate_tscn_headless(tscn_path: String) -> String:
 
 ## Advanced validation for GDScript using the Godot Language Server.
 static func _validate_gdscript(content: String) -> Dictionary:
-	if content.contains("```"):
-		return {"error": "Invalid format: Output contains markdown code blocks (```). Please output ONLY raw text content."}
-
 	if not content.contains("extends Node3D"):
 		return {"error": "Script must extend Node3D"}
 
@@ -154,4 +177,3 @@ static func _validate_gdscript(content: String) -> Dictionary:
 		if err != OK:
 			return {"error": "GDScript parse error (code %d). Note: LSP connection failed." % err}
 		return {"error": null}
-

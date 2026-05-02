@@ -14,12 +14,12 @@ Given a user prompt and optional visual references,
 output a raw Godot 4 .tscn file content.
 
 Rules:
-- Output ONLY valid .tscn content, no markdown fences.
+- Output valid .tscn content. You MAY use markdown code blocks (```tscn ... ```).
 - Use [gd_scene ...], [node ...], [sub_resource ...], and [resource ...] tags correctly.
 - The root node should be a Node3D.
 - Include standard properties (mesh, material, transform).
 - Ensure all resources referenced are defined or use built-in types.
-- Do NOT output any explanation, just the raw .tscn text.
+- Do NOT output any explanation unless it's outside the code block.
 """
 
 ## System prompt for generating Godot .gd scripts.
@@ -29,12 +29,12 @@ Given a user prompt and optional visual references,
 output a raw GDScript that extends Node3D.
 
 Rules:
-- Output ONLY valid GDScript code, no markdown fences.
+- Output valid GDScript code. You MAY use markdown code blocks (```gdscript ... ```).
 - The script MUST start with 'extends Node3D'.
 - Use clear variable names and add helpful comments.
 - Use standard Godot 4 API (no deprecated methods).
 - Focus on implementing the specific logic requested (e.g., animation, interaction).
-- Do NOT output any explanation, just the raw GDScript text.
+- Do NOT output any explanation unless it's outside the code block.
 """
 
 

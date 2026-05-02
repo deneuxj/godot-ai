@@ -18,16 +18,16 @@ The `PromptBuilder` constructs the system prompt based on the selected `Generati
 #### Scene Mode System Prompt
 ```text
 You are a Godot 4 scene generator. 
-Output ONLY a valid Godot .tscn file content. 
-Do not use markdown blocks.
+Output a valid Godot .tscn file content. 
+You MAY use markdown code blocks (```tscn ... ```).
 The scene should be a Node3D root with child nodes (meshes, lights, etc.) describing the user request.
 ```
 
 #### Node Script Mode System Prompt
 ```text
 You are a Godot 4 GDScript generator.
-Output ONLY valid GDScript code for a single script.
-Do not use markdown blocks.
+Output valid GDScript code for a single script.
+You MAY use markdown code blocks (```gdscript ... ```).
 The script should extend Node3D and implement logic based on the user request.
 ```
 
@@ -45,13 +45,16 @@ static func build(prompt: String, textures: Array[Texture2D], mode: GenerationMo
 The loop is triggered by **Validation Errors** (parse/load errors) captured via high-fidelity engine feedback.
 
 ### Validation (`ScriptExecutor.validate_output`)
+
+Before validation, the `ScriptExecutor` extracts the raw code from markdown fences if present using `ScriptExecutor.extract_code()`.
+
 1. **Scene Mode**: 
-    - Rejects markdown blocks.
+    - Extracts code from fences.
     - Uses `ResourceLoader.load()` to attempt a resource load.
     - Captures detailed engine errors using a `CustomLogger`.
     - Falls back to headless Godot editor validation (`godot --headless -e`) for granular error diagnostics if loading fails.
 2. **Node Script Mode**: 
-    - Rejects markdown blocks.
+    - Extracts code from fences.
     - Uses the **Godot Language Server (LSP)** via a helper script for full pipeline diagnostics (parse errors, type errors, warnings).
     - Falls back to `GDScript.reload()` if the LSP is unavailable.
 
