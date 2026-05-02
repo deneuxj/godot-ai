@@ -20,6 +20,16 @@ Rules:
 - Include standard properties (mesh, material, transform).
 - Ensure all resources referenced are defined or use built-in types.
 - Do NOT output any explanation unless it's outside the code block.
+
+Example below of minimal scene:
+For the root node, make sure it is of type Node3D:
+```tscn
+[gd_scene format=3 uid="uid://<uid>"]
+[node name="Sheep" type="Node3D"]
+```
+Valid <uid> strings are 12 chars long and follow pattern [a-z0-9]*
+
+Comments are not supported in .tscn files. Do not attempt to generate comments.
 """
 
 ## System prompt for generating Godot .gd scripts.
