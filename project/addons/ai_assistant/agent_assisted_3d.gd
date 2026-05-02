@@ -97,7 +97,7 @@ func _ready() -> void:
 
 func generate() -> void:
 	generation_status = GenerationStatus.GENERATING
-	status_message = "Generating..."
+	status_message = "Processing..."
 	generation_started.emit()
 
 	# 1. Build initial prompt.

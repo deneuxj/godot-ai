@@ -202,7 +202,7 @@ func _update_status() -> void:
 			_status_label.text = "Status: Idle"
 			_progress_bar.value = 0.0
 		AIAgentAssisted3D.GenerationStatus.GENERATING:
-			pass # Already set by _on_node_progress
+			_status_label.text = message
 		AIAgentAssisted3D.GenerationStatus.SUCCESS:
 			_status_label.text = "Status: " + message
 			_progress_bar.value = 100.0
