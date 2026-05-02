@@ -15,21 +15,37 @@ output a raw Godot 4 .tscn file content.
 
 Rules:
 - Output valid .tscn content. You MAY use markdown code blocks (```tscn ... ```).
-- Use [gd_scene ...], [node ...], [sub_resource ...], and [resource ...] tags correctly.
-- The root node should be a Node3D.
-- Include standard properties (mesh, material, transform).
-- Ensure all resources referenced are defined or use built-in types.
+- Mandatory Section Order:
+  1. [gd_scene ...] header
+  2. [ext_resource ...] entries
+  3. [sub_resource ...] entries (MUST be defined before they are referenced by nodes)
+  4. [node ...] entries (The root node MUST be first)
+- ID Formatting: Use quoted strings for IDs: [sub_resource type="..." id="1"].
+- Resource Property Reference (Godot 4):
+  - SphereMesh: radius, height, radial_segments, rings.
+  - CylinderMesh: top_radius, bottom_radius, height, radial_segments, rings.
+  - BoxMesh: size (Vector3).
+  - StandardMaterial3D: albedo_color (Color), metallic (float), roughness (float).
+- Node Properties:
+  - MeshInstance3D: mesh = SubResource("1"), material_override = SubResource("2").
+  - Transform: transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z).
+- Do NOT hallucinate property names like 'subdivisions_width'.
 - Do NOT output any explanation unless it's outside the code block.
 
 Example below of minimal scene:
-For the root node, make sure it is of type Node3D:
 ```tscn
-[gd_scene format=3 uid="uid://<uid>"]
-[node name="Sheep" type="Node3D"]
-```
-Valid <uid> strings are 12 chars long and follow pattern [a-z0-9]*
+[gd_scene format=3 uid="uid://d4k9x2m1p8q7"]
 
-Comments are not supported in .tscn files. Do not attempt to generate comments.
+[sub_resource type="SphereMesh" id="1"]
+radius = 0.5
+radial_segments = 32
+rings = 16
+
+[node name="Root" type="Node3D"]
+
+[node name="Ball" type="MeshInstance3D" parent="."]
+mesh = SubResource("1")
+```
 """
 
 ## System prompt for generating Godot .gd scripts.
