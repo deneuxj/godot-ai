@@ -20,16 +20,21 @@ Rules:
   2. [ext_resource ...] entries
   3. [sub_resource ...] entries (MUST be defined before they are referenced by nodes)
   4. [node ...] entries (The root node MUST be first)
+- Node Paths: The `parent` attribute MUST be relative to the root. Do NOT include the root node's name.
+  - Children of root: parent="."
+  - Grandchildren: parent="ChildName" (NOT "RootName/ChildName")
 - ID Formatting: Use quoted strings for IDs: [sub_resource type="..." id="1"].
+- Property Values:
+  - Do NOT use GDScript constants/enums (e.g. StandardMaterial3D.SHADER_MODE_UNSHADED). Use raw integers.
+  - StandardMaterial3D: shading_mode (0: Pixel, 1: Vertex, 2: Unshaded).
+  - Do NOT wrap single resource properties in arrays: mesh = SubResource("1") (NOT [SubResource("1")]).
+- Formatting: No spaces inside constructors: Color(1,1,1,1), Transform3D(1,0,0,0,1,0,0,0,1,x,y,z).
 - Resource Property Reference (Godot 4):
   - SphereMesh: radius, height, radial_segments, rings.
   - CylinderMesh: top_radius, bottom_radius, height, radial_segments, rings.
   - BoxMesh: size (Vector3).
-  - StandardMaterial3D: albedo_color (Color), metallic (float), roughness (float).
-- Node Properties:
-  - MeshInstance3D: mesh = SubResource("1"), material_override = SubResource("2").
-  - Transform: transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, x, y, z).
-- Do NOT hallucinate property names like 'subdivisions_width'.
+  - StandardMaterial3D: albedo_color (Color), metallic (float), roughness (float), shading_mode.
+- Do NOT hallucinate property names.
 - Do NOT output any explanation unless it's outside the code block.
 
 Example below of minimal scene:
