@@ -50,6 +50,18 @@ var prompt: String = ""
 @export
 var texture_attachments: Array[Texture2D] = []
 
+@export_group("Output Control")
+
+## Directory where the generated file will be saved.
+@export_global_dir
+var output_directory: String = "res://generated/"
+
+## Filename (without extension) for the generated file. If empty, uses the node's name.
+@export
+var output_filename: String = ""
+
+@export_group("Status")
+
 @export
 var generation_status: GenerationStatus = GenerationStatus.IDLE
 
@@ -190,12 +202,19 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 # --- Persistence helpers ---
 
 func _save_generated_output(content: String, mode: GenerationMode) -> String:
-	var dir := "res://generated/"
+	var dir := output_directory
+	if not dir.ends_with("/"):
+		dir += "/"
+		
 	if not DirAccess.dir_exists_absolute(dir):
 		DirAccess.make_dir_recursive_absolute(dir)
 
 	var ext := ".tscn" if mode == GenerationMode.SCENE else ".gd"
-	var path := "res://generated/%s%s" % [name, ext]
+	var file_name := output_filename
+	if file_name.is_empty():
+		file_name = name
+		
+	var path := "%s%s%s" % [dir, file_name, ext]
 	
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file:
