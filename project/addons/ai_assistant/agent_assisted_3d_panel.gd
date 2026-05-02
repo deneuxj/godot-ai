@@ -2,7 +2,7 @@
 ##
 ## Connects to the currently selected AIAgentAssisted3D node in the editor,
 ## provides two-way prompt binding, progress tracking, texture drag-and-drop,
-## and a live preview of generated output (TSCN or GDScript).
+## and a live preview of generated output and errors.
 
 @tool
 extends ScrollContainer
@@ -19,9 +19,8 @@ var _editor_interface: EditorInterface
 @onready var _clear_button: Button = find_child("ClearButton")
 @onready var _status_label: Label = find_child("StatusLabel")
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
-@onready var _tab_container: TabContainer = find_child("TabContainer")
-@onready var _node_tree: Tree = find_child("Node Tree")
-@onready var _code_view: CodeEdit = find_child("Generated Output")
+@onready var _code_view: CodeEdit = find_child("GeneratedOutput")
+@onready var _error_text_edit: TextEdit = find_child("ErrorTextEdit")
 @onready var _drop_label: Label = find_child("DropLabel")
 @onready var _attachments_container: VBoxContainer = find_child("AttachmentsContainer")
 
@@ -41,11 +40,16 @@ func _ready() -> void:
 		)
 
 	# Connect UI signals.
-	_prompt_text_edit.text_changed.connect(_on_prompt_text_edit_text_changed)
-	_mode_selector.item_selected.connect(_on_mode_selected)
-	_send_button.pressed.connect(_on_send_pressed)
-	_cancel_button.pressed.connect(_on_cancel_pressed)
-	_clear_button.pressed.connect(_on_clear_pressed)
+	if _prompt_text_edit:
+		_prompt_text_edit.text_changed.connect(_on_prompt_text_edit_text_changed)
+	if _mode_selector:
+		_mode_selector.item_selected.connect(_on_mode_selected)
+	if _send_button:
+		_send_button.pressed.connect(_on_send_pressed)
+	if _cancel_button:
+		_cancel_button.pressed.connect(_on_cancel_pressed)
+	if _clear_button:
+		_clear_button.pressed.connect(_on_clear_pressed)
 
 	# Connect to the editor's selection system.
 	if is_instance_valid(_editor_interface):
@@ -108,15 +112,15 @@ func _update_for_selected_node() -> void:
 
 		# Refresh UI state.
 		_refresh_attachments()
-		_refresh_node_tree()
 		_code_view.text = _current_node.generated_code
+		_error_text_edit.text = _current_node.last_error
 		_update_status()
 	else:
 		_prompt_text_edit.text = ""
 		_status_label.text = "No AIAgentAssisted3D selected"
 		_progress_bar.value = 0.0
-		_node_tree.clear()
 		_code_view.text = ""
+		_error_text_edit.text = ""
 		_drop_label.visible = true
 		_update_theme_colors() # Reset to neutral
 
@@ -191,6 +195,8 @@ func _update_status() -> void:
 
 	_update_theme_colors()
 
+	_error_text_edit.text = _current_node.last_error
+
 	match status:
 		AIAgentAssisted3D.GenerationStatus.IDLE:
 			_status_label.text = "Status: Idle"
@@ -200,7 +206,6 @@ func _update_status() -> void:
 		AIAgentAssisted3D.GenerationStatus.SUCCESS:
 			_status_label.text = "Status: " + message
 			_progress_bar.value = 100.0
-			_refresh_node_tree()
 		AIAgentAssisted3D.GenerationStatus.ERROR:
 			_status_label.text = "Status: " + message
 
@@ -305,31 +310,6 @@ func _refresh_attachments() -> void:
 		var name_label := Label.new()
 		name_label.text = texture.resource_path.get_file()
 		_attachments_container.add_child(name_label)
-
-
-# --- Node tree preview ---
-
-func _refresh_node_tree() -> void:
-	_node_tree.clear()
-
-	if not is_instance_valid(_current_node):
-		return
-
-	var root := _node_tree.create_item()
-	root.set_text(0, "AIAgentAssisted3D")
-
-	for child in _current_node.get_children():
-		_add_node_to_tree(child, root)
-
-
-func _add_node_to_tree(node: Node, parent_item: TreeItem) -> void:
-	var item := _node_tree.create_item(parent_item)
-	var node_name: String = node.name
-	var node_type: String = node.get_class()
-	item.set_text(0, "%s (%s)" % [node_name, node_type])
-
-	for child in node.get_children():
-		_add_node_to_tree(child, item)
 
 
 # --- Helpers ---

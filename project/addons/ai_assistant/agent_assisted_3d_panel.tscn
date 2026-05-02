@@ -101,21 +101,25 @@ custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
+[node name="OutputLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Generated Output:"
+
+[node name="GeneratedOutput" type="CodeEdit" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 0
-
-[node name="Node Tree" type="Tree" parent="MarginContainer/VBoxContainer/TabContainer"]
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="Generated Output" type="CodeEdit" parent="MarginContainer/VBoxContainer/TabContainer"]
-visible = false
-layout_mode = 2
 editable = false
 highlight_all_occurrences = true
 symbol_lookup_on_click = true
 line_folding = true
-metadata/_tab_index = 1
+
+[node name="ErrorLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Last Error:"
+
+[node name="ErrorTextEdit" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+editable = false
+wrap_mode = 1
