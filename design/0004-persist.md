@@ -39,13 +39,17 @@ func _apply_scene(path: String):
 ```
 
 ### Node Script Mode
-The plugin attaches the saved `.gd` script to the `AgentAssisted3D` node itself.
+The plugin attaches the saved `.gd` script to a new child node of the `AIAgentAssisted3D` node.
 
 ```gdscript
 func _apply_script(path: String):
     var script = load(path) as Script
     if script:
-        self.set_script(script)
+        var instance = Node3D.new()
+        instance.name = generated_node_name
+        instance.set_script(script)
+        add_child(instance)
+        instance.owner = get_tree().edited_scene_root
 ```
 
 ---

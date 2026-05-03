@@ -31,7 +31,7 @@
 res://
 ├── plugin.cfg                              # Plugin manifest
 ├── ai_assistant.gd                        # Plugin entry point, registers dock & node
-├── agent_assisted_3d.gd                  # Custom 3D node class
+├── agent_assisted_3d.gd                  # Custom 3D node class (AIAgentAssisted3D)
 ├── agent_assisted_3d_panel.tscn          # Editor dock UI scene
 ├── agent_assisted_3d_panel.gd            # Editor dock UI controller
 ├── ai_client/
@@ -39,11 +39,11 @@ res://
 │   └── openai_client.gd                  # OpenAI-compatible API implementation
 ├── generator/
 │   ├── prompt_builder.gd                 # Builds AI prompt from user input + textures
-│   └── script_executor.gd                # Safely loads & runs generated GDScript
+│   ├── script_executor.gd                # Safely loads & runs generated GDScript
+│   └── custom_logger.gd                  # Intercepts engine errors
 ├── settings/
 │   └── ai_settings.gd                    # Reads/writes project settings
-└── generated/                            # Cache directory for generated .gd files
-    └── (dynamic, per-node)
+└── generated/                            # Cache directory for generated .gd/.tscn files
 ```
 
 ## Implementation Order

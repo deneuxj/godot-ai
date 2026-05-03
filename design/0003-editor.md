@@ -19,10 +19,10 @@
 │                                     │
 │  Status:  Generating... ████████░░  │
 │                                     │
-│  [ Node Tree ] [ Generated Output ] │ (REQ-EDITOR-0004 Tabs)
+│  [ Generated Output ] [ Error Log ] │ (Tabs)
 │  ┌───────────────────────────────┐  │
-│  │ └─ Node3D                    │  │
-│  │    ├─ MeshInstance3D         │  │
+│  │ func build():                 │  │
+│  │    ...                        │  │
 │  └───────────────────────────────┘  │
 └─────────────────────────────────────┘
 ```
@@ -30,8 +30,8 @@
 ### Dock Controller (`agent_assisted_3d_panel.gd`)
 
 - Handles the `GenerationMode` selection property.
-- Syncs the mode selector with the selected `AgentAssisted3D` node.
-- "Generated Output" tab shows the raw TSCN or GDScript code.
+- Syncs the mode selector with the selected `AIAgentAssisted3D` node.
+- "Generated Output" tab shows the raw GDScript code.
 
 ---
 
@@ -42,4 +42,4 @@
 | REQ-EDITOR-0002 | `agent_assisted_3d_panel.tscn` dock UI |
 | REQ-NODE3D-0011 | Generation mode selector in the dock |
 | REQ-NODE3D-0010 | "Cancel" button and `_on_cancel_pressed` controller logic |
-| REQ-EDITOR-0004 | TabContainer with `Node Tree` and `Generated Output` (CodeEdit) |
+| REQ-EDITOR-0004 | TabContainer with `Generated Output` and `Error Log` |

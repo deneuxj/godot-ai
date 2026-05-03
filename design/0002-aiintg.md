@@ -58,14 +58,13 @@ Before validation, the `ScriptExecutor` extracts the raw code from markdown fenc
 
 1. **Scripted Scene Mode**:
     - Extracts GDScript code from fences.
-    - Performs **GDScript Validation** (LSP) to catch syntax errors.
+    - Performs **GDScript Validation** using `GDScript.reload()` to catch syntax errors.
     - **Executes the script** and calls `build()`.
-    - Captures any runtime errors (e.g., property not found).
+    - Captures any runtime errors (e.g., property not found) via the `CustomLogger`.
     - If successful, verifies the returned object is a `Node3D`.
 2. **Node Script Mode**: 
     - Extracts code from fences.
-    - Uses the **Godot Language Server (LSP)** via a helper script for full pipeline diagnostics (parse errors, type errors, warnings).
-    - Falls back to `GDScript.reload()` if the LSP is unavailable.
+    - Performs **GDScript Validation** using `GDScript.reload()` to catch syntax and parse errors.
 
 ### Conversation Structure
 When an error occurs, the conversation history is updated as follows:
@@ -79,8 +78,8 @@ When an error occurs, the conversation history is updated as follows:
 | Requirement | Covered By |
 |---|---|
 | REQ-AIINTG-0001 | `AIClient` abstract class + `OpenAIClient` implementation |
-| REQ-AIINTG-0003 | `PromptBuilder` logic for Mode-specific output (TSCN or GDScript) |
-| REQ-AIINTG-0005 | `AgentAssisted3D` validation loop and `PromptBuilder.build_error_correction()` |
-| REQ-AIINTG-0004 | `AISettings` manages configuration including `max_retries` |
+| REQ-AIINTG-0003 | `PromptBuilder` logic for Mode-specific output |
+| REQ-AIINTG-0005 | `AIAgentAssisted3D` validation loop and `PromptBuilder.build_error_correction()` |
+| REQ-AIINTG-0004 | `AISettings` manages configuration under `ai/connection/` and `ai/generation/` |
 | REQ-AIINTG-0006 | Configurable `max_retries` in `AISettings` |
 | REQ-NODE3D-0010 | `AIClient.cancel()` method implementation |
