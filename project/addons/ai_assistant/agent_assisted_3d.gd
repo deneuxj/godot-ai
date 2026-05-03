@@ -104,7 +104,7 @@ func _ready() -> void:
 
 func generate() -> void:
 	generation_status = GenerationStatus.GENERATING
-	self.status_message = "Processing..."
+	status_message = "Processing..."
 	generation_started.emit()
 
 	# 1. Build initial prompt.
@@ -117,7 +117,7 @@ func generate() -> void:
 	# 2. AI & Validation Loop
 	for attempt in range(max_retries):
 		# Call AI.
-		self.status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		content = await _call_ai(messages)
 		
 		# Immediately update the code property so the user can see it.
@@ -129,8 +129,8 @@ func generate() -> void:
 			return # Cancelled.
 		
 		# Clear previous error before validation and force visibility.
-		self.last_error = ""
-		self.status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		last_error = ""
+		status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		await get_tree().process_frame
 		await get_tree().process_frame
 		# Small delay to ensure the user can see "Validating" before blocking execution.
@@ -147,8 +147,8 @@ func generate() -> void:
 			return # Cancelled during validation.
 
 		# 4. Error correction: Update error and loop.
-		self.last_error = error_result.error
-		self.status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
+		last_error = error_result.error
+		status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
 		await get_tree().process_frame
 		await get_tree().create_timer(0.2).timeout
@@ -159,10 +159,10 @@ func generate() -> void:
 		_apply_generated_output(path, generation_mode)
 		
 		generation_status = GenerationStatus.SUCCESS
-		self.status_message = "Generation complete"
+		status_message = "Generation complete"
 	elif generation_status != GenerationStatus.IDLE:
 		generation_status = GenerationStatus.ERROR
-		self.status_message = "Generation failed after %d attempts" % max_retries
+		status_message = "Generation failed after %d attempts" % max_retries
 
 	generation_finished.emit()
 
