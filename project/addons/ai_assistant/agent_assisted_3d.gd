@@ -20,7 +20,8 @@ enum GenerationStatus {
 
 enum GenerationMode {
 	SCENE = 0,
-	NODE_SCRIPT = 1,
+	SCRIPTED_SCENE = 1,
+	NODE_SCRIPT = 2,
 }
 
 
@@ -139,7 +140,25 @@ func generate() -> void:
 
 		if error_result.error == null:
 			success = true
-			break
+			if generation_mode == GenerationMode.SCRIPTED_SCENE and error_result.has("root"):
+				# Save the root node for serialization later.
+				var root: Node3D = error_result.root
+				var dir := output_directory
+				if not dir.ends_with("/"):
+					dir += "/"
+				var file_name := output_filename if not output_filename.is_empty() else name
+				var path := "%s%s.tscn" % [dir, file_name]
+				
+				var err := ScriptExecutor.serialize_to_tscn(root, path)
+				root.free() # Clean up the temporary hierarchy
+				
+				if err != OK:
+					success = false
+					error_result.error = "Failed to serialize node hierarchy to TSCN (error code %d). Check your 'owner' assignments." % err
+				else:
+					break # Success!
+			else:
+				break
 		
 		if generation_status == GenerationStatus.IDLE:
 			return # Cancelled during validation.
@@ -222,6 +241,10 @@ func _save_generated_output(content: String, mode: GenerationMode) -> String:
 		
 	var path := "%s%s%s" % [dir, file_name, ext]
 	
+	# For SCRIPTED_SCENE, we already saved the .tscn via serialize_to_tscn
+	if mode == GenerationMode.SCRIPTED_SCENE:
+		return path
+
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file:
 		file.store_string(content)
@@ -233,7 +256,7 @@ func _save_generated_output(content: String, mode: GenerationMode) -> String:
 # --- Result application ---
 
 func _apply_generated_output(path: String, mode: GenerationMode) -> void:
-	if mode == GenerationMode.SCENE:
+	if mode == GenerationMode.SCENE or mode == GenerationMode.SCRIPTED_SCENE:
 		# Clear existing generated children.
 		for child in get_children():
 			child.queue_free()

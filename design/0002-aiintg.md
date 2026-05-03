@@ -23,6 +23,22 @@ You MAY use markdown code blocks (```tscn ... ```).
 The scene should be a Node3D root with child nodes (meshes, lights, etc.) describing the user request.
 ```
 
+#### Scripted Scene Mode System Prompt
+```text
+You are a Godot 4 scene builder.
+Output a GDScript that constructs a 3D scene hierarchy.
+Your script MUST implement a `build() -> Node3D` method that returns the root of the constructed hierarchy.
+Use standard Node3D, MeshInstance3D, etc.
+IMPORTANT: You must set the 'owner' property of every child node to the root node you return for serialization to work.
+Example:
+func build() -> Node3D:
+    var root = Node3D.new()
+    var mesh = MeshInstance3D.new()
+    root.add_child(mesh)
+    mesh.owner = root
+    return root
+```
+
 #### Node Script Mode System Prompt
 ```text
 You are a Godot 4 GDScript generator.
@@ -52,7 +68,13 @@ Before validation, the `ScriptExecutor` extracts the raw code from markdown fenc
     - Extracts code from fences.
     - Uses `ResourceLoader.load()` to attempt a resource load.
     - Captures detailed engine errors using a `CustomLogger`.
-2. **Node Script Mode**: 
+2. **Scripted Scene Mode**:
+    - Extracts GDScript code from fences.
+    - Performs **GDScript Validation** (LSP) to catch syntax errors.
+    - **Executes the script** and calls `build()`.
+    - Captures any runtime errors (e.g., property not found).
+    - If successful, verifies the returned object is a `Node3D`.
+3. **Node Script Mode**: 
     - Extracts code from fences.
     - Uses the **Godot Language Server (LSP)** via a helper script for full pipeline diagnostics (parse errors, type errors, warnings).
     - Falls back to `GDScript.reload()` if the LSP is unavailable.

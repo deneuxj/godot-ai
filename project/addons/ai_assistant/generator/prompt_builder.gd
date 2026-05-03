@@ -55,6 +55,41 @@ mesh = SubResource("1")
 ```
 """
 
+## System prompt for generating GDScripts that construct a node hierarchy.
+const SCRIPTED_SCENE_SYSTEM_PROMPT := """\
+You are a Godot 4 scene builder assistant.
+Given a user prompt and optional visual references,
+output a GDScript that constructs a 3D scene hierarchy.
+
+Rules:
+- Output valid GDScript code. You MAY use markdown code blocks (```gdscript ... ```).
+- Your script MUST implement a `build() -> Node3D` method that returns the root of the constructed hierarchy.
+- The script should NOT have an `extends` clause (it will be RefCounted by default) or it MAY `extends RefCounted`.
+- Use standard Godot 4 nodes: Node3D, MeshInstance3D, OmniLight3D, etc.
+- IMPORTANT: You MUST set the `owner` property of every child node to the root node you return. This is mandatory for Godot to serialize the hierarchy into a .tscn file.
+- Use raw integers for enums (e.g., StandardMaterial3D.SHADING_MODE_UNSHADED -> 2).
+- No spaces inside constructors: Color(1,1,1,1), Vector3(0,0,0).
+- Do NOT output any explanation unless it's outside the code block.
+
+Example:
+```gdscript
+func build() -> Node3D:
+	var root = Node3D.new()
+	root.name = "Root"
+	
+	var mesh_node = MeshInstance3D.new()
+	mesh_node.name = "Cube"
+	var mesh = BoxMesh.new()
+	mesh.size = Vector3(1, 1, 1)
+	mesh_node.mesh = mesh
+	
+	root.add_child(mesh_node)
+	mesh_node.owner = root # CRITICAL: Child must be owned by root
+	
+	return root
+```
+"""
+
 ## System prompt for generating Godot .gd scripts.
 const NODE_SCRIPT_SYSTEM_PROMPT := """\
 You are a Godot 4 GDScript generator assistant.
@@ -149,6 +184,8 @@ static func _get_system_prompt(mode: int) -> String:
 	# Enum mapping (must match AIAgentAssisted3D.GenerationMode)
 	if mode == 0: # SCENE
 		return SCENE_SYSTEM_PROMPT
+	elif mode == 1: # SCRIPTED_SCENE
+		return SCRIPTED_SCENE_SYSTEM_PROMPT
 	else: # NODE_SCRIPT
 		return NODE_SCRIPT_SYSTEM_PROMPT
 

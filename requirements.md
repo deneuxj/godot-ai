@@ -16,9 +16,12 @@ REQ-NODE3D-0003: Textures can be added as attachments to the prompt for visual c
 
 REQ-NODE3D-0004: When added to a scene, the node shall use AI to process the prompt and generate either a Godot scene file (.tscn) or a GDScript file (.gd).
 
-REQ-NODE3D-0011: The user shall be able to choose between two generation modes:
-  - **Scene**: The AI generates a `.tscn` file which is then instantiated as a child of the `AIAgentAssisted3D` node.
-  - **Node Script**: The AI generates a `.gd` script which is attached directly to a child node of the `AIAgentAssisted3D` node.
+REQ-NODE3D-0011: The user shall be able to choose between three generation modes:
+  - **Scene**: The AI generates a `.tscn` file which is then instantiated as a child of the `AgentAssisted3D` node.
+  - **Scripted Scene**: The AI generates a GDScript that constructs a node hierarchy when executed. The plugin executes this script, captures any runtime errors for the AI correction loop, and saves the resulting successful hierarchy as a `.tscn` file.
+  - **Node Script**: The AI generates a `.gd` script which is attached directly to the `AgentAssisted3D` node or a child node.
+
+REQ-NODE3D-0015: In 'Scripted Scene' mode, the generated script shall implement a standard entry point (e.g., a `build()` method) that returns the root of the generated node hierarchy.
 
 REQ-NODE3D-0012: The user shall be able to specify the name of the generated child node via a property.
 

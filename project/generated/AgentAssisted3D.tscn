@@ -1,83 +1,77 @@
-[gd_scene format=3 uid="uid://d0vzyr4n9u5k"]
+[gd_scene format=3 uid="uid://d0v0yr4oau5k"]
 
-[sub_resource type="StandardMaterial3D" id="1"]
-albedo_color = Color(1, 1, 1, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mroox"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
 metallic = 0.1
-roughness = 0.8
-shading_mode = 0
+roughness = 0.7
 
-[sub_resource type="BoxMesh" id="2"]
+[sub_resource type="BoxMesh" id="BoxMesh_x8run"]
 size = Vector3(1.5, 0.8, 0.6)
 
-[sub_resource type="SphereMesh" id="3"]
-radius = 0.4
-radial_segments = 16
-rings = 8
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yj2mg"]
+metallic = 0.1
+roughness = 0.8
 
-[sub_resource type="BoxMesh" id="4"]
-size = Vector3(0.25, 0.3, 0.25)
+[sub_resource type="SphereMesh" id="SphereMesh_lecf5"]
+radius = 0.25
 
-[sub_resource type="SphereMesh" id="5"]
-radius = 0.2
-radial_segments = 12
-rings = 6
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aq1nc"]
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+roughness = 0.75
 
-[node name="SheepRoot" type="Node3D"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g3oq0"]
+radius = 0.08
+height = 0.6
 
-[node name="Body" type="MeshInstance3D" parent="."]
-mesh = SubResource("2")
-material:shader = SubResource("1")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yotpr"]
+roughness = 0.9
 
-[node name="Head" type="MeshInstance3D" parent="."]
-# Using a slightly smaller sphere for the head top, attached to the body volume
-mesh = SubResource("3")
-translate = Vector3(0.5, 0.3, -0.2)
-material:shader = SubResource("1")
+[sub_resource type="SphereMesh" id="SphereMesh_pcmfp"]
+radius = 0.03
 
-[node name="Ear_L" type="MeshInstance3D" parent="Head"]
-# Simplified ear using a small box or sphere attached to the head mesh
-mesh = SubResource("4")
-translate = Vector3(-0.3, 0.15, -0.2)
-material:shader = SubResource("1")
+[node name="Sheep_Model" type="Node3D" unique_id=332328240]
 
-[node name="Ear_R" type="MeshInstance3D" parent="Head"]
-mesh = SubResource("4")
-translate = Vector3(0.3, 0.15, -0.2)
-material:shader = SubResource("1")
+[node name="Body" type="MeshInstance3D" parent="." unique_id=1068537576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("BoxMesh_x8run")
 
-[node name="Leg_F_L" type="MeshInstance3D" parent="Body"]
-# Front left leg (Box mesh for simplicity)
-mesh = SubResource("4")
-translate = Vector3(0.5, -0.2, 0.2)
-material:shader = SubResource("1")
+[node name="Head" type="MeshInstance3D" parent="." unique_id=30081961]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.1, 0.4)
+material_override = SubResource("StandardMaterial3D_yj2mg")
+mesh = SubResource("SphereMesh_lecf5")
 
-[node name="Leg_B_L" type="MeshInstance3D" parent="Body"]
-# Back left leg
-mesh = SubResource("4")
-translate = Vector3(-0.5, -0.2, 0.2)
-material:shader = SubResource("1")
+[node name="FrontLeftLeg" type="MeshInstance3D" parent="." unique_id=215081530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.25, 0.4)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("CapsuleMesh_g3oq0")
 
-[node name="Leg_F_R" type="MeshInstance3D" parent="Body"]
-# Front right leg
-mesh = SubResource("4")
-translate = Vector3(0.5, -0.2, -0.2)
-material:shader = SubResource("1")
+[node name="FrontRightLeg" type="MeshInstance3D" parent="." unique_id=1786091948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.25, 0.4)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("CapsuleMesh_g3oq0")
 
-[node name="Leg_B_R" type="MeshInstance3D" parent="Body"]
-# Back right leg
-mesh = SubResource("4")
-translate = Vector3(-0.5, -0.2, -0.2)
-material:shader = SubResource("1")
+[node name="BackLeftLeg" type="MeshInstance3D" parent="." unique_id=649718912]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.25, -0.1)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("CapsuleMesh_g3oq0")
 
-[node name="Fluff_Back" type="MeshInstance3D" parent="Body"]
-# Adding a small decorative mesh to simulate back fluff (Using Sphere for rounding effect)
-mesh = SubResource("5")
-translate = Vector3(0.0, 0.2, 0.0)
-scale = Vector3(1.2, 1.2, 1.2)
-material:shader = SubResource("1")
+[node name="BackRightLeg" type="MeshInstance3D" parent="." unique_id=1526276389]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.25, -0.1)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("CapsuleMesh_g3oq0")
 
-[node name="Fluff_Chest" type="MeshInstance3D" parent="Body"]
-mesh = SubResource("5")
-translate = Vector3(0.0, -0.2, 0.0)
-scale = Vector3(1.2, 1.2, 1.2)
-material:shader = SubResource("1")
+[node name="Fluff_UpperLeft" type="MeshInstance3D" parent="." unique_id=1407006581]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.4, 0.2)
+material_override = SubResource("StandardMaterial3D_yotpr")
+mesh = SubResource("SphereMesh_pcmfp")
+
+[node name="Fluff_UpperRight" type="MeshInstance3D" parent="." unique_id=1702729753]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.4, 0.1)
+material_override = SubResource("StandardMaterial3D_yotpr")
+mesh = SubResource("SphereMesh_pcmfp")
+
+[node name="Fluff_Neck" type="MeshInstance3D" parent="." unique_id=1601017438]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.1, 0.6)
+material_override = SubResource("StandardMaterial3D_yotpr")
+mesh = SubResource("SphereMesh_pcmfp")
