@@ -148,7 +148,7 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 
 ## Get the system prompt, checking the project setting override first.
 static func _get_system_prompt(mode: int) -> String:
-	var custom: String = AISettings.get_string("generation/", "system_prompt")
+	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
 	if custom != "":
 		return custom
 	

@@ -117,7 +117,7 @@ func generate() -> void:
 	var content: String = ""
 	var success: bool = false
 	
-	var max_retries: int = AISettings.get_int("generation/", "max_retries")
+	var max_retries: int = AISettings.get_int(AISettings.GEN, "max_retries")
 
 	# 2. AI & Validation Loop
 	for attempt in range(max_retries):
@@ -195,10 +195,10 @@ func cancel_generation() -> void:
 # --- AI call ---
 
 func _call_ai(messages: Array[Dictionary]) -> String:
-	var endpoint: String = api_endpoint if api_endpoint != "" else AISettings.get_string("connection/", "base_url")
-	var key: String = api_key if api_key != "" else AISettings.get_string("connection/", "api_key")
-	var model_name: String = model if model != "" else AISettings.get_string("connection/", "model")
-	var max_tokens: int = AISettings.get_int("generation/", "max_tokens")
+	var endpoint: String = api_endpoint if api_endpoint != "" else AISettings.get_string(AISettings.CONN, "base_url")
+	var key: String = api_key if api_key != "" else AISettings.get_string(AISettings.CONN, "api_key")
+	var model_name: String = model if model != "" else AISettings.get_string(AISettings.CONN, "model")
+	var max_tokens: int = AISettings.get_int(AISettings.GEN, "max_tokens")
 
 	var client := AIClient.create_openai_client()
 	add_child(client)

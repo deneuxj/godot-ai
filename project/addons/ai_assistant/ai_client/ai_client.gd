@@ -97,13 +97,13 @@ func cancel() -> void:
 static func create_openai_client() -> OpenAIClient:
 	var client := OpenAIClient.new()
 	
-	client.set_endpoint(AISettings.get_string("connection/", "base_url"))
+	client.set_endpoint(AISettings.get_string(AISettings.CONN, "base_url"))
 	
-	var api_key: String = AISettings.get_string("connection/", "api_key")
+	var api_key: String = AISettings.get_string(AISettings.CONN, "api_key")
 	if api_key != "":
 		client.set_api_key(api_key)
 	
-	client.set_model(AISettings.get_string("connection/", "model"))
-	client.set_max_tokens(AISettings.get_int("generation/", "max_tokens"))
+	client.set_model(AISettings.get_string(AISettings.CONN, "model"))
+	client.set_max_tokens(AISettings.get_int(AISettings.GEN, "max_tokens"))
 	
 	return client

@@ -20,7 +20,3 @@ config/features=PackedStringArray("4.6")
 [dotnet]
 
 project/assembly_name="UnnamedProject"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/ai_assistant/plugin.cfg")

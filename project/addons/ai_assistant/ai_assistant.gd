@@ -5,7 +5,6 @@
 extends EditorPlugin
 
 
-const AI_SETTINGS = "res://addons/ai_assistant/settings/ai_settings.gd"
 const AI_ASSISTED_3D_NODE = "res://addons/ai_assistant/agent_assisted_3d.gd"
 const PANEL_SCENE = "res://addons/ai_assistant/agent_assisted_3d_panel.tscn"
 const CUSTOM_LOGGER = preload("res://addons/ai_assistant/generator/custom_logger.gd")
@@ -22,11 +21,7 @@ func _enter_tree() -> void:
 	# Also register it with ScriptExecutor for easy access.
 	ScriptExecutor.register_logger(_logger)
 
-	# Ensure AI project settings exist before anything reads them.
-	var settings = load(AI_SETTINGS)
-	if settings:
-		settings.call("ensure_settings_exist")
-
+	_register_project_settings()
 	_create_dock()
 	add_control_to_bottom_panel(_dock, "Agent Assisted 3D")
 
@@ -38,6 +33,36 @@ func _exit_tree() -> void:
 	if _dock:
 		remove_control_from_bottom_panel(_dock)
 		_dock.queue_free()
+
+
+func _register_project_settings() -> void:
+	# Connection Settings
+	_set_setting("ai/connection/base_url", "http://localhost:1234/v1", "Base URL for the AI API (e.g. http://localhost:1234/v1)")
+	_set_setting("ai/connection/api_key", "", "API Key for authentication")
+	_set_setting("ai/connection/model", "local-model", "Model name to use")
+	
+	# Generation Settings
+	_set_setting("ai/generation/max_tokens", 4096, "Max tokens in response", TYPE_INT, PROPERTY_HINT_RANGE, "1,32768,1")
+	_set_setting("ai/generation/max_retries", 5, "Max correction attempts", TYPE_INT, PROPERTY_HINT_RANGE, "0,20,1")
+	_set_setting("ai/generation/timeout_ms", 60000, "Request timeout in ms", TYPE_INT, PROPERTY_HINT_RANGE, "1000,300000,1000")
+	_set_setting("ai/generation/system_prompt", "", "Custom system prompt override", TYPE_STRING, PROPERTY_HINT_MULTILINE_TEXT)
+
+	ProjectSettings.save()
+
+
+func _set_setting(key: String, value: Variant, description: String = "", type: int = -1, hint: int = PROPERTY_HINT_NONE, hint_string: String = "") -> void:
+	if not ProjectSettings.has_setting(key):
+		ProjectSettings.set_setting(key, value)
+	
+	ProjectSettings.set_initial_value(key, value)
+	
+	var info := {
+		"name": key,
+		"type": type if type != -1 else typeof(value),
+		"hint": hint,
+		"hint_string": hint_string,
+	}
+	ProjectSettings.add_property_info(info)
 
 
 func _create_dock() -> void:
