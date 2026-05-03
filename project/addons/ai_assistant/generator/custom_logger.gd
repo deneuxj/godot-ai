@@ -14,8 +14,18 @@ func _log_message(message: String, is_error: bool) -> void:
 
 func _log_error(function: String, file: String, line: int, code: String, rationale: String, editor_notify: bool, error_type: int, script_backtraces: Array) -> void:
 	if is_capturing:
-		var type_str = "ERROR" if error_type == 1 else "WARNING"
-		var msg = "[%s] %s (at %s:%d in %s)" % [type_str, rationale, file, line, function]
+		var type_str = "UNKNOWN"
+		match error_type:
+			ErrorType.ERROR_TYPE_ERROR:
+				type_str = "ERROR"
+			ErrorType.ERROR_TYPE_WARNING:
+				type_str = "WARNING"
+			ErrorType.ERROR_TYPE_SCRIPT:
+				type_str = "SCRIPT ERROR"
+			ErrorType.ERROR_TYPE_SHADER:
+				type_str = "SHADER ERROR"
+				
+		var msg = "[%s] %s:%d - (%s) %s" % [type_str, file, line, code, rationale]
 		captured_errors.append(msg)
 
 func start_capture() -> void:

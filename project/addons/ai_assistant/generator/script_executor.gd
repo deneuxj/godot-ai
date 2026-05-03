@@ -136,6 +136,9 @@ static func _validate_scripted_scene(content: String) -> Dictionary:
 			root.free() # Clean up invalid node type
 		return {"error": "build() must return a Node3D (got %s)." % (type_string(typeof(root)) if root else "null")}
 
+	# 3. Set owner for all descendants to the root so they can be packed/serialized.
+	_set_owner_recursive(root, root)
+
 	# Success: return the root node so it can be serialized.
 	return {"error": null, "root": root}
 
