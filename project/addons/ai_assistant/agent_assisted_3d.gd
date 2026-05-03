@@ -10,6 +10,8 @@ extends Node3D
 
 class_name AIAgentAssisted3D
 
+const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
+
 
 enum GenerationStatus {
 	IDLE = 0,
@@ -115,7 +117,7 @@ func generate() -> void:
 	var content: String = ""
 	var success: bool = false
 	
-	var max_retries: int = _get_project_setting("max_retries", 5)
+	var max_retries: int = AISettings.get_int("generation/", "max_retries")
 
 	# 2. AI & Validation Loop
 	for attempt in range(max_retries):
@@ -190,22 +192,21 @@ func cancel_generation() -> void:
 	status_message = "Generation cancelled"
 	generation_finished.emit()
 
-
 # --- AI call ---
 
 func _call_ai(messages: Array[Dictionary]) -> String:
-	var endpoint: String = api_endpoint if api_endpoint != "" else _get_project_setting("base_url", "http://localhost:1234/v1")
-	var key: String = api_key if api_key != "" else _get_project_setting("api_key", "")
-	var model_name: String = model if model != "" else _get_project_setting("model", "")
-	var max_tokens: int = _get_project_setting("max_tokens", 4096)
+	var endpoint: String = api_endpoint if api_endpoint != "" else AISettings.get_string("connection/", "base_url")
+	var key: String = api_key if api_key != "" else AISettings.get_string("connection/", "api_key")
+	var model_name: String = model if model != "" else AISettings.get_string("connection/", "model")
+	var max_tokens: int = AISettings.get_int("generation/", "max_tokens")
 
 	var client := AIClient.create_openai_client()
 	add_child(client)
 	_active_client = client
-	
+
 	# Relay progress signal to the editor dock
 	client.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
-	
+
 	client.set_endpoint(endpoint)
 	if key != "":
 		client.set_api_key(key)
@@ -213,7 +214,7 @@ func _call_ai(messages: Array[Dictionary]) -> String:
 		client.set_model(model_name)
 	client.set_max_tokens(max_tokens)
 
-	var response := await client.chat_stream(messages)
+	var response = await client.chat_stream(messages)
 	
 	if is_instance_valid(client):
 		client.queue_free()
@@ -299,7 +300,3 @@ func _set_owner_recursive(node: Node, scene_owner: Node) -> void:
 
 
 # --- Helpers ---
-
-func _get_project_setting(key: String, default: Variant = null) -> Variant:
-	var full_key := "ai/openai/%s" % key
-	return ProjectSettings.get_setting(full_key, default)

@@ -27,38 +27,17 @@ func _enter_tree() -> void:
 	if settings:
 		settings.call("ensure_settings_exist")
 
-	_register_project_settings()
 	_create_dock()
 	add_control_to_bottom_panel(_dock, "Agent Assisted 3D")
 
 
 func _exit_tree() -> void:
 	if _logger:
-		# OS.remove_logger is the expected counterpart to add_logger
 		OS.remove_logger(_logger)
-	remove_control_from_bottom_panel(_dock)
-	_dock.queue_free()
-
-
-func _register_project_settings() -> void:
-	if not ProjectSettings.has_setting("ai/openai/base_url"):
-		ProjectSettings.set_setting("ai/openai/base_url", "http://localhost:1234")
-	if not ProjectSettings.has_setting("ai/openai/api_key"):
-		ProjectSettings.set_setting("ai/openai/api_key", "")
-	if not ProjectSettings.has_setting("ai/openai/model"):
-		ProjectSettings.set_setting("ai/openai/model", "local-model")
-	if not ProjectSettings.has_setting("ai/openai/max_tokens"):
-		ProjectSettings.set_setting("ai/openai/max_tokens", 8192)
-	if not ProjectSettings.has_setting("ai/openai/system_prompt"):
-		ProjectSettings.set_setting("ai/openai/system_prompt", "")
-
-	ProjectSettings.set_initial_value("ai/openai/base_url", "http://localhost:1234")
-	ProjectSettings.set_initial_value("ai/openai/api_key", "")
-	ProjectSettings.set_initial_value("ai/openai/model", "local-model")
-	ProjectSettings.set_initial_value("ai/openai/max_tokens", 8192)
-	ProjectSettings.set_initial_value("ai/openai/system_prompt", "")
-
-	ProjectSettings.save()
+	
+	if _dock:
+		remove_control_from_bottom_panel(_dock)
+		_dock.queue_free()
 
 
 func _create_dock() -> void:
