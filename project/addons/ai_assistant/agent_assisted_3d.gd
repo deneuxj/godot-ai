@@ -71,7 +71,10 @@ var model: String = ""
 @export_group("Last Result")
 
 @export_multiline
-var last_error: String = ""
+var last_error: String = "":
+	set(value):
+		last_error = value
+		status_updated.emit(status_message)
 
 @export_multiline
 var generated_code: String = ""
@@ -125,11 +128,13 @@ func generate() -> void:
 		if generation_status == GenerationStatus.IDLE:
 			return # Cancelled.
 		
-		# Clear previous error before validation.
-		last_error = ""
+		# Clear previous error before validation and force visibility.
+		self.last_error = ""
 		self.status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
-		await get_tree().process_frame # Force UI update
-		await get_tree().process_frame # Second frame for good measure
+		await get_tree().process_frame
+		await get_tree().process_frame
+		# Small delay to ensure the user can see "Validating" before blocking execution.
+		await get_tree().create_timer(0.2).timeout
 
 		# 3. Validate output
 		var error_result := ScriptExecutor.validate_output(extracted_code, generation_mode)
@@ -142,10 +147,11 @@ func generate() -> void:
 			return # Cancelled during validation.
 
 		# 4. Error correction: Update error and loop.
-		last_error = error_result.error
+		self.last_error = error_result.error
 		self.status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
-		await get_tree().process_frame # Force UI update
+		await get_tree().process_frame
+		await get_tree().create_timer(0.2).timeout
 
 	if success:
 		# 5. Save and Apply

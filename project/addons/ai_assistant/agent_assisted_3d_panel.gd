@@ -182,6 +182,7 @@ func _on_node_progress(_chunks: Array[String]) -> void:
 
 func _on_node_code_updated(code: String) -> void:
 	_code_view.text = code
+	_update_status()
 
 
 func _on_node_status_updated(message: String) -> void:
