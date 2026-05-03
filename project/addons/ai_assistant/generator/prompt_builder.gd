@@ -43,9 +43,7 @@ Rules:
 - Your script MUST implement a `build() -> Node3D` method that returns the root of the constructed hierarchy.
 - The script should NOT have an `extends` clause (it will be RefCounted by default) or it MAY `extends RefCounted`.
 - Use standard Godot 4 nodes: Node3D, MeshInstance3D, OmniLight3D, etc.
-- IMPORTANT: You MUST set the `owner` property of every child node to the root node you return. This is mandatory for Godot to serialize the hierarchy into a .tscn file.
-- Use raw integers for enums (e.g., StandardMaterial3D.SHADING_MODE_UNSHADED -> 2).
-- No spaces inside constructors: Color(1,1,1,1), Vector3(0,0,0).
+- GDScript in Godot 4 DOES NOT support nested functions. Define all your logic in top-level functions (e.g., `build()`).
 - Do NOT output any explanation unless it's outside the code block.
 
 Example:
@@ -61,7 +59,6 @@ func build() -> Node3D:
 	mesh_node.mesh = mesh
 
 	root.add_child(mesh_node)
-	mesh_node.owner = root # CRITICAL: Child must be owned by root
 
 	return root
 ```
@@ -76,6 +73,7 @@ output a valid Godot 4 .gd script that extends Node3D.
 Rules:
 - Output valid GDScript code. You MAY use markdown code blocks (```gdscript ... ```).
 - The script MUST `extends Node3D`.
+- GDScript in Godot 4 DOES NOT support nested functions. Define all logic in class-level functions.
 - Use Godot 4.x syntax.
 - Implement `_ready()` or other lifecycle methods as requested.
 - No explanation or extra text. Just the script content.
