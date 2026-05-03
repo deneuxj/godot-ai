@@ -1,6 +1,33 @@
 [gd_scene format=3 uid="uid://jbxwojtkucw0"]
 
 [ext_resource type="Script" uid="uid://fltqr6krppck" path="res://addons/ai_assistant/agent_assisted_3d.gd" id="1_d8ypf"]
+[ext_resource type="PackedScene" uid="uid://d0v0yr4oau5k" path="res://generated/AgentAssisted3D.tscn" id="2_t8jrp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mroox"]
+albedo_color = Color(0.9, 0.9, 0.8, 1)
+metallic = 0.1
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_x8run"]
+size = Vector3(2, 1.5, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yj2mg"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lecf5"]
+height = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aq1nc"]
+albedo_color = Color(0.95, 0.95, 0.9, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_g3oq0"]
+size = Vector3(2.2, 0.4, 2.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yotpr"]
+size = Vector3(1.8, 0.7, 1.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pcmfp"]
+size = Vector3(1.2, 0.6, 1.2)
 
 [node name="TestAgentAssisted3D" type="Node3D" unique_id=2084474840]
 
@@ -10,5 +37,51 @@ prompt = "Dessine-moi un mouton en 1000 lignes de code max."
 generation_mode = 1
 generated_node_name = "Mouton"
 model = "google/gemma-4-e4b"
-last_error = "Script missing mandatory 'build() -> Node3D' method."
 metadata/_custom_type_script = "uid://fltqr6krppck"
+
+[node name="Mouton" type="Node3D" parent="AgentAssisted3D" unique_id=1283391389 instance=ExtResource("2_t8jrp")]
+
+[node name="Body" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=734617364]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("BoxMesh_x8run")
+
+[node name="Head" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=1210972]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.4, -0.7)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("BoxMesh_yj2mg")
+
+[node name="LeftFrontLeg" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=969061204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, -0.4, 0.6)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("CylinderMesh_lecf5")
+
+[node name="RightFrontLeg" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=49102171]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, -0.4, -0.6)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("CylinderMesh_lecf5")
+
+[node name="LeftBackLeg" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=832989014]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, -0.4, -0.6)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("CylinderMesh_lecf5")
+
+[node name="RightBackLeg" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=1986417816]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, -0.4, 0.6)
+material_override = SubResource("StandardMaterial3D_mroox")
+mesh = SubResource("CylinderMesh_lecf5")
+
+[node name="FluffTop" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=1368805936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("BoxMesh_g3oq0")
+
+[node name="FluffRear" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=144098034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.4, -1)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("BoxMesh_yotpr")
+
+[node name="FluffHead" type="MeshInstance3D" parent="AgentAssisted3D/Mouton" unique_id=191999050]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.4, -0.7)
+material_override = SubResource("StandardMaterial3D_aq1nc")
+mesh = SubResource("BoxMesh_pcmfp")

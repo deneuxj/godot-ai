@@ -13,6 +13,7 @@ config_version=5
 connection/base_url="http://localhost:1234"
 generation/max_tokens=8192
 generation/max_retries=20
+generation/timeout_ms=10000
 
 [animation]
 
