@@ -9,19 +9,11 @@ Uses standard OpenAI Chat Completions API with streaming support.
 
 ---
 
-## REQ-AIINTG-0003: TSCN and GDScript Generation
+## REQ-AIINTG-0003: GDScript Generation
 
 ### Prompt Builder (`generator/prompt_builder.gd`)
 
 The `PromptBuilder` constructs the system prompt based on the selected `GenerationMode`.
-
-#### Scene Mode System Prompt
-```text
-You are a Godot 4 scene generator. 
-Output a valid Godot .tscn file content. 
-You MAY use markdown code blocks (```tscn ... ```).
-The scene should be a Node3D root with child nodes (meshes, lights, etc.) describing the user request.
-```
 
 #### Scripted Scene Mode System Prompt
 ```text
@@ -64,17 +56,13 @@ The loop is triggered by **Validation Errors** (parse/load errors) captured via 
 
 Before validation, the `ScriptExecutor` extracts the raw code from markdown fences if present using `ScriptExecutor.extract_code()`.
 
-1. **Scene Mode**: 
-    - Extracts code from fences.
-    - Uses `ResourceLoader.load()` to attempt a resource load.
-    - Captures detailed engine errors using a `CustomLogger`.
-2. **Scripted Scene Mode**:
+1. **Scripted Scene Mode**:
     - Extracts GDScript code from fences.
     - Performs **GDScript Validation** (LSP) to catch syntax errors.
     - **Executes the script** and calls `build()`.
     - Captures any runtime errors (e.g., property not found).
     - If successful, verifies the returned object is a `Node3D`.
-3. **Node Script Mode**: 
+2. **Node Script Mode**: 
     - Extracts code from fences.
     - Uses the **Godot Language Server (LSP)** via a helper script for full pipeline diagnostics (parse errors, type errors, warnings).
     - Falls back to `GDScript.reload()` if the LSP is unavailable.

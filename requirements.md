@@ -16,8 +16,7 @@ REQ-NODE3D-0003: Textures can be added as attachments to the prompt for visual c
 
 REQ-NODE3D-0004: When added to a scene, the node shall use AI to process the prompt and generate either a Godot scene file (.tscn) or a GDScript file (.gd).
 
-REQ-NODE3D-0011: The user shall be able to choose between three generation modes:
-  - **Scene**: The AI generates a `.tscn` file which is then instantiated as a child of the `AgentAssisted3D` node.
+REQ-NODE3D-0011: The user shall be able to choose between two generation modes:
   - **Scripted Scene**: The AI generates a GDScript that constructs a node hierarchy when executed. The plugin executes this script, captures any runtime errors for the AI correction loop, and saves the resulting successful hierarchy as a `.tscn` file.
   - **Node Script**: The AI generates a `.gd` script which is attached directly to the `AgentAssisted3D` node or a child node.
 
@@ -47,7 +46,7 @@ REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends
 
 REQ-AIINTG-0002: The plugin shall use an **OpenAI-compatible API** protocol.
 
-REQ-AIINTG-0003: The AI shall output either a Godot scene (.tscn) or GDScript code (.gd) depending on the selected mode.
+REQ-AIINTG-0003: The AI shall output GDScript code (.gd) which may either construct a scene or implement node logic.
 
 REQ-AIINTG-0005: When a compilation, parse, or load error occurs, the error message shall be appended as a new user message to the conversation history, instructing the AI to correct the output. The AI shall then return a revised version. This process shall repeat until success or the maximum retry limit is reached.
 
@@ -66,7 +65,7 @@ REQ-AIINTG-0006: The maximum number of attempts to correct a generated script/sc
 REQ-EDITOR-0001: The plugin shall provide real-time progress feedback in the Godot editor during AI processing.
 
 REQ-EDITOR-0002: The plugin shall provide a custom editor dock for the AgentAssisted3D node showing:
-  - Generation mode selector (Scene vs. Node Script)
+  - Generation mode selector (Scripted Scene vs. Node Script)
   - Prompt text editor
   - Texture attachment list (drag & drop support)
   - Send button (triggers generation)

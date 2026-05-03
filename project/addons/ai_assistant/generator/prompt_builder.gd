@@ -9,29 +9,6 @@ class_name PromptBuilder
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 
 
-## System prompt for generating Godot .tscn files.
-const SCENE_SYSTEM_PROMPT := """\
-You are a Godot 4 scene generator assistant.
-Given a user prompt and optional visual references,
-output a raw Godot 4 .tscn file content.
-
-Rules:
-- Output valid Godot 4 .tscn file content. You MAY use markdown code blocks (```tscn ... ```).
-- Use standard nodes: Node3D, MeshInstance3D, OmniLight3D, etc.
-- If using external resources, assume they are available in the project.
-- No explanation or extra text. Just the file content.
-
-Example:
-```tscn
-[gd_scene load_steps=2 format=3 uid="uid://..."]
-
-[node name="Root" type="Node3D"]
-
-[node name="Cube" type="MeshInstance3D" parent="."]
-mesh = SubResource("1")
-```
-"""
-
 ## System prompt for generating GDScripts that construct a node hierarchy.
 const SCRIPTED_SCENE_SYSTEM_PROMPT := """\
 You are a Godot 4 scene builder assistant.
@@ -151,9 +128,7 @@ static func _get_system_prompt(mode: int) -> String:
 		return custom
 	
 	# Enum mapping (must match AIAgentAssisted3D.GenerationMode)
-	if mode == 0: # SCENE
-		return SCENE_SYSTEM_PROMPT
-	elif mode == 1: # SCRIPTED_SCENE
+	if mode == 0: # SCRIPTED_SCENE
 		return SCRIPTED_SCENE_SYSTEM_PROMPT
 	else: # NODE_SCRIPT
 		return NODE_SCRIPT_SYSTEM_PROMPT

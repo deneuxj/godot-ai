@@ -54,9 +54,7 @@ static func validate_output(content: String, mode: int) -> Dictionary:
 	var code = extract_code(content)
 
 	var result: Dictionary
-	if mode == 0: # SCENE
-		result = await _validate_tscn(code)
-	elif mode == 1: # SCRIPTED_SCENE
+	if mode == 0: # SCRIPTED_SCENE
 		result = await _validate_scripted_scene(code)
 	else: # NODE_SCRIPT
 		result = await _validate_gdscript(code)
@@ -69,48 +67,6 @@ static func validate_output(content: String, mode: int) -> Dictionary:
 				result.error += "\nEngine Errors:\n" + extra
 
 	return result
-
-
-## Basic parse validation for Godot TSCN files.
-static func _validate_tscn(content: String) -> Dictionary:
-	if not content.begins_with("[gd_scene") and not content.begins_with("[gd_resource"):
-		return {"error": "Invalid TSCN format: Must start with [gd_scene or [gd_resource"}
-
-	# Attempt to load the scene via a temporary file.
-	var temp_path := "res://generated/temp_validation.tscn"
-	var dir := "res://generated/"
-	if not DirAccess.dir_exists_absolute(dir):
-		DirAccess.make_dir_recursive_absolute(dir)
-	
-	var file := FileAccess.open(temp_path, FileAccess.WRITE)
-	if not file:
-		return {"error": "Failed to create temp file for validation"}
-	
-	file.store_string(content)
-	file.close()
-	
-	# Try to load it as a resource (Asynchronously).
-	var err = ResourceLoader.load_threaded_request(temp_path)
-	if err != OK:
-		DirAccess.remove_absolute(temp_path)
-		return {"error": "Failed to initiate background TSCN load: %d" % err}
-	
-	# Wait for loading to complete.
-	var status = ResourceLoader.load_threaded_get_status(temp_path)
-	while status == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
-		await Engine.get_main_loop().process_frame
-		status = ResourceLoader.load_threaded_get_status(temp_path)
-	
-	var scene = ResourceLoader.load_threaded_get(temp_path)
-	
-	if scene == null:
-		# Error will be captured by the logger.
-		DirAccess.remove_absolute(temp_path)
-		return {"error": "Failed to load TSCN: Godot ResourceLoader returned null."}
-	
-	# Cleanup.
-	DirAccess.remove_absolute(temp_path)
-	return {"error": null}
 
 
 ## Validate and execute a construction script to build a scene.

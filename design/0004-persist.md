@@ -8,13 +8,12 @@ Generated resources are stored in `res://generated/`, named using the node's nam
 
 ```
 res://generated/
-├── <node_name>.tscn (Scene and Scripted Scene Mode)
+├── <node_name>.tscn (Scripted Scene Mode)
 └── <node_name>.gd   (Node Script Mode)
 ```
 
 ### Save Mechanism
 
-- **Scene Mode**: The plugin saves the raw string received from the AI directly to a `.tscn` file.
 - **Scripted Scene Mode**: The plugin executes the AI's GDScript, takes the returned `Node3D` root, and serializes it to a `.tscn` file using `PackedScene.pack()`.
 - **Node Script Mode**: The plugin saves the raw string to a `.gd` file.
 
@@ -22,7 +21,7 @@ res://generated/
 
 ## REQ-PERSIST-0002: Applying Results
 
-### Scene & Scripted Scene Mode
+### Scripted Scene Mode
 The `AgentAssisted3D` node clears its existing children and instantiates the saved `.tscn` file.
 
 ```gdscript

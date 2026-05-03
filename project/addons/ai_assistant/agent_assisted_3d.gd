@@ -1,7 +1,7 @@
 ## AgentAssisted3D - Custom 3D node that generates scenes or scripts via AI.
 ##
-## The AI can generate either a full scene (.tscn) to be instantiated as a child,
-## or a GDScript (.gd) to be attached directly to this node.
+## The AI can generate either a GDScript that constructs a scene hierarchy (Scripted Scene),
+## or a GDScript to be attached directly to a child node (Node Script).
 ## Results are saved to `res://generated/`.
 
 @tool
@@ -21,9 +21,8 @@ enum GenerationStatus {
 }
 
 enum GenerationMode {
-	SCENE = 0,
-	SCRIPTED_SCENE = 1,
-	NODE_SCRIPT = 2,
+	SCRIPTED_SCENE = 0,
+	NODE_SCRIPT = 1,
 }
 
 
@@ -45,7 +44,7 @@ var texture_attachments: Array[Texture2D] = []
 @export_group("Settings")
 
 @export
-var generation_mode: GenerationMode = GenerationMode.SCENE
+var generation_mode: GenerationMode = GenerationMode.SCRIPTED_SCENE
 
 @export
 var generated_node_name: String = "GeneratedNode"
@@ -235,7 +234,7 @@ func _save_generated_output(content: String, mode: GenerationMode) -> String:
 	if not DirAccess.dir_exists_absolute(dir):
 		DirAccess.make_dir_recursive_absolute(dir)
 
-	var ext := ".tscn" if mode == GenerationMode.SCENE else ".gd"
+	var ext := ".gd"
 	var file_name := output_filename
 	if file_name.is_empty():
 		file_name = name
@@ -263,7 +262,7 @@ func _save_generated_output(content: String, mode: GenerationMode) -> String:
 # --- Result application ---
 
 func _apply_generated_output(path: String, mode: GenerationMode) -> void:
-	if mode == GenerationMode.SCENE or mode == GenerationMode.SCRIPTED_SCENE:
+	if mode == GenerationMode.SCRIPTED_SCENE:
 		# Clear existing generated children.
 		for child in get_children():
 			child.queue_free()

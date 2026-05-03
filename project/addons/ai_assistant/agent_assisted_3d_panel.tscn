@@ -40,14 +40,12 @@ text = "Mode:"
 [node name="ModeSelector" type="OptionButton" parent="MarginContainer/VBoxContainer/ModeRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 3
+item_count = 2
 selected = 0
-popup/item_0/text = "Scene (.tscn)"
+popup/item_0/text = "Scripted Scene (.gd -> .tscn)"
 popup/item_0/id = 0
-popup/item_1/text = "Scripted Scene (.gd -> .tscn)"
+popup/item_1/text = "Node Script (.gd)"
 popup/item_1/id = 1
-popup/item_2/text = "Node Script (.gd)"
-popup/item_2/id = 2
 
 [node name="PromptLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
