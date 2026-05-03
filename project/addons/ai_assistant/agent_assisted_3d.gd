@@ -131,13 +131,9 @@ func generate() -> void:
 		# Clear previous error before validation and force visibility.
 		last_error = ""
 		status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
-		await get_tree().process_frame
-		await get_tree().process_frame
-		# Small delay to ensure the user can see "Validating" before blocking execution.
-		await get_tree().create_timer(0.2).timeout
 
-		# 3. Validate output
-		var error_result := ScriptExecutor.validate_output(extracted_code, generation_mode)
+		# 3. Validate output (Async)
+		var error_result := await ScriptExecutor.validate_output(extracted_code, generation_mode)
 
 		if error_result.error == null:
 			success = true
@@ -150,8 +146,6 @@ func generate() -> void:
 		last_error = error_result.error
 		status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
-		await get_tree().process_frame
-		await get_tree().create_timer(0.2).timeout
 
 	if success:
 		# 5. Save and Apply
