@@ -242,9 +242,15 @@ func _save_generated_output(content: String, mode: GenerationMode) -> String:
 		
 	var path := "%s%s%s" % [dir, file_name, ext]
 	
-	# For SCRIPTED_SCENE, we already saved the .tscn via serialize_to_tscn
+	# For SCRIPTED_SCENE, we already saved the .tscn via serialize_to_tscn in the loop.
+	# But we still want to save the .gd script itself for the user to see/edit.
 	if mode == GenerationMode.SCRIPTED_SCENE:
-		return path
+		var file := FileAccess.open(path, FileAccess.WRITE)
+		if file:
+			file.store_string(content)
+			file.close()
+		# Return the .tscn path so _apply_generated_output can load the scene.
+		return path.replace(".gd", ".tscn")
 
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file:
