@@ -101,7 +101,7 @@ func _ready() -> void:
 
 func generate() -> void:
 	generation_status = GenerationStatus.GENERATING
-	status_message = "Processing..."
+	self.status_message = "Processing..."
 	generation_started.emit()
 
 	# 1. Build initial prompt.
@@ -114,7 +114,7 @@ func generate() -> void:
 	# 2. AI & Validation Loop
 	for attempt in range(max_retries):
 		# Call AI.
-		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		self.status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		content = await _call_ai(messages)
 		
 		# Immediately update the code property so the user can see it.
@@ -127,8 +127,9 @@ func generate() -> void:
 		
 		# Clear previous error before validation.
 		last_error = ""
-		status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		self.status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		await get_tree().process_frame # Force UI update
+		await get_tree().process_frame # Second frame for good measure
 
 		# 3. Validate output
 		var error_result := ScriptExecutor.validate_output(extracted_code, generation_mode)
@@ -142,7 +143,7 @@ func generate() -> void:
 
 		# 4. Error correction: Update error and loop.
 		last_error = error_result.error
-		status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
+		self.status_message = "Fixing error... (attempt %d/%d)" % [attempt + 1, max_retries]
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
 		await get_tree().process_frame # Force UI update
 
@@ -152,10 +153,10 @@ func generate() -> void:
 		_apply_generated_output(path, generation_mode)
 		
 		generation_status = GenerationStatus.SUCCESS
-		status_message = "Generation complete"
+		self.status_message = "Generation complete"
 	elif generation_status != GenerationStatus.IDLE:
 		generation_status = GenerationStatus.ERROR
-		status_message = "Generation failed after %d attempts" % max_retries
+		self.status_message = "Generation failed after %d attempts" % max_retries
 
 	generation_finished.emit()
 
