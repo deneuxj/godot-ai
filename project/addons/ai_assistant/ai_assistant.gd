@@ -42,20 +42,20 @@ func _exit_tree() -> void:
 
 func _register_project_settings() -> void:
 	if not ProjectSettings.has_setting("ai/openai/base_url"):
-		ProjectSettings.set_setting("ai/openai/base_url", "http://localhost:1234/v1")
+		ProjectSettings.set_setting("ai/openai/base_url", "http://localhost:1234")
 	if not ProjectSettings.has_setting("ai/openai/api_key"):
 		ProjectSettings.set_setting("ai/openai/api_key", "")
 	if not ProjectSettings.has_setting("ai/openai/model"):
 		ProjectSettings.set_setting("ai/openai/model", "local-model")
 	if not ProjectSettings.has_setting("ai/openai/max_tokens"):
-		ProjectSettings.set_setting("ai/openai/max_tokens", 4096)
+		ProjectSettings.set_setting("ai/openai/max_tokens", 8192)
 	if not ProjectSettings.has_setting("ai/openai/system_prompt"):
 		ProjectSettings.set_setting("ai/openai/system_prompt", "")
 
-	ProjectSettings.set_initial_value("ai/openai/base_url", "http://localhost:1234/v1")
+	ProjectSettings.set_initial_value("ai/openai/base_url", "http://localhost:1234")
 	ProjectSettings.set_initial_value("ai/openai/api_key", "")
 	ProjectSettings.set_initial_value("ai/openai/model", "local-model")
-	ProjectSettings.set_initial_value("ai/openai/max_tokens", 4096)
+	ProjectSettings.set_initial_value("ai/openai/max_tokens", 8192)
 	ProjectSettings.set_initial_value("ai/openai/system_prompt", "")
 
 	ProjectSettings.save()

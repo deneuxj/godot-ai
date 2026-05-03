@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://d0vzyr4n9u5k"]
+
+[sub_resource type="StandardMaterial3D" id="1"]
+albedo_color = Color(1, 1, 1, 1)
+metallic = 0.1
+roughness = 0.8
+shading_mode = 0
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(1.5, 0.8, 0.6)
+
+[sub_resource type="SphereMesh" id="3"]
+radius = 0.4
+radial_segments = 16
+rings = 8
+
+[sub_resource type="BoxMesh" id="4"]
+size = Vector3(0.25, 0.3, 0.25)
+
+[sub_resource type="SphereMesh" id="5"]
+radius = 0.2
+radial_segments = 12
+rings = 6
+
+[node name="SheepRoot" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+mesh = SubResource("2")
+material:shader = SubResource("1")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+# Using a slightly smaller sphere for the head top, attached to the body volume
+mesh = SubResource("3")
+translate = Vector3(0.5, 0.3, -0.2)
+material:shader = SubResource("1")
+
+[node name="Ear_L" type="MeshInstance3D" parent="Head"]
+# Simplified ear using a small box or sphere attached to the head mesh
+mesh = SubResource("4")
+translate = Vector3(-0.3, 0.15, -0.2)
+material:shader = SubResource("1")
+
+[node name="Ear_R" type="MeshInstance3D" parent="Head"]
+mesh = SubResource("4")
+translate = Vector3(0.3, 0.15, -0.2)
+material:shader = SubResource("1")
+
+[node name="Leg_F_L" type="MeshInstance3D" parent="Body"]
+# Front left leg (Box mesh for simplicity)
+mesh = SubResource("4")
+translate = Vector3(0.5, -0.2, 0.2)
+material:shader = SubResource("1")
+
+[node name="Leg_B_L" type="MeshInstance3D" parent="Body"]
+# Back left leg
+mesh = SubResource("4")
+translate = Vector3(-0.5, -0.2, 0.2)
+material:shader = SubResource("1")
+
+[node name="Leg_F_R" type="MeshInstance3D" parent="Body"]
+# Front right leg
+mesh = SubResource("4")
+translate = Vector3(0.5, -0.2, -0.2)
+material:shader = SubResource("1")
+
+[node name="Leg_B_R" type="MeshInstance3D" parent="Body"]
+# Back right leg
+mesh = SubResource("4")
+translate = Vector3(-0.5, -0.2, -0.2)
+material:shader = SubResource("1")
+
+[node name="Fluff_Back" type="MeshInstance3D" parent="Body"]
+# Adding a small decorative mesh to simulate back fluff (Using Sphere for rounding effect)
+mesh = SubResource("5")
+translate = Vector3(0.0, 0.2, 0.0)
+scale = Vector3(1.2, 1.2, 1.2)
+material:shader = SubResource("1")
+
+[node name="Fluff_Chest" type="MeshInstance3D" parent="Body"]
+mesh = SubResource("5")
+translate = Vector3(0.0, -0.2, 0.0)
+scale = Vector3(1.2, 1.2, 1.2)
+material:shader = SubResource("1")

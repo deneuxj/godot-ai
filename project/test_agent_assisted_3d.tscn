@@ -1,187 +1,187 @@
 [gd_scene format=3 uid="uid://jbxwojtkucw0"]
 
 [ext_resource type="Script" uid="uid://fltqr6krppck" path="res://addons/ai_assistant/agent_assisted_3d.gd" id="1_d8ypf"]
-[ext_resource type="PackedScene" uid="uid://sheep_example" path="res://generated/AgentAssisted3D.tscn" id="2_t8jrp"]
-
-[sub_resource type="SphereMesh" id="1"]
-radius = 0.8
-radial_segments = 16
-rings = 16
-
-[sub_resource type="StandardMaterial3D" id="6"]
-shading_mode = 0
-
-[sub_resource type="SphereMesh" id="2"]
-radius = 0.3
-height = 0.4
-radial_segments = 16
-rings = 16
-
-[sub_resource type="SphereMesh" id="5"]
-radius = 0.15
-height = 0.3
-radial_segments = 8
-rings = 8
-
-[sub_resource type="CapsuleMesh" id="4"]
-radius = 0.1
-height = 0.2
-radial_segments = 8
-rings = 1
-
-[sub_resource type="CylinderMesh" id="3"]
-top_radius = 0.1
-bottom_radius = 0.1
-height = 0.6
-radial_segments = 8
-rings = 1
 
 [node name="TestAgentAssisted3D" type="Node3D" unique_id=2084474840]
 
 [node name="AgentAssisted3D" type="Node3D" parent="." unique_id=423421973]
 script = ExtResource("1_d8ypf")
-generated_node_name = "Mouton"
-prompt = "Dessine-moi un mouton en 1000 lignes de code max."
-generation_status = 2
-status_message = "Generation complete"
-generated_code = "[gd_scene format=3 uid=\"uid://sheep_example\"]
+prompt = "Dessine-moi un mouton en 1000 lignes de code max.
+This is your previous attempt, keep improving on it:
+```tscn
+[gd_scene format=3 uid=\"uid://a1b62rfgkjd9\"]
 
-[sub_resource type=\"SphereMesh\" id=\"1\"]
-radius = 0.8
-height = 1.0
-radial_segments = 16
-rings = 16
+[sub_resource type=\"BoxMesh\" id=\"1\"]
+size = Vector3(0.4, 0.25, 0.4) # Simple block size for limbs/base
 
 [sub_resource type=\"SphereMesh\" id=\"2\"]
-radius = 0.3
-height = 0.4
+radius = 0.2
 radial_segments = 16
-rings = 16
-
-[sub_resource type=\"CylinderMesh\" id=\"3\"]
-top_radius = 0.1
-bottom_radius = 0.1
-height = 0.6
-radial_segments = 8
-rings = 1
-
-[sub_resource type=\"CapsuleMesh\" id=\"4\"]
-radius = 0.1
-height = 0.2
-radial_segments = 8
-rings = 1
-
-[sub_resource type=\"SphereMesh\" id=\"5\"]
-radius = 0.15
-height = 0.3
-radial_segments = 8
 rings = 8
 
-[sub_resource type=\"StandardMaterial3D\" id=\"6\"]
-albedo_color = Color(1, 1, 1, 1)
-roughness = 0.8
-shading_mode = 0
+[sub_resource type=\"StandardMaterial3D\" id=\"3\"]
+albedo_color = Color(0.9, 0.9, 0.9) # Primary Wool/Body color
+metallic = 0.1
+roughness = 0.7
 
-[node name=\"SceneRoot\" type=\"Node3D\"]
+[sub_resource type=\"StandardMaterial3D\" id=\"4\"]
+albedo_color = Color(0.5, 0.3, 0.2) # Accents (Ears/Legs)
+metallic = 0.0
+roughness = 0.9
 
-[node name=\"Mouton\" type=\"Node3D\" parent=\".\"]
+[sub_resource type=\"StandardMaterial3D\" id=\"5\"]
+albedo_color = Color(0.98, 0.98, 1.0) # Fluffy wool color (main body material)
+metallic = 0.0
+roughness = 0.95
 
-[node name=\"Corps\" type=\"MeshInstance3D\" parent=\"Mouton\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+[node name=\"SheepCharacter\" type=\"Node3D\"]
+
+# Body Mesh: Central mass of the sheep
+[node name=\"Body\" type=\"MeshInstance3D\" parent=\".\"]
 mesh = SubResource(\"1\")
-surface_material_override/0 = SubResource(\"6\")
+material:shader = SubResource(\"5\")
+scale = Vector3(1.0, 0.8, 1.0)
 
-[node name=\"Tete\" type=\"MeshInstance3D\" parent=\"Mouton\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.6)
+# Head: Sphere attached slightly above and forward of the body
+[node name=\"Head\" type=\"MeshInstance3D\" parent=\".\"]
 mesh = SubResource(\"2\")
-surface_material_override/0 = SubResource(\"6\")
+transform = Transform3D(Basis(), Vector3(0.4, 0.3, -0.1))
+material:shader = SubResource(\"3\")
 
-[node name=\"Queue\" type=\"MeshInstance3D\" parent=\"Mouton\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.8)
-mesh = SubResource(\"5\")
-surface_material_override/0 = SubResource(\"6\")
+# Left Ear (Placed relative to the root node for simplicity)
+[node name=\"EarLeft\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"2\")
+scale = Vector3(0.1, 0.15, 0.1)
+transform = Transform3D(Basis(), Vector3(-0.4, 0.2, 0.0)) # Approximate location on the head/body axis
+material:shader = SubResource(\"4\")
 
-[node name=\"Oreille_Gauche\" type=\"MeshInstance3D\" parent=\"Mouton\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.6, 0.6)
-mesh = SubResource(\"4\")
-surface_material_override/0 = SubResource(\"6\")
+# Right Ear (Placed relative to the root node for simplicity)
+[node name=\"EarRight\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"2\")
+scale = Vector3(0.1, 0.15, 0.1)
+transform = Transform3D(Basis(), Vector3(0.4, 0.2, 0.0)) # Approximate location on the head/body axis
+material:shader = SubResource(\"4\")
 
-[node name=\"Oreille_Droite\" type=\"MeshInstance3D\" parent=\"Mouton\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.6, 0.6)
-mesh = SubResource(\"4\")
-surface_material_override/0 = SubResource(\"6\")
+# Front Left Leg (Placed relative to the root node)
+[node name=\"FrontLeftLeg\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.12, 0.2, 0.12)
+transform = Transform3D(Basis(), Vector3(-0.45, -0.15, 0))
 
-[node name=\"Pattes_Groupe\" type=\"Node3D\" parent=\"Mouton\"]
+# Front Right Leg (Placed relative to the root node)
+[node name=\"FrontRightLeg\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.12, 0.2, 0.12)
+transform = Transform3D(Basis(), Vector3(0.45, -0.15, 0))
+```
+For comments, use this format:
+```tscn
+; this is a comment
+```
+instead of
+```tscn
+# this is a comment
+```"
+generated_node_name = "Mouton"
+model = "google/gemma-4-e4b"
+last_error = "Failed to load TSCN: Godot ResourceLoader returned null.
+Engine Errors:
+[WARNING]  (at scene/resources/resource_format_text.cpp:40 in _printerr)
+[WARNING] Failed loading resource: res://generated/temp_validation.tscn. (at core/io/resource_loader.cpp:343 in _load)
+[WARNING] Error loading resource: 'res://generated/temp_validation.tscn'. (at core/core_bind.cpp:78 in load)"
+generated_code = "[gd_scene format=3 uid=\"uid://d2f5h9k1g7m4\"]
 
-[node name=\"Pattes_Avant_Gauche\" type=\"MeshInstance3D\" parent=\"Mouton/Pattes_Groupe\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.1, 0.3)
+; --- Sub-Resources ---
+
+; 1: Cylinder Mesh (For legs, tail, body base)
+[sub_resource type=\"CylinderMesh\" id=\"1\"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.5
+radial_segments = 8
+rings = 4
+
+; 2: Sphere Mesh (For head)
+[sub_resource type=\"SphereMesh\" id=\"2\"]
+radius = 0.2
+radial_segments = 16
+rings = 8
+
+; 3: Box Mesh (For ears/small accents)
+[sub_resource type=\"BoxMesh\" id=\"3\"]
+size = Vector3(0.1, 0.15, 0.1)
+
+; Material 4: Main Wool Body (Off-white)
+[sub_resource type=\"StandardMaterial3D\" id=\"4\"]
+albedo_color = Color(0.95, 0.95, 0.95)
+metallic = 0.1
+roughness = 0.85
+
+; Material 5: Accents/Skin (Darker brown/grey)
+[sub_resource type=\"StandardMaterial3D\" id=\"5\"]
+albedo_color = Color(0.6, 0.55, 0.5)
+metallic = 0.1
+roughness = 0.9
+
+; --- Node Definitions (All parented relative to the root node 'SheepCharacter') ---
+
+[node name=\"SheepCharacter\" type=\"Node3D\"]
+
+; The main body mass/torso - Root placement for simplicity in structure management
+[node name=\"Torso\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+material:shader = SubResource(\"4\")
+scale = Vector3(0.85, 1.0, 0.75)
+
+; Head structure (Transformed relative to root)
+[node name=\"Head\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"2\")
+transform = Transform3D(Basis(), Vector3(0.4, 0.1, -0.2)) ; Positioned relative to the world/root origin
+material:shader = SubResource(\"4\")
+
+; Ears (Placed relative to the root node)
+[node name=\"EarLeft\" type=\"MeshInstance3D\" parent=\".\"]
 mesh = SubResource(\"3\")
-surface_material_override/0 = SubResource(\"6\")
+scale = Vector3(0.08, 0.12, 0.08)
+transform = Transform3D(Basis(), Vector3(-0.45, 0.1, -0.2)) ; Adjusted position relative to root origin
+material:shader = SubResource(\"5\")
 
-[node name=\"Pattes_Avant_Droite\" type=\"MeshInstance3D\" parent=\"Mouton/Pattes_Groupe\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.1, 0.3)
+[node name=\"EarRight\" type=\"MeshInstance3D\" parent=\".\"]
 mesh = SubResource(\"3\")
-surface_material_override/0 = SubResource(\"6\")
+scale = Vector3(0.08, 0.12, 0.08)
+transform = Transform3D(Basis(), Vector3(0.45, 0.1, -0.2)) ; Adjusted position relative to root origin
+material:shader = SubResource(\"5\")
 
-[node name=\"Pattes_Arriere_Gauche\" type=\"MeshInstance3D\" parent=\"Mouton/Pattes_Groupe\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.1, -0.3)
-mesh = SubResource(\"3\")
-surface_material_override/0 = SubResource(\"6\")
+; Tail (Placed relative to the root node)
+[node name=\"Tail\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.06, 0.05, 0.2)
+transform = Transform3D(Basis(), Vector3(0, -0.1, -0.2)) ; Adjusted position relative to root origin
+material:shader = SubResource(\"4\")
 
-[node name=\"Pattes_Arriere_Droite\" type=\"MeshInstance3D\" parent=\"Mouton/Pattes_Groupe\"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.1, -0.3)
-mesh = SubResource(\"3\")
-surface_material_override/0 = SubResource(\"6\")"
-model = "zai-org/glm-4.7-flash"
+; --- Limbs (Positioned relative to the root node) ---
+
+; Front Left Leg 
+[node name=\"FrontLeftLeg\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.1, 0.5, 0.1)
+transform = Transform3D(Basis(), Vector3(-0.28, -0.45, 0))
+
+; Front Right Leg 
+[node name=\"FrontRightLeg\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.1, 0.5, 0.1)
+transform = Transform3D(Basis(), Vector3(0.28, -0.45, 0))
+
+; Back Left Leg 
+[node name=\"BackLeftLeg\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.1, 0.45, 0.1)
+transform = Transform3D(Basis(), Vector3(-0.2, -0.38, 0))
+
+; Back Right Leg 
+[node name=\"BackRightLeg\" type=\"MeshInstance3D\" parent=\".\"]
+mesh = SubResource(\"1\")
+scale = Vector3(0.1, 0.45, 0.1)
+transform = Transform3D(Basis(), Vector3(0.2, -0.38, 0))"
 metadata/_custom_type_script = "uid://fltqr6krppck"
-
-[node name="@Node3D@29750" type="Node3D" parent="AgentAssisted3D" unique_id=1851708110 instance=ExtResource("2_t8jrp")]
-
-[node name="Mouton" type="Node3D" parent="AgentAssisted3D/@Node3D@29750" unique_id=1559058448]
-
-[node name="Corps" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton" unique_id=109214242]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-mesh = SubResource("1")
-surface_material_override/0 = SubResource("6")
-
-[node name="Tete" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton" unique_id=1366795170]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.6)
-mesh = SubResource("2")
-surface_material_override/0 = SubResource("6")
-
-[node name="Queue" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton" unique_id=1246602107]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.8)
-mesh = SubResource("5")
-surface_material_override/0 = SubResource("6")
-
-[node name="Oreille_Gauche" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton" unique_id=1677930891]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.6, 0.6)
-mesh = SubResource("4")
-surface_material_override/0 = SubResource("6")
-
-[node name="Oreille_Droite" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton" unique_id=565958455]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.6, 0.6)
-mesh = SubResource("4")
-surface_material_override/0 = SubResource("6")
-
-[node name="Pattes_Groupe" type="Node3D" parent="AgentAssisted3D/@Node3D@29750/Mouton" unique_id=715872656]
-
-[node name="Pattes_Avant_Gauche" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton/Pattes_Groupe" unique_id=2083482630]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.1, 0.3)
-mesh = SubResource("3")
-surface_material_override/0 = SubResource("6")
-
-[node name="Pattes_Avant_Droite" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton/Pattes_Groupe" unique_id=166921197]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.1, 0.3)
-mesh = SubResource("3")
-surface_material_override/0 = SubResource("6")
-
-[node name="Pattes_Arriere_Gauche" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton/Pattes_Groupe" unique_id=1617000224]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.1, -0.3)
-mesh = SubResource("3")
-surface_material_override/0 = SubResource("6")
-
-[node name="Pattes_Arriere_Droite" type="MeshInstance3D" parent="AgentAssisted3D/@Node3D@29750/Mouton/Pattes_Groupe" unique_id=72748241]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.1, -0.3)
-mesh = SubResource("3")
-surface_material_override/0 = SubResource("6")
