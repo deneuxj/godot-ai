@@ -2,3 +2,10 @@ project/.godot
 .qwen/settings.json
 .qwen/settings.json.orig
 .qwen/skills/godot-lsp/scripts/__pycache__/*.pyc
+
+# Generated files
+project/generated/
+
+# Personal assets
+project/blueprint.jpg
+project/blueprint.jpg.import
