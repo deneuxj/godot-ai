@@ -19,6 +19,13 @@
 │  │  │ Builder │  │ (OpenAI)  │  │ (GDScript)│  │ (safe)│  │  │
 │  │  └─────────┘  └──────────┘  └──────────┘  └───────┘  │  │
 │  └────────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                      AIChat Node                       │  │
+│  │  ┌────────────────┐         ┌────────────────────┐     │  │
+│  │  │ chat_history   │         │ AI Client (OpenAI) │     │  │
+│  │  └────────────────┘         └────────────────────┘     │  │
+│  └────────────────────────────────────────────────────────┘  │
 ├──────────────────────────────────────────────────────────────┤
 │                     Plugin Layer                             │
 │  plugin.cfg │ ai_assistant.gd │ settings │ dock             │
@@ -32,6 +39,7 @@ res://
 ├── plugin.cfg                              # Plugin manifest
 ├── ai_assistant.gd                        # Plugin entry point, registers dock & node
 ├── agent_assisted_3d.gd                  # Custom 3D node class (AIAgentAssisted3D)
+├── ai_chat.gd                            # Custom chat node class (AIChat)
 ├── agent_assisted_3d_panel.tscn          # Editor dock UI scene
 ├── agent_assisted_3d_panel.gd            # Editor dock UI controller
 ├── ai_client/
@@ -46,6 +54,16 @@ res://
 └── generated/                            # Cache directory for generated .gd/.tscn files
 ```
 
+## Design Documents
+
+- `0000-overview.md`: Project architecture and implementation roadmap.
+- `0001-node3d.md`: Detailed design of the `AIAgentAssisted3D` node.
+- `0002-aiintg.md`: AI client and protocol integration details.
+- `0003-editor.md`: Editor dock and UX design.
+- `0004-persist.md`: File persistence and serialization strategy.
+- `0005-safety.md`: Error handling and loop limits.
+- `0006-chat.md`: Generic AI chat node (`AIChat`) design.
+
 ## Implementation Order
 
 1. **Plugin scaffolding** - `plugin.cfg`, `ai_assistant.gd`, plugin registration
@@ -54,9 +72,10 @@ res://
 4. **Prompt builder** - `generator/prompt_builder.gd` with system prompt
 5. **Script executor** - `generator/script_executor.gd` with safety measures
 6. **AgentAssisted3D node** - Custom node class with generation pipeline
-7. **Editor dock** - `agent_assitted_3d_panel.tscn` with UI and integration
-8. **Persistence** - Cache management, prompt change detection, regeneration
-9. **Testing** - Verify with LM Studio, edge cases, error handling
+7. **AIChat node** - Custom chat node for generic AI interaction
+8. **Editor dock** - `agent_assitted_3d_panel.tscn` with UI and integration
+9. **Persistence** - Cache management, prompt change detection, regeneration
+10. **Testing** - Verify with LM Studio, edge cases, error handling
 
 ## Requirements Coverage
 

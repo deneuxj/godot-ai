@@ -10,35 +10,29 @@ REQ-PLGN-0001: Integrate a coding agent AI with Godot 4 to assist with scene cre
 
 REQ-NODE3D-0001: Provide a new 3D node type: `AIAgentAssisted3D`.
 
-REQ-NODE3D-0002: The node shall be parameterized with a text prompt (multiline text input property).
-
-REQ-NODE3D-0003: Textures can be added as attachments to the prompt for visual context.
-
-REQ-NODE3D-0004: When added to a scene, the node shall use AI to generate GDScript code that either constructs a scene or implements node logic.
-
-REQ-NODE3D-0011: The user shall be able to choose between two generation modes:
-  - **Scripted Scene**: The AI generates a GDScript that constructs a node hierarchy when executed. The plugin executes this script, captures any runtime errors for the AI correction loop, and saves the resulting successful hierarchy as a `.tscn` file.
-  - **Node Script**: The AI generates a `.gd` script which is attached to a generated child node.
-
-REQ-NODE3D-0015: In 'Scripted Scene' mode, the generated script shall implement a standard entry point (a `build()` method) that returns the root of the generated node hierarchy.
-
-REQ-NODE3D-0012: The user shall be able to specify the name of the generated child node via a property.
-
-REQ-NODE3D-0013: The generated GDScript code shall be accessible as a text property on the AIAgentAssisted3D node.
-
-REQ-NODE3D-0014: Error messages from the validation loop shall be accessible via a property on the AIAgentAssisted3D node.
-
-REQ-NODE3D-0008: The generated output shall be valid Godot code or resource.
-
-REQ-NODE3D-0009: If the generated output fails to load or parse, the plugin shall append the error details to the chat history and re-send the request to the AI for correction. This loop shall repeat until the resource loads successfully or the maximum retry count is reached.
+... (existing AIAgentAssisted3D requirements) ...
 
 REQ-NODE3D-0005: The generated hierarchy or script attachment shall be persisted in the scene file.
 
-REQ-NODE3D-0006: Generation shall only be triggered by explicit user action via the "Send" button in the editor dock.
+### AIChat Node
 
-REQ-NODE3D-0007: The user shall be able to trigger re-generation with the same or modified prompt via the "Send" button.
+REQ-CHAT-0001: Provide a new node type: `AIChat` that extends `Node`.
 
-REQ-NODE3D-0010: Ongoing AI generation requests shall be interruptible by the user.
+REQ-CHAT-0002: The node shall maintain a conversational history (array of messages).
+
+REQ-CHAT-0003: The node shall provide a method `send_message(prompt: String)` to append a user message and trigger an AI response.
+
+REQ-CHAT-0004: The node shall emit signals for `chat_started`, `progress` (streaming), `chat_finished`, and `chat_error`.
+
+REQ-CHAT-0005: The AI response shall be automatically appended to the conversational history upon successful completion.
+
+REQ-CHAT-0006: The node shall be usable both in the Godot editor (`@tool`) and during gameplay.
+
+REQ-CHAT-0007: The node shall allow overriding API settings (endpoint, key, model, system prompt) via properties, defaulting to project settings.
+
+REQ-CHAT-0008: The node shall provide a `clear_history()` method to reset the conversation.
+
+REQ-CHAT-0009: Ongoing chat requests shall be interruptible via a `cancel()` method.
 
 ### AI Integration
 
