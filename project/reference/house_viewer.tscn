@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dxq8gxwj22w8t"]
+
+[ext_resource type="Script" path="res://reference/house_viewer.gd" id="1_viewer"]
+[ext_resource type="Script" path="res://reference/fly_camera.gd" id="2_camera"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+
+[sub_resource type="Sky" id="Sky_sky"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_env"]
+background_mode = 2
+sky = SubResource("Sky_sky")
+tonemap_mode = 2
+
+[node name="HouseViewer" type="Node3D"]
+script = ExtResource("1_viewer")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 10, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_env")
+
+[node name="FlyCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 12, 12, 20)
+script = ExtResource("2_camera")
+speed = 15.0
