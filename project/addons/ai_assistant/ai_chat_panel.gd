@@ -143,17 +143,17 @@ func _update_display() -> void:
 		var color: String = "#4285f4" if msg.role == "user" else "#34a853"
 		
 		_history_display.push_color(Color(color))
-		_history_display.add_text("[%s]: " % role)
+		_history_display.append_text("[%s]: " % role)
 		_history_display.pop()
 		
-		_history_display.add_text(msg.content + "\n\n")
+		_history_display.append_text(msg.content + "\n\n")
 	
 	# Show partial response if currently typing.
 	if not _current_node.partial_response.is_empty():
 		_history_display.push_color(Color("#34a853"))
-		_history_display.add_text("[Assistant]: ")
+		_history_display.append_text("[Assistant]: ")
 		_history_display.pop()
-		_history_display.add_text(_current_node.partial_response)
+		_history_display.append_text(_current_node.partial_response)
 
 
 func _update_status_theme() -> void:

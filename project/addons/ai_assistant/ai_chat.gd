@@ -10,6 +10,7 @@ class_name AIChat
 
 
 const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
+const PromptBuilder = preload("res://addons/ai_assistant/generator/prompt_builder.gd")
 
 signal chat_started()
 signal progress(chunks: Array[String])
@@ -21,7 +22,7 @@ signal chat_error(error_message: String)
 
 ## System prompt to prepend to the conversation.
 @export_multiline
-var system_prompt: String = ""
+var system_prompt: String = PromptBuilder.CHAT_SYSTEM_PROMPT
 
 ## API endpoint URL (overrides project settings if not empty).
 @export
