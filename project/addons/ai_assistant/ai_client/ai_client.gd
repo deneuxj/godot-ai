@@ -61,11 +61,9 @@ func set_max_tokens(tokens: int) -> AIClient:
 ## Send a chat request and return the full response as a string.
 ##
 ## Subclasses must override this method. The [param messages] parameter
-## is an array of message dictionaries with "role" and "content" keys,
-## typically built by [class PromptBuilder].
-##
-## Returns an empty string if not overridden.
-func chat(messages: Array[Dictionary]) -> String:
+## is an array of message dictionaries with "role" and "content" keys.
+## [param tools] is an optional array of tool definition dictionaries.
+func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	push_error("AIClient.chat() not implemented. Override in subclass.")
 	return ""
 
@@ -74,10 +72,7 @@ func chat(messages: Array[Dictionary]) -> String:
 ##
 ## Subclasses must override this method. Chunks of the response are
 ## emitted via the [signal progress] signal as they arrive.
-##
-## Returns the full concatenated response string when streaming finishes.
-## Returns an empty string if not overridden.
-func chat_stream(messages: Array[Dictionary]) -> String:
+func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	push_error("AIClient.chat_stream() not implemented. Override in subclass.")
 	return ""
 

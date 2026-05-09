@@ -53,6 +53,9 @@ func _register_project_settings() -> void:
 	_set_setting("ai/generation/max_retries", 5, "Max correction attempts", TYPE_INT, PROPERTY_HINT_RANGE, "0,20,1")
 	_set_setting("ai/generation/timeout_ms", 60000, "Request timeout in ms", TYPE_INT, PROPERTY_HINT_RANGE, "1000,300000,1000")
 	_set_setting("ai/generation/system_prompt", "", "Custom system prompt override", TYPE_STRING, PROPERTY_HINT_MULTILINE_TEXT)
+	
+	# Tools Settings
+	_set_setting("ai/tools/godot_source_path", "", "Path to the Godot source code checkout (for documentation).", TYPE_STRING, PROPERTY_HINT_GLOBAL_DIR)
 
 	ProjectSettings.save()
 

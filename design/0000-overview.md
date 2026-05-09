@@ -63,6 +63,7 @@ res://
 - `0004-persist.md`: File persistence and serialization strategy.
 - `0005-safety.md`: Error handling and loop limits.
 - `0006-chat.md`: Generic AI chat node (`AIChat`) design.
+- `0007-tools.md`: AI tool/function calling system.
 
 ## Implementation Order
 

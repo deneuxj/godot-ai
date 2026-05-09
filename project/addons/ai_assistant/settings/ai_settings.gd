@@ -5,6 +5,7 @@ class_name AISettings
 # Subgroup paths
 const CONN := "ai/connection/"
 const GEN := "ai/generation/"
+const TOOLS := "ai/tools/"
 
 
 ## Get a string value from a subgroup.

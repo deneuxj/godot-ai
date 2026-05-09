@@ -16,6 +16,8 @@ script = ExtResource("1_script")
 script = ExtResource("2_chat")
 system_prompt = "You are a helpful Godot Engine assistant. You help users with GDScript, node organization, and engine features. Keep your responses concise and technically accurate."
 model = "qwen/qwen3.6-35b-a3b"
+enable_godot_docs = null
+enable_project_resources = null
 
 [node name="Panel" type="Panel" parent="." unique_id=612958820]
 layout_mode = 1

@@ -114,14 +114,17 @@ func _on_test_chat_pressed() -> void:
 	add_child(client)
 
 	var messages := _build_messages(_user_message_line.text.strip_edges())
-	var response := await client.chat(messages)
+	var response: Variant = await client.chat(messages)
 
-	if response.is_empty():
+	if typeof(response) == TYPE_STRING and response.is_empty():
 		_status_label.text = "Status: Request failed or returned empty"
+	elif typeof(response) == TYPE_DICTIONARY:
+		_status_label.text = "Status: Received tool calls (not handled in this test)"
+		response = JSON.stringify(response, "  ")
 	else:
 		_status_label.text = "Status: Non-streaming response received"
 
-	_response_text_edit.text = response
+	_response_text_edit.text = str(response)
 	_progress_bar.value = 100.0
 
 	client.queue_free()
@@ -153,14 +156,17 @@ func _on_test_stream_pressed() -> void:
 	# Connect the progress signal before calling chat_stream.
 	client.progress.connect(_on_stream_progress)
 
-	var full_response := await client.chat_stream(messages)
+	var full_response: Variant = await client.chat_stream(messages)
 
-	if full_response.is_empty():
+	if typeof(full_response) == TYPE_STRING and full_response.is_empty():
 		_status_label.text = "Status: Request failed or returned empty"
+	elif typeof(full_response) == TYPE_DICTIONARY:
+		_status_label.text = "Status: Received tool calls (not handled in this test)"
+		full_response = JSON.stringify(full_response, "  ")
 	else:
 		_status_label.text = "Status: Streaming response received"
 
-	_streaming_text_edit.text = full_response
+	_streaming_text_edit.text = str(full_response)
 	_progress_bar.value = 100.0
 
 	client.queue_free()

@@ -78,6 +78,24 @@ REQ-PERSIST-0002: The generated scene shall be instantiated as child nodes, or t
 
 REQ-PERSIST-0003: No automatic generation shall occur behind the scenes (e.g., on prompt change or scene load).
 
+### AI Tools
+
+REQ-TOOL-0001: The plugin shall support an extensible tool/function calling system for the AI.
+
+REQ-TOOL-0002: Provide a tool `explore_godot_docs` that allows the AI to:
+  - List available classes and global constants.
+  - Search for classes, methods, or properties by keyword.
+  - Retrieve detailed documentation for a specific class, including its description, properties, and methods.
+
+REQ-TOOL-0003: Provide a tool `explore_project_resources` that allows the AI to:
+  - List files and directories in the project.
+  - Search for specific resources (scenes, scripts, textures) by name.
+  - Retrieve basic metadata or content (for text files) of a specific resource.
+
+REQ-TOOL-0004: The `AIAgentAssisted3D` and `AIChat` nodes shall provide properties to enable or disable specific tools for the AI agent.
+
+REQ-TOOL-0005: Tool execution shall be transparent to the user, with results optionally logged in the console or status area.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API

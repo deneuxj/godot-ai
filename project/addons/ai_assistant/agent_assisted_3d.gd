@@ -71,6 +71,14 @@ var api_key: String = ""
 @export
 var model: String = ""
 
+@export_group("Tools")
+
+@export
+var enable_godot_docs: bool = true
+
+@export
+var enable_project_resources: bool = true
+
 @export_group("Last Result")
 
 @export_multiline
@@ -112,8 +120,9 @@ func generate() -> void:
 	generated_code = ""
 	generation_started.emit()
 
-	# 1. Build initial prompt.
+	# 1. Build initial prompt and tools.
 	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources)
 	var content: String = ""
 	var success: bool = false
 	
@@ -123,7 +132,7 @@ func generate() -> void:
 	for attempt in range(max_retries):
 		# Call AI.
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
-		content = await _call_ai(messages)
+		content = await _call_ai(messages, tools)
 		
 		# Immediately update the code property so the user can see it.
 		var extracted_code := ScriptExecutor.extract_code(content)
@@ -194,13 +203,13 @@ func cancel_generation() -> void:
 
 # --- AI call ---
 
-func _call_ai(messages: Array[Dictionary]) -> String:
+func _call_ai(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> String:
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
 	
 	# Relay progress signal to the editor dock
 	_active_handler.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
 
-	return await _active_handler.execute(messages)
+	return await _active_handler.execute(messages, tools)
 
 
 # --- Persistence helpers ---

@@ -39,19 +39,17 @@ func cancel() -> void:
 
 
 ## Non-streaming chat: sends [param messages] and returns the full response.
-##
-## Uses [HTTPRequest] to POST to the configured endpoint's `/v1/chat/completions`
-## path. Waits for the request to complete, then parses the JSON response
-## to extract `choices[0].message.content`.
-##
-## Returns an empty string on failure.
-func chat(messages: Array[Dictionary]) -> String:
+## [param tools] is an optional array of tool definition dictionaries.
+func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
 	var body: Dictionary = {
 		"model": model,
 		"messages": messages,
 		"max_tokens": max_tokens,
 	}
+	
+	if not tools.is_empty():
+		body["tools"] = tools
 
 	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":
@@ -68,8 +66,6 @@ func chat(messages: Array[Dictionary]) -> String:
 		push_error("HTTP request failed: %d" % error_code)
 		return ""
 
-	# Wait for the request to complete.
-	# request_completed(result: int, status_code: int, headers: PackedStringArray, body: PackedByteArray)
 	var result: Array = await _http_request.request_completed
 	var error_code_param: int = result[0]
 	var response_code: int = result[1]
@@ -87,7 +83,6 @@ func chat(messages: Array[Dictionary]) -> String:
 		push_error("API error: HTTP %d — %s" % [response_code, err_msg])
 		return ""
 
-	# Parse JSON response body.
 	var parsed: Variant = JSON.parse_string(response_body)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("Failed to parse JSON response")
@@ -95,24 +90,22 @@ func chat(messages: Array[Dictionary]) -> String:
 
 	var response_body_dict: Dictionary = parsed as Dictionary
 
-	# Extract the first choice's message content.
 	var choices: Array = response_body_dict.get("choices", [])
 	if choices.is_empty():
 		push_error("Empty choices in API response")
 		return ""
 
-	var content: String = (choices[0] as Dictionary).get("message", {}).get("content", "")
-	return content
+	var message = (choices[0] as Dictionary).get("message", {})
+	
+	if message.has("tool_calls"):
+		return {"tool_calls": message["tool_calls"]}
+		
+	return message.get("content", "")
 
 
 ## Streaming chat: sends [param messages] and emits [signal progress] per chunk.
-##
-## Parses Server-Sent Events (SSE) format from the response body. Each chunk
-## contains a JSON object with `choices[0].delta.content`. The signal is
-## emitted for each chunk as it arrives.
-##
-## Returns the full concatenated response string when streaming finishes.
-func chat_stream(messages: Array[Dictionary]) -> String:
+## [param tools] is an optional array of tool definition dictionaries.
+func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
 	var body: Dictionary = {
 		"model": model,
@@ -120,6 +113,9 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 		"max_tokens": max_tokens,
 		"stream": true,
 	}
+	
+	if not tools.is_empty():
+		body["tools"] = tools
 
 	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":
@@ -136,8 +132,6 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 		push_error("HTTP request failed: %d" % error_code)
 		return ""
 
-	# Wait for the request to complete.
-	# request_completed(result: int, status_code: int, headers: PackedStringArray, body: PackedByteArray)
 	var result: Array = await _http_request.request_completed
 	var http_error: int = result[0]
 	var response_code: int = result[1]
@@ -151,9 +145,10 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 		push_error("API error: HTTP %d" % response_code)
 		return ""
 
-	# Parse SSE stream: each line starting with "data: " contains JSON.
 	var chunks: PackedStringArray = []
 	var full_content: String = ""
+	var tool_calls: Array = []
+	
 	var lines: PackedStringArray = response_body.split("\n")
 
 	for line in lines:
@@ -171,13 +166,34 @@ func chat_stream(messages: Array[Dictionary]) -> String:
 
 		var choice: Dictionary = (parsed as Dictionary).get("choices", [{}])[0]
 		var delta: Dictionary = choice.get("delta", {})
+		
+		# Handle tool calls in streaming
+		if delta.has("tool_calls"):
+			var delta_tool_calls = delta["tool_calls"]
+			for tc in delta_tool_calls:
+				var index = tc.get("index", 0)
+				if tool_calls.size() <= index:
+					tool_calls.append({
+						"id": "",
+						"type": "function",
+						"function": {"name": "", "arguments": ""}
+					})
+				
+				var target = tool_calls[index]
+				if tc.has("id"): target["id"] += tc["id"]
+				if tc.has("function"):
+					if tc["function"].has("name"): target["function"]["name"] += tc["function"]["name"]
+					if tc["function"].has("arguments"): target["function"]["arguments"] += tc["function"]["arguments"]
+
 		var chunk_content: String = delta.get("content", "")
 		if chunk_content != "":
 			chunks.append(chunk_content)
 			full_content += chunk_content
+			# Emit chunks immediately if needed, but the original implementation collected them.
+			# To be truly transparent and responsive, we should emit as we go.
+			progress.emit([chunk_content])
 
-	# Emit progress signal with all collected chunks.
-	if chunks.size() > 0:
-		progress.emit(chunks)
+	if not tool_calls.is_empty():
+		return {"tool_calls": tool_calls}
 
 	return full_content

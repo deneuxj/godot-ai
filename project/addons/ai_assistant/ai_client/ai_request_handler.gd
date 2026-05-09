@@ -31,7 +31,7 @@ func _init(parent: Node, endpoint: String = "", key: String = "", model_name: St
 
 
 ## Send a streaming chat request and return the full response.
-func execute(messages: Array[Dictionary]) -> String:
+func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> String:
 	if is_busy():
 		push_warning("AIRequestHandler: A request is already in progress.")
 		return ""
@@ -63,8 +63,40 @@ func execute(messages: Array[Dictionary]) -> String:
 		progress.emit(chunks)
 	)
 
-	# 4. Execute request.
-	var response = await client.chat_stream(messages)
+	# 4. Execute request loop (handles tool calls)
+	var final_response: String = ""
+	var current_messages = messages.duplicate()
+	
+	const MAX_TOOL_LOOPS = 5
+	for i in range(MAX_TOOL_LOOPS):
+		var result = await client.chat_stream(current_messages, tools)
+		
+		if _cancelled:
+			break
+			
+		if typeof(result) == TYPE_DICTIONARY and result.has("tool_calls"):
+			var tool_calls = result["tool_calls"]
+			# Add the assistant message with tool calls to history
+			current_messages.append({
+				"role": "assistant",
+				"tool_calls": tool_calls
+			})
+			
+			# Execute each tool call
+			for tool_call in tool_calls:
+				var tool_result = _execute_tool(tool_call)
+				current_messages.append({
+					"role": "tool",
+					"tool_call_id": tool_call.id,
+					"name": tool_call.function.name,
+					"content": tool_result
+				})
+			
+			# Continue loop to send tool results back to AI
+			continue
+		else:
+			final_response = str(result)
+			break
 
 	# 5. Cleanup.
 	if is_instance_valid(client):
@@ -73,7 +105,27 @@ func execute(messages: Array[Dictionary]) -> String:
 	if _active_client == client:
 		_active_client = null
 	
-	return response
+	return final_response
+
+
+func _execute_tool(tool_call: Dictionary) -> String:
+	var function_name = tool_call.function.name
+	var arguments = JSON.parse_string(tool_call.function.arguments)
+	if arguments == null:
+		arguments = {}
+		
+	var tool: AITool = null
+	match function_name:
+		"explore_godot_docs":
+			tool = load("res://addons/ai_assistant/tools/godot_docs_tool.gd").new()
+		"explore_project_resources":
+			tool = load("res://addons/ai_assistant/tools/project_resources_tool.gd").new()
+	
+	if tool:
+		print("AI calling tool: ", function_name, " with args: ", arguments)
+		return tool.execute(arguments)
+	
+	return "Error: Tool " + function_name + " not found."
 
 
 ## Interrupt the ongoing AI request.

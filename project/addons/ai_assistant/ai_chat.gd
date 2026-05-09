@@ -36,6 +36,15 @@ var api_key: String = ""
 var model: String = ""
 
 
+@export_group("Tools")
+
+@export
+var enable_godot_docs: bool = true
+
+@export
+var enable_project_resources: bool = true
+
+
 # --- State ---
 
 ## Current conversation history as an array of message dictionaries:
@@ -89,11 +98,13 @@ func send_message(prompt: String) -> void:
 	
 	chat_started.emit()
 
-	# 2. Prepare full message list for the API.
+	# 2. Prepare full message list and tools for the API.
 	var messages: Array[Dictionary] = []
 	if not system_prompt.is_empty():
 		messages.append({"role": "system", "content": system_prompt})
 	messages.append_array(chat_history)
+	
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources)
 
 	# 3. Create and configure handler.
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
@@ -106,7 +117,7 @@ func send_message(prompt: String) -> void:
 	)
 
 	# 5. Execute request.
-	var response = await _active_handler.execute(messages)
+	var response = await _active_handler.execute(messages, tools)
 	
 	# 6. Cleanup and finish.
 	if response.is_empty() and not _was_cancelled():

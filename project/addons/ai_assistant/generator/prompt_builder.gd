@@ -95,6 +95,21 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int) -> Arra
 	return messages
 
 
+## Build the tools array based on node configuration.
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool) -> Array[Dictionary]:
+	var tools: Array[Dictionary] = []
+	
+	if enable_docs:
+		var tool = load("res://addons/ai_assistant/tools/godot_docs_tool.gd").new()
+		tools.append(tool.get_definition())
+	
+	if enable_resources:
+		var tool = load("res://addons/ai_assistant/tools/project_resources_tool.gd").new()
+		tools.append(tool.get_definition())
+		
+	return tools
+
+
 ## Encode a [Texture2D] to base64 PNG string.
 static func _encode_texture(texture: Texture2D) -> String:
 	if not texture:
