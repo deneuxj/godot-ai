@@ -5,11 +5,10 @@
 ## conversational context.
 
 @tool
-extends ScrollContainer
+extends "res://addons/ai_assistant/ai_base_panel.gd"
 
 
 var _current_node: AIChat = null
-var _editor_interface: EditorInterface
 
 # UI node references
 @onready var _history_display: RichTextLabel = find_child("HistoryDisplay")
@@ -21,12 +20,7 @@ var _editor_interface: EditorInterface
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
 
 
-# Called by the plugin after instantiation to inject the EditorInterface.
-func _init_editor(editor_interface: EditorInterface) -> void:
-	_editor_interface = editor_interface
-
-
-func _ready() -> void:
+func _on_ready() -> void:
 	# Connect UI signals.
 	if _send_button:
 		_send_button.pressed.connect(_on_send_pressed)
@@ -35,34 +29,9 @@ func _ready() -> void:
 	if _clear_button:
 		_clear_button.pressed.connect(_on_clear_pressed)
 
-	# Connect to the editor's selection system.
-	if is_instance_valid(_editor_interface):
-		_setup_editor_connection()
 
-
-func _exit_tree() -> void:
-	# Disconnect from the editor's selection system.
-	if is_instance_valid(_editor_interface):
-		var selection := _editor_interface.get_selection()
-		if selection and selection.is_connected("selection_changed", _on_selection_changed):
-			selection.selection_changed.disconnect(_on_selection_changed)
-	
-	# Disconnect from the current node.
+func _on_exit_tree() -> void:
 	_disconnect_from_node()
-
-
-func _on_selection_changed() -> void:
-	_update_for_selected_node()
-
-
-func _setup_editor_connection() -> void:
-	var selection := _editor_interface.get_selection()
-	if selection:
-		if not selection.is_connected("selection_changed", _on_selection_changed):
-			selection.selection_changed.connect(_on_selection_changed)
-
-	# Initial state.
-	_update_for_selected_node()
 
 
 func _disconnect_from_node() -> void:
@@ -77,18 +46,13 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("chat_error", _on_chat_error)
 
 
-func _update_for_selected_node() -> void:
+func _update_for_node(node: Node) -> void:
 	_disconnect_from_node()
-
-	var selection := _editor_interface.get_selection()
-	var selected_nodes: Array = []
-	if selection:
-		selected_nodes = selection.get_selected_nodes()
 
 	_current_node = null
 
-	if selected_nodes.size() > 0 and selected_nodes[0] is AIChat:
-		_current_node = selected_nodes[0] as AIChat
+	if node is AIChat:
+		_current_node = node as AIChat
 
 		# Connect signals from the node.
 		_current_node.connect("chat_started", _on_chat_started)
@@ -99,11 +63,12 @@ func _update_for_selected_node() -> void:
 		# Refresh UI state.
 		_update_display()
 		_status_label.text = "Status: Ready"
+		_update_status_theme()
 	else:
 		_history_display.text = ""
 		_status_label.text = "No AIChat selected"
 		_progress_bar.value = 0.0
-		_update_theme_colors() # Reset to neutral
+		_status_label.remove_theme_color_override("font_color")
 
 
 # --- Send / Cancel / Clear ---
@@ -139,7 +104,7 @@ func _on_chat_started() -> void:
 	_status_label.text = "Status: Typing..."
 	_send_button.disabled = true
 	_cancel_button.disabled = false
-	_update_theme_colors()
+	_update_status_theme()
 
 
 func _on_node_progress(_chunks: Array[String]) -> void:
@@ -155,14 +120,14 @@ func _on_chat_finished(_response: String) -> void:
 	_cancel_button.disabled = true
 	_progress_bar.value = 100.0
 	_update_display()
-	_update_theme_colors()
+	_update_status_theme()
 
 
 func _on_chat_error(err: String) -> void:
 	_status_label.text = "Status: Error - " + err
 	_send_button.disabled = false
 	_cancel_button.disabled = true
-	_update_theme_colors()
+	_update_status_theme()
 
 
 # --- Display ---
@@ -191,22 +156,16 @@ func _update_display() -> void:
 		_history_display.add_text(_current_node.partial_response)
 
 
-func _update_theme_colors() -> void:
-	if not is_instance_valid(_editor_interface):
-		return
-
-	var base := _editor_interface.get_base_control()
-	var theme := base.theme
-	
+func _update_status_theme() -> void:
 	if not is_instance_valid(_current_node):
-		_status_label.remove_theme_color_override("font_color")
 		return
 
-	if _send_button.disabled: # Simple check for "busy"
-		_status_label.add_theme_color_override("font_color", theme.get_color("warning_color", "Editor"))
+	var color_key := "font_color"
+	if _send_button.disabled:
+		color_key = "typing"
 	elif _status_label.text.contains("Error"):
-		_status_label.add_theme_color_override("font_color", theme.get_color("error_color", "Editor"))
+		color_key = "error"
 	elif _status_label.text.contains("Finished"):
-		_status_label.add_theme_color_override("font_color", theme.get_color("success_color", "Editor"))
-	else:
-		_status_label.remove_theme_color_override("font_color")
+		color_key = "success"
+	
+	_status_label.add_theme_color_override("font_color", _get_status_color(color_key))

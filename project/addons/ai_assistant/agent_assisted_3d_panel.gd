@@ -5,11 +5,10 @@
 ## and a live preview of generated output and errors.
 
 @tool
-extends ScrollContainer
+extends "res://addons/ai_assistant/ai_base_panel.gd"
 
 
 var _current_node: AIAgentAssisted3D = null
-var _editor_interface: EditorInterface
 
 # UI node references
 @onready var _prompt_text_edit: TextEdit = find_child("PromptTextEdit")
@@ -25,12 +24,7 @@ var _editor_interface: EditorInterface
 @onready var _attachments_container: VBoxContainer = find_child("AttachmentsContainer")
 
 
-# Called by the plugin after instantiation to inject the EditorInterface.
-func _init_editor(editor_interface: EditorInterface) -> void:
-	_editor_interface = editor_interface
-
-
-func _ready() -> void:
+func _on_ready() -> void:
 	# Enable drag-and-drop on the attachments container.
 	if _attachments_container:
 		_attachments_container.set_drag_forwarding(
@@ -51,34 +45,9 @@ func _ready() -> void:
 	if _clear_button:
 		_clear_button.pressed.connect(_on_clear_pressed)
 
-	# Connect to the editor's selection system.
-	if is_instance_valid(_editor_interface):
-		_setup_editor_connection()
 
-
-func _exit_tree() -> void:
-	# Disconnect from the editor's selection system.
-	if is_instance_valid(_editor_interface):
-		var selection := _editor_interface.get_selection()
-		if selection and selection.is_connected("selection_changed", _on_selection_changed):
-			selection.selection_changed.disconnect(_on_selection_changed)
-	
-	# Disconnect from the current node.
+func _on_exit_tree() -> void:
 	_disconnect_from_node()
-
-
-func _on_selection_changed() -> void:
-	_update_for_selected_node()
-
-
-func _setup_editor_connection() -> void:
-	var selection := _editor_interface.get_selection()
-	if selection:
-		if not selection.is_connected("selection_changed", _on_selection_changed):
-			selection.selection_changed.connect(_on_selection_changed)
-
-	# Initial state.
-	_update_for_selected_node()
 
 
 func _disconnect_from_node() -> void:
@@ -93,18 +62,13 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("status_updated", _on_node_status_updated)
 
 
-func _update_for_selected_node() -> void:
+func _update_for_node(node: Node) -> void:
 	_disconnect_from_node()
-
-	var selection := _editor_interface.get_selection()
-	var selected_nodes: Array = []
-	if selection:
-		selected_nodes = selection.get_selected_nodes()
 
 	_current_node = null
 
-	if selected_nodes.size() > 0 and selected_nodes[0] is AIAgentAssisted3D:
-		_current_node = selected_nodes[0] as AIAgentAssisted3D
+	if node is AIAgentAssisted3D:
+		_current_node = node as AIAgentAssisted3D
 
 		# Sync properties.
 		_prompt_text_edit.text = _current_node.prompt
@@ -128,7 +92,7 @@ func _update_for_selected_node() -> void:
 		_code_view.text = ""
 		_error_text_edit.text = ""
 		_drop_label.visible = true
-		_update_theme_colors() # Reset to neutral
+		_status_label.remove_theme_color_override("font_color")
 
 
 # --- Mode / Prompt sync ---
@@ -205,7 +169,7 @@ func _update_status() -> void:
 	_cancel_button.disabled = not generating
 	_clear_button.disabled = generating
 
-	_update_theme_colors()
+	_update_theme_colors_impl()
 
 	_error_text_edit.text = _current_node.last_error
 
@@ -224,27 +188,21 @@ func _update_status() -> void:
 			_status_label.text = "Status: " + message
 
 
-func _update_theme_colors() -> void:
-	if not is_instance_valid(_editor_interface):
-		return
-
-	var base := _editor_interface.get_base_control()
-	var theme := base.theme
-	
+func _update_theme_colors_impl() -> void:
 	if not is_instance_valid(_current_node):
-		_status_label.remove_theme_color_override("font_color")
 		return
 
 	var status: AIAgentAssisted3D.GenerationStatus = _current_node.generation_status
+	var color_key := "font_color"
 	match status:
 		AIAgentAssisted3D.GenerationStatus.GENERATING:
-			_status_label.add_theme_color_override("font_color", theme.get_color("warning_color", "Editor"))
+			color_key = "generating"
 		AIAgentAssisted3D.GenerationStatus.SUCCESS:
-			_status_label.add_theme_color_override("font_color", theme.get_color("success_color", "Editor"))
+			color_key = "success"
 		AIAgentAssisted3D.GenerationStatus.ERROR:
-			_status_label.add_theme_color_override("font_color", theme.get_color("error_color", "Editor"))
-		_:
-			_status_label.remove_theme_color_override("font_color")
+			color_key = "error"
+	
+	_status_label.add_theme_color_override("font_color", _get_status_color(color_key))
 
 
 # --- Drag & drop for texture attachments ---
@@ -324,11 +282,3 @@ func _refresh_attachments() -> void:
 		var name_label := Label.new()
 		name_label.text = texture.resource_path.get_file()
 		_attachments_container.add_child(name_label)
-
-
-# --- Helpers ---
-
-func _estimate_tokens(text: String) -> int:
-	if text.is_empty():
-		return 0
-	return int(len(text) / 4.0)
