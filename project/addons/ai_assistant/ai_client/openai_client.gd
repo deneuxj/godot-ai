@@ -121,6 +121,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
+	print("[%s] OpenAIClient: Sending streaming request to %s" % [Time.get_time_string_from_system(), endpoint + "/v1/chat/completions"])
 	var error_code: int = _http_request.request(
 		endpoint + "/v1/chat/completions",
 		headers,
@@ -133,6 +134,8 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		return ""
 
 	var result: Array = await _http_request.request_completed
+	print("[%s] OpenAIClient: Request completed (connection closed). Processing chunks..." % Time.get_time_string_from_system())
+	
 	var http_error: int = result[0]
 	var response_code: int = result[1]
 	var response_body: String = result[3].get_string_from_utf8()
@@ -150,6 +153,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	var tool_calls: Array = []
 	
 	var lines: PackedStringArray = response_body.split("\n")
+	print("[%s] OpenAIClient: Found %d lines in response body." % [Time.get_time_string_from_system(), lines.size()])
 
 	for line in lines:
 		line = line.strip_edges()
@@ -189,9 +193,9 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		if chunk_content != "":
 			chunks.append(chunk_content)
 			full_content += chunk_content
-			# Emit chunks immediately if needed, but the original implementation collected them.
-			# To be truly transparent and responsive, we should emit as we go.
-			progress.emit([chunk_content])
+			# Emit chunks immediately if needed. We must use a typed array to match the signal.
+			var typed_chunks: Array[String] = [chunk_content]
+			progress.emit(typed_chunks)
 
 	if not tool_calls.is_empty():
 		return {"tool_calls": tool_calls}
