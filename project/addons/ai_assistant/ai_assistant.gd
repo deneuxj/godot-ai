@@ -7,9 +7,11 @@ extends EditorPlugin
 
 const AI_ASSISTED_3D_NODE = "res://addons/ai_assistant/agent_assisted_3d.gd"
 const PANEL_SCENE = "res://addons/ai_assistant/agent_assisted_3d_panel.tscn"
+const CHAT_PANEL_SCENE = "res://addons/ai_assistant/ai_chat_panel.tscn"
 const CUSTOM_LOGGER = preload("res://addons/ai_assistant/generator/custom_logger.gd")
 
 var _dock: Control = null
+var _chat_dock: Control = null
 var _logger: Logger = null
 
 
@@ -22,8 +24,9 @@ func _enter_tree() -> void:
 	ScriptExecutor.register_logger(_logger)
 
 	_register_project_settings()
-	_create_dock()
+	_create_docks()
 	add_control_to_bottom_panel(_dock, "Agent Assisted 3D")
+	add_control_to_bottom_panel(_chat_dock, "AI Chat")
 
 
 func _exit_tree() -> void:
@@ -33,6 +36,10 @@ func _exit_tree() -> void:
 	if _dock:
 		remove_control_from_bottom_panel(_dock)
 		_dock.queue_free()
+	
+	if _chat_dock:
+		remove_control_from_bottom_panel(_chat_dock)
+		_chat_dock.queue_free()
 
 
 func _register_project_settings() -> void:
@@ -65,7 +72,11 @@ func _set_setting(key: String, value: Variant, description: String = "", type: i
 	ProjectSettings.add_property_info(info)
 
 
-func _create_dock() -> void:
+func _create_docks() -> void:
 	var dock_scene = load(PANEL_SCENE)
 	_dock = dock_scene.instantiate()
 	_dock.call("_init_editor", get_editor_interface())
+
+	var chat_dock_scene = load(CHAT_PANEL_SCENE)
+	_chat_dock = chat_dock_scene.instantiate()
+	_chat_dock.call("_init_editor", get_editor_interface())

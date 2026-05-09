@@ -33,6 +33,38 @@
 - Syncs the mode selector with the selected `AIAgentAssisted3D` node.
 - "Generated Output" tab shows the raw GDScript code.
 
+## AIChat Editor Panel
+
+### Editor Dock Scene (`ai_chat_panel.tscn`)
+
+```
+┌─────────────────────────────────────┐
+│  AI Chat                            │
+├─────────────────────────────────────┤
+│  Conversation History:              │
+│  ┌───────────────────────────────┐  │
+│  │ [User]: Hello                  │  │
+│  │ [Assistant]: Hi there!         │  │
+│  └───────────────────────────────┘  │
+│                                     │
+│  Your Message:                      │
+│  ┌───────────────────────────────┐  │
+│  │          (text area)          │  │
+│  └───────────────────────────────┘  │
+│                                     │
+│  [ Send ] [ Cancel ] [ Clear Hist ] │
+│                                     │
+│  Status: Typing...  ████████░░      │
+└─────────────────────────────────────┘
+```
+
+### Dock Controller (`ai_chat_panel.gd`)
+
+- Detects selection of `AIChat` nodes in the scene tree.
+- Binds to `chat_started`, `progress`, and `chat_finished` signals.
+- Updates the `HistoryDisplay` in real-time during streaming.
+- Manages button enabled/disabled states based on request status.
+
 ---
 
 ## Requirements Coverage
