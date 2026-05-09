@@ -8,8 +8,8 @@ extends Node
 
 class_name AIChat
 
-const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 
+const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
 
 signal chat_started()
 signal progress(chunks: Array[String])
@@ -46,7 +46,7 @@ var chat_history: Array[Dictionary] = []
 ## This is cleared when a new request starts and populated during streaming.
 var partial_response: String = ""
 
-var _active_client: AIClient = null
+var _active_handler: AIRequestHandler = null
 
 
 @export_group("Debug / Testing")
@@ -79,7 +79,7 @@ var debug_clear_history: bool = false:
 ## Send a message to the AI and trigger a streaming response.
 ## The [param prompt] is appended to the [member chat_history] as a user message.
 func send_message(prompt: String) -> void:
-	if is_instance_valid(_active_client):
+	if _active_handler and _active_handler.is_busy():
 		push_warning("AIChat: A request is already in progress. Cancel it first or wait for completion.")
 		return
 
@@ -95,41 +95,21 @@ func send_message(prompt: String) -> void:
 		messages.append({"role": "system", "content": system_prompt})
 	messages.append_array(chat_history)
 
-	# 3. Create and configure client.
-	var client := AIClient.create_openai_client()
-	add_child(client)
-	_active_client = client
-
-	var endpoint: String = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
-	var key: String = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
-	var model_name: String = model if not model.is_empty() else AISettings.get_string(AISettings.CONN, "model")
-	var max_tokens: int = AISettings.get_int(AISettings.GEN, "max_tokens")
-
-	client.set_endpoint(endpoint)
-	if not key.is_empty():
-		client.set_api_key(key)
-	if not model_name.is_empty():
-		client.set_model(model_name)
-	client.set_max_tokens(max_tokens)
-
+	# 3. Create and configure handler.
+	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	
 	# 4. Connect signals.
-	client.progress.connect(func(chunks: Array[String]): 
+	_active_handler.progress.connect(func(chunks: Array[String]): 
 		for chunk in chunks:
 			partial_response += chunk
 		progress.emit(chunks)
 	)
 
 	# 5. Execute request.
-	var response = await client.chat_stream(messages)
+	var response = await _active_handler.execute(messages)
 	
 	# 6. Cleanup and finish.
-	if is_instance_valid(client):
-		client.queue_free()
-	
-	if _active_client == client:
-		_active_client = null
-
-	if response.is_empty() and not _was_cancelled(client):
+	if response.is_empty() and not _was_cancelled():
 		chat_error.emit("Received empty response from AI.")
 	elif not response.is_empty():
 		chat_history.append({"role": "assistant", "content": response})
@@ -139,9 +119,8 @@ func send_message(prompt: String) -> void:
 
 ## Interrupt the ongoing AI request.
 func cancel() -> void:
-	if is_instance_valid(_active_client):
-		_active_client.cancel()
-		# _active_client will be cleaned up in the await loop of send_message.
+	if _active_handler:
+		_active_handler.cancel()
 
 
 ## Reset the conversation history.
@@ -149,7 +128,5 @@ func clear_history() -> void:
 	chat_history.clear()
 
 
-func _was_cancelled(client: AIClient) -> bool:
-	# This is a heuristic since AIClient doesn't explicitly track cancel state yet.
-	# If we are here and response is empty, it's likely an error or cancel.
-	return _active_client == null or not is_instance_valid(client)
+func _was_cancelled() -> bool:
+	return _active_handler != null and _active_handler.was_cancelled()

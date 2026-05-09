@@ -11,6 +11,7 @@ extends Node3D
 class_name AIAgentAssisted3D
 
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
+const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
 
 
 enum GenerationStatus {
@@ -89,7 +90,7 @@ var status_message: String = "":
 	set(value):
 		status_message = value
 		status_updated.emit(value)
-var _active_client: AIClient = null
+var _active_handler: AIRequestHandler = null
 
 
 # --- Lifecycle ---
@@ -184,8 +185,8 @@ func generate() -> void:
 
 
 func cancel_generation() -> void:
-	if is_instance_valid(_active_client):
-		_active_client.cancel()
+	if _active_handler:
+		_active_handler.cancel()
 	
 	generation_status = GenerationStatus.IDLE
 	status_message = "Generation cancelled"
@@ -194,34 +195,12 @@ func cancel_generation() -> void:
 # --- AI call ---
 
 func _call_ai(messages: Array[Dictionary]) -> String:
-	var endpoint: String = api_endpoint if api_endpoint != "" else AISettings.get_string(AISettings.CONN, "base_url")
-	var key: String = api_key if api_key != "" else AISettings.get_string(AISettings.CONN, "api_key")
-	var model_name: String = model if model != "" else AISettings.get_string(AISettings.CONN, "model")
-	var max_tokens: int = AISettings.get_int(AISettings.GEN, "max_tokens")
-
-	var client := AIClient.create_openai_client()
-	add_child(client)
-	_active_client = client
-
+	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	
 	# Relay progress signal to the editor dock
-	client.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
+	_active_handler.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
 
-	client.set_endpoint(endpoint)
-	if key != "":
-		client.set_api_key(key)
-	if model_name != "":
-		client.set_model(model_name)
-	client.set_max_tokens(max_tokens)
-
-	var response = await client.chat_stream(messages)
-	
-	if is_instance_valid(client):
-		client.queue_free()
-	
-	if _active_client == client:
-		_active_client = null
-		
-	return response
+	return await _active_handler.execute(messages)
 
 
 # --- Persistence helpers ---
