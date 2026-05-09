@@ -82,17 +82,18 @@ func _get_status_color(status_type: String) -> Color:
 		return Color.WHITE
 
 	var base := _editor_interface.get_base_control()
-	var theme := base.theme
+	if not is_instance_valid(base):
+		return Color.WHITE
 	
 	match status_type.to_lower():
 		"warning", "busy", "generating", "typing":
-			return theme.get_color("warning_color", "Editor")
+			return base.get_theme_color("warning_color", "Editor")
 		"success", "finished", "idle":
-			return theme.get_color("success_color", "Editor")
+			return base.get_theme_color("success_color", "Editor")
 		"error":
-			return theme.get_color("error_color", "Editor")
+			return base.get_theme_color("error_color", "Editor")
 		_:
-			return theme.get_color("font_color", "Editor")
+			return base.get_theme_color("font_color", "Editor")
 
 
 ## Helper to estimate token count (approx. 4 chars per token).
