@@ -1,10 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://de4chat-test-scene"]
+[gd_scene format=3 uid="uid://k1rivw7wtl8v"]
 
-[ext_resource type="Script" uid="uid://test-ai-chat-scene-script" path="res://test_ai_chat_scene.gd" id="1_script"]
-[ext_resource type="Script" uid="uid://ai-chat-node-script" path="res://addons/ai_assistant/ai_chat.gd" id="2_chat"]
+[ext_resource type="Script" uid="uid://caan8eqcva3g7" path="res://test_ai_chat_scene.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://crgnmdl6n3d45" path="res://addons/ai_assistant/ai_chat.gd" id="2_chat"]
 
-[node name="TestAIChat" type="Control"]
-layout_fill = 1
+[node name="TestAIChat" type="Control" unique_id=678501508]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,11 +12,12 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="AIChat" type="Node" parent="."]
+[node name="AIChat" type="Node" parent="." unique_id=767824470]
 script = ExtResource("2_chat")
 system_prompt = "You are a helpful Godot Engine assistant. You help users with GDScript, node organization, and engine features. Keep your responses concise and technically accurate."
+model = "qwen/qwen3.6-35b-a3b"
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=612958820]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,7 +25,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=1352313953]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,25 +37,25 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=48426578]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Header" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="Header" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=141266422]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="Panel/MarginContainer/VBoxContainer/Header"]
+[node name="Title" type="Label" parent="Panel/MarginContainer/VBoxContainer/Header" unique_id=1842659800]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 text = "AI Chat Test"
 
-[node name="ClearButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/Header"]
+[node name="ClearButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/Header" unique_id=645405287]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Clear History"
 
-[node name="HistoryDisplay" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="HistoryDisplay" type="RichTextLabel" parent="Panel/MarginContainer/VBoxContainer" unique_id=977218075]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -62,25 +63,25 @@ theme_override_constants/line_separation = 4
 bbcode_enabled = true
 scroll_following = true
 
-[node name="StatusRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="StatusRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1245278575]
 layout_mode = 2
 
-[node name="StatusLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/StatusRow"]
+[node name="StatusLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer/StatusRow" unique_id=730435271]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Ready"
 
-[node name="InputRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="InputRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1925341104]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="InputField" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/InputRow"]
+[node name="InputField" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/InputRow" unique_id=1399755005]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Type your message here..."
 
-[node name="SendButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/InputRow"]
+[node name="SendButton" type="Button" parent="Panel/MarginContainer/VBoxContainer/InputRow" unique_id=1010676601]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Send"
