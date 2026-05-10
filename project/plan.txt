@@ -1,0 +1,118 @@
+# Implementation Plan: Building the Geometry of Each Wall
+# This file contains instructions to build the geometry of each wall based on the blueprint.
+
+## Coordinate System
+- The origin (0, 0, 0) is placed at the **bottom-left corner of the Garage**.
+- The X-axis represents horizontal movement (right is positive).
+- The Y-axis represents vertical movement (up is positive).
+- All dimensions are in meters.
+- Wall thickness is assumed to be **0.50m** for external walls and **0.10m** for internal walls.
+
+## Wall Construction Instructions
+
+### 1. Garage
+- **Dimensions:** 5.99m width x 7.249m height
+- **Walls:**
+  - **Left Wall:** External wall from (0, 0) to (0, 7.249)
+  - **Top Wall:** External wall from (0, 7.249) to (5.99, 7.249)
+  - **Bottom Wall:** External wall from (0, 0) to (5.99, 0)
+  - **Right Wall:** Open (no wall)
+
+### 2. Guarderobe
+- **Dimensions:** 4.74m width x 2.00m height
+- **Position:** Starts at (5.99, 5.249)
+- **Walls:**
+  - **Left Wall:** Internal wall from (5.99, 5.249) to (5.99, 7.249)
+  - **Top Wall:** External wall from (5.99, 7.249) to (10.73, 7.249)
+  - **Bottom Wall:** Internal wall from (5.99, 5.249) to (10.73, 5.249)
+  - **Right Wall:** Internal wall from (10.73, 5.249) to (10.73, 7.249)
+
+### 3. Salle de séjour (Living Room)
+- **Dimensions:** 4.47m width x 4.049m height
+- **Position:** Starts at (5.99, 0)
+- **Walls:**
+  - **Top Wall:** Internal wall from (5.99, 4.049) to (10.46, 4.049)
+  - **Bottom Wall:** External wall from (5.99, 0) to (10.46, 0)
+  - **Left Wall:** Internal wall from (5.99, 0) to (5.99, 4.049)
+  - **Right Wall:** Internal wall from (10.46, 0) to (10.46, 4.049)
+
+### 4. Terrace
+- **Dimensions:** 1.52m width x ~2.0m height
+- **Position:** Starts at (10.46, 0)
+- **Walls:**
+  - **Top Wall:** External wall from (10.46, 2.0) to (11.98, 2.0)
+  - **Right Wall:** External wall from (11.98, 0) to (11.98, 2.0)
+  - **Bottom Wall:** Open (no wall)
+  - **Left Wall:** Open (no wall)
+
+### 5. Salle à manger (Dining Room)
+- **Dimensions:** 5.00m width x 3.97m height
+- **Position:** Starts at (10.46, 0)
+- **Walls:**
+  - **Top Wall:** Open (connection to Kitchen)
+  - **Bottom Wall:** External wall from (10.46, 0) to (15.46, 0)
+  - **Left Wall:** External wall from (10.46, 0) to (10.46, 3.97)
+  - **Right Wall:** External wall from (15.46, 0) to (15.46, 3.97)
+
+### 6. Cuisine (Kitchen)
+- **Dimensions:** 4.50m width x 6.249m height
+- **Position:** Starts at (10.46, 3.97)
+- **Walls:**
+  - **Top Wall:** Internal wall from (10.46, 10.219) to (14.96, 10.219)
+  - **Bottom Wall:** Open (connection to Dining Room)
+  - **Left Wall:** Internal wall from (10.46, 3.97) to (10.46, 10.219)
+  - **Right Wall:** Internal wall from (14.96, 3.97) to (14.96, 10.219)
+
+### 7. Chambre à coucher 1 (Bedroom 1)
+- **Dimensions:** 3.0m width x 5.0m height
+- **Position:** Starts at (14.96, 3.97)
+- **Walls:**
+  - **Left Wall:** Internal wall from (14.96, 3.97) to (14.96, 8.97)
+  - **Right Wall:** Internal wall from (17.96, 3.97) to (17.96, 8.97)
+  - **Top Wall:** Internal wall from (14.96, 8.97) to (17.96, 8.97)
+  - **Bottom Wall:** External wall from (14.96, 3.97) to (17.96, 3.97)
+
+### 8. Chambre à coucher 2 (Bedroom 2)
+- **Dimensions:** 3.0m width x 5.0m height
+- **Position:** Starts at (17.96, 3.97)
+- **Walls:**
+  - **Left Wall:** Internal wall from (17.96, 3.97) to (17.96, 8.97)
+  - **Right Wall:** External wall from (20.96, 3.97) to (20.96, 8.97)
+  - **Top Wall:** Internal wall from (17.96, 8.97) to (20.96, 8.97)
+  - **Bottom Wall:** External wall from (17.96, 3.97) to (20.96, 3.97)
+
+### 9. Salle de bain (Bathroom)
+- **Dimensions:** 4.5m width x 2.0m height
+- **Position:** Starts at (10.46, 8.219)
+- **Walls:**
+  - **Left Wall:** External wall from (10.46, 8.219) to (10.46, 10.219)
+  - **Right Wall:** Internal wall from (14.96, 8.219) to (14.96, 10.219)
+  - **Top Wall:** Internal wall from (10.46, 10.219) to (14.96, 10.219)
+  - **Bottom Wall:** Internal wall from (10.46, 8.219) to (14.96, 8.219)
+
+### 10. WC (Toilet)
+- **Dimensions:** 1.0m width x 2.0m height
+- **Position:** Starts at (14.96, 8.219)
+- **Walls:**
+  - **Left Wall:** Internal wall from (14.96, 8.219) to (14.96, 10.219)
+  - **Right Wall:** Internal wall from (15.96, 8.219) to (15.96, 10.219)
+  - **Top Wall:** External wall from (14.96, 10.219) to (15.96, 10.219)
+  - **Bottom Wall:** Internal wall from (14.96, 8.219) to (15.96, 8.219)
+
+### 11. Debarras (Main Entrance)
+- **Dimensions:** 2.54m width x 3.03m height
+- **Position:** Starts at (15.96, 7.189)
+- **Walls:**
+  - **Left Wall:** Internal wall from (15.96, 7.189) to (15.96, 10.219)
+  - **Right Wall:** Internal wall from (18.50, 7.189) to (18.50, 10.219)
+  - **Top Wall:** External wall from (15.96, 10.219) to (18.50, 10.219)
+  - **Bottom Wall:** Open (no wall)
+
+### 12. Bureau (Office)
+- **Dimensions:** 3.00m width x 3.03m height
+- **Position:** Starts at (18.50, 7.189)
+- **Walls:**
+  - **Left Wall:** Internal wall from (18.50, 7.189) to (18.50, 10.219)
+  - **Right Wall:** External wall from (21.50, 7.189) to (21.50, 10.219)
+  - **Top Wall:** External wall from (18.50, 10.219) to (21.50, 10.219)
+  - **Bottom Wall:** Open (no wall)
