@@ -233,7 +233,9 @@ func _parse_doc_xml_robust(path: String) -> Dictionary:
 	
 	while parser.read() == OK:
 		var type = parser.get_node_type()
-		var node_name = parser.get_node_name()
+		var node_name = ""
+		if type == XMLParser.NODE_ELEMENT or type == XMLParser.NODE_ELEMENT_END:
+			node_name = parser.get_node_name()
 		
 		if type == XMLParser.NODE_ELEMENT:
 			if node_name == "brief_description":
