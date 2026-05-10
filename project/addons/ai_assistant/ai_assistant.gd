@@ -44,7 +44,8 @@ func _exit_tree() -> void:
 
 func _register_project_settings() -> void:
 	# Connection Settings
-	_set_setting("ai/connection/base_url", "http://localhost:1234/v1", "Base URL for the AI API (e.g. http://localhost:1234/v1)")
+	_set_setting("ai/connection/base_url", "http://localhost:1234", "Base URL for the AI API (e.g. http://localhost:1234)")
+
 	_set_setting("ai/connection/api_key", "", "API Key for authentication")
 	_set_setting("ai/connection/model", "local-model", "Model name to use")
 	

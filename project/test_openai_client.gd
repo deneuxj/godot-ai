@@ -9,7 +9,7 @@ extends Node2D
 
 
 ## API endpoint URL.
-@export var api_endpoint: String = "http://localhost:1234/v1"
+@export var api_endpoint: String = "http://localhost:1234"
 
 ## API key (leave empty for servers that don't require auth).
 @export var api_key: String = ""
