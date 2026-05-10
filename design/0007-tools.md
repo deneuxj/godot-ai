@@ -38,6 +38,26 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0006: Modify Project Resource Tool (`modify_project_resource`)
+
+### Specification
+- **Method**: `modify_resource(path: String, target_line: int, old_content: String, new_content: String) -> Dictionary`
+- **Parameters**:
+    - `path`: The `res://` path to the file.
+    - `target_line`: The 1-based line where the change is expected to start.
+    - `old_content`: The exact text block expected to be replaced. (Empty for new files).
+    - `new_content`: The new text block to insert.
+
+### Implementation Detail
+1. **New File**: If the file doesn't exist and `old_content` is empty, create the file and parent directories.
+2. **Flexible Matching**: 
+    - Search for `old_content` in the file, starting at `target_line` and checking a small window (e.g., +/- 5 lines).
+    - If found, replace the block.
+    - If not found exactly at `target_line` or within the window, return an error with the actual lines found at `target_line` to help the AI recalibrate.
+3. **Safety**: Only allows modifying text-based files.
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -71,5 +91,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0001 | Design of the Tool System and `AIRequestHandler` loop |
 | REQ-TOOL-0002 | `GodotDocsTool` implementation details |
 | REQ-TOOL-0003 | `ProjectResourcesTool` implementation details |
+| REQ-TOOL-0006 | `ModifyProjectResourceTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

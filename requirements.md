@@ -106,6 +106,13 @@ REQ-TOOL-0004: The `AIAgentAssisted3D` and `AIChat` nodes shall provide properti
 
 REQ-TOOL-0005: Tool execution shall be transparent to the user, with results optionally logged in the console or status area.
 
+REQ-TOOL-0006: Provide a tool `modify_project_resource` that allows the AI to:
+  - Create new files or patch existing ones.
+  - The tool shall take a path, a target line, the old content, and the new content.
+  - For existing files, the tool shall verify that the `old_content` exists near the `target_line`. 
+  - If a mismatch occurs, the tool shall return an error instructing the AI to read the file again.
+  - For new files, the `old_content` shall be empty and the tool shall create the file at the specified path.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API
