@@ -202,7 +202,7 @@ func _update_display() -> void:
 			
 			_history_display.append_text(text_content)
 			if images > 0:
-				_history_display.push_italic()
+				_history_display.push_italics()
 				_history_display.append_text(" (%d image attachment%s)" % [images, "s" if images > 1 else ""])
 				_history_display.pop()
 			_history_display.append_text("\n\n")
