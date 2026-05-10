@@ -88,13 +88,32 @@ var debug_clear_history: bool = false:
 
 ## Send a message to the AI and trigger a streaming response.
 ## The [param prompt] is appended to the [member chat_history] as a user message.
-func send_message(prompt: String) -> void:
+## Optional [param attachments] can be a list of resource paths (e.g. textures) to include.
+func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	if _active_handler and _active_handler.is_busy():
 		push_warning("AIChat: A request is already in progress. Cancel it first or wait for completion.")
 		return
 
-	# 1. Update history with user prompt.
-	chat_history.append({"role": "user", "content": prompt})
+	# 1. Update history with user prompt and attachments.
+	var user_content: Variant = prompt
+	if not attachments.is_empty():
+		var content_array: Array[Dictionary] = []
+		content_array.append({"type": "text", "text": prompt})
+		
+		for path in attachments:
+			var res = load(path)
+			if res is Texture2D:
+				var b64 = PromptBuilder._encode_texture(res)
+				if b64:
+					content_array.append({
+						"type": "image_url",
+						"image_url": {"url": "data:image/png;base64," + b64}
+					})
+			else:
+				push_warning("AIChat: Attachment at '%s' is not a supported texture type." % path)
+		user_content = content_array
+
+	chat_history.append({"role": "user", "content": user_content})
 	partial_response = ""
 	
 	chat_started.emit()

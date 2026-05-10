@@ -11,9 +11,10 @@ config_version=5
 [ai]
 
 connection/base_url="http://localhost:1234"
-generation/max_tokens=8192
+generation/max_tokens=32768
 generation/max_retries=20
 generation/timeout_ms=10000
+tools/godot_source_path="/home/johann/projects/godot"
 
 [animation]
 

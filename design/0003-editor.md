@@ -47,12 +47,18 @@
 │  │ [Assistant]: Hi there!         │  │
 │  └───────────────────────────────┘  │
 │                                     │
+│  Attachments:                       │
+│  ┌───────────────────────────────┐  │
+│  │ [x] icon.svg  [x] world.tscn  │  │ (REQ-EDITOR-0005)
+│  └───────────────────────────────┘  │
+│                                     │
 │  Your Message:                      │
 │  ┌───────────────────────────────┐  │
 │  │          (text area)          │  │
 │  └───────────────────────────────┘  │
 │                                     │
-│  [ Send ] [ Cancel ] [ Clear Hist ] │
+│  [ Attach ] [ Send ] [ Cancel ]     │ (REQ-EDITOR-0005)
+│  [ Clear Hist ]                     │
 │                                     │
 │  Status: Typing...  ████████░░      │
 └─────────────────────────────────────┘
@@ -64,6 +70,11 @@
 - Binds to `chat_started`, `progress`, and `chat_finished` signals.
 - Updates the `HistoryDisplay` in real-time during streaming.
 - Manages button enabled/disabled states based on request status.
+- **Attachment Handling:**
+    - Opens an `EditorFileDialog` for resource selection when "Attach" is clicked.
+    - Maintains a local list of paths to be sent with the next message.
+    - Renders a list of current attachments with removal ("x") buttons.
+    - Passes the list to `AIChat.send_message()` and clears it after sending.
 
 ---
 
@@ -75,3 +86,4 @@
 | REQ-NODE3D-0011 | Generation mode selector in the dock |
 | REQ-NODE3D-0010 | "Cancel" button and `_on_cancel_pressed` controller logic |
 | REQ-EDITOR-0004 | TabContainer with `Generated Output` and `Error Log` |
+| REQ-EDITOR-0005 | "Attach" button, FileDialog, and attachment list in `ai_chat_panel` |

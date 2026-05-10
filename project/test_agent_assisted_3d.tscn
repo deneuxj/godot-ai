@@ -220,10 +220,27 @@ metadata/_custom_type_script = "uid://fltqr6krppck"
 
 [node name="generate house" type="Node3D" parent="." unique_id=1769445095]
 script = ExtResource("1_d8ypf")
-prompt = "Generate the house in the attached blueprint.
+prompt = "Generate the house in the attached blueprint. The house is single-floor.
+To the left is the garage. There is a door to the cellar, upper right of the garage. Parallel to the cellar is the living room. The living room has access to the terrace, at the bottom of the blue print. Beside the terrace is the pool table room, which also has access to the terrace. Above on the blue print is the kitchen, which makes the junction between the living room and the pool table room. The kitchen has a door to the side of the cellar opposite to the garage. The bathroom, main entrance and the office corner are all in a section of the house that is offset 2m above the cellar on the blue print.
+Below is an ascii-art rendering of the house:
+           +----+--+---+----+
+           |  B |WC| E |  O |
++------+---+----+--+        |
+|      | C |                |
+|      +---+      +----+----+
+|  G   |          |    |    |
+|      | L     K  | R1 | R2 |
+|      |          |    |    |
++------+---+      +----+----+
+           |   P  |
+           |      |
+           +------+
+Get all wall dimensions from the blue print, the ascii-art description is provided to help you interprete the blueprint.
+
 Scale is 1m (from the blue print) is 1 unit in the generated geometry.
-Outer walls only.
+Walls only.
 No furniture. No Floor. No roof. No ceiling. No lighting. No cameras."
 texture_attachments = Array[Texture2D]([ExtResource("2_t8jrp")])
-model = "qwen/qwen3.6-35b-a3b"
+generated_node_name = "GeneratedHouseNode"
+model = "mistralai/devstral-small-2-2512"
 metadata/_custom_type_script = "uid://fltqr6krppck"

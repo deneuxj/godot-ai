@@ -16,8 +16,14 @@ var _current_node: AIChat = null
 @onready var _send_button: Button = find_child("SendButton")
 @onready var _cancel_button: Button = find_child("CancelButton")
 @onready var _clear_button: Button = find_child("ClearButton")
+@onready var _attach_button: Button = find_child("AttachButton")
+@onready var _attachments_container: HBoxContainer = find_child("AttachmentsContainer")
+@onready var _attachment_dialog: EditorFileDialog = find_child("AttachmentDialog")
 @onready var _status_label: Label = find_child("StatusLabel")
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
+
+
+var _pending_attachments: Array[String] = []
 
 
 func _on_ready() -> void:
@@ -28,6 +34,10 @@ func _on_ready() -> void:
 		_cancel_button.pressed.connect(_on_cancel_pressed)
 	if _clear_button:
 		_clear_button.pressed.connect(_on_clear_pressed)
+	if _attach_button:
+		_attach_button.pressed.connect(_on_attach_pressed)
+	if _attachment_dialog:
+		_attachment_dialog.file_selected.connect(_on_file_selected)
 
 
 func _on_exit_tree() -> void:
@@ -76,11 +86,13 @@ func _update_for_node(node: Node) -> void:
 func _on_send_pressed() -> void:
 	if is_instance_valid(_current_node):
 		var prompt := _input_text_edit.text.strip_edges()
-		if prompt.is_empty():
+		if prompt.is_empty() and _pending_attachments.is_empty():
 			return
 		
 		_input_text_edit.text = ""
-		_current_node.send_message(prompt)
+		_current_node.send_message(prompt, _pending_attachments)
+		_pending_attachments.clear()
+		_update_attachments_ui()
 		_update_display()
 
 
@@ -95,7 +107,37 @@ func _on_cancel_pressed() -> void:
 func _on_clear_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.clear_history()
+		_pending_attachments.clear()
+		_update_attachments_ui()
 		_update_display()
+
+
+func _on_attach_pressed() -> void:
+	if _attachment_dialog:
+		_attachment_dialog.popup_file_dialog()
+
+
+func _on_file_selected(path: String) -> void:
+	if not _pending_attachments.has(path):
+		_pending_attachments.append(path)
+		_update_attachments_ui()
+
+
+func _update_attachments_ui() -> void:
+	# Clear existing badges.
+	for child in _attachments_container.get_children():
+		child.queue_free()
+	
+	for path in _pending_attachments:
+		var badge = Button.new()
+		badge.text = path.get_file() + " [x]"
+		badge.tooltip_text = path
+		badge.flat = true
+		badge.pressed.connect(func(): 
+			_pending_attachments.erase(path)
+			_update_attachments_ui()
+		)
+		_attachments_container.add_child(badge)
 
 
 # --- Node Signals ---
@@ -146,7 +188,24 @@ func _update_display() -> void:
 		_history_display.append_text("[%s]: " % role)
 		_history_display.pop()
 		
-		_history_display.append_text(msg.content + "\n\n")
+		if msg.content is String:
+			_history_display.append_text(msg.content + "\n\n")
+		elif msg.content is Array:
+			# Multi-modal content
+			var text_content := ""
+			var images := 0
+			for part in msg.content:
+				if part.get("type") == "text":
+					text_content += part.get("text", "")
+				elif part.get("type") == "image_url":
+					images += 1
+			
+			_history_display.append_text(text_content)
+			if images > 0:
+				_history_display.push_italic()
+				_history_display.append_text(" (%d image attachment%s)" % [images, "s" if images > 1 else ""])
+				_history_display.pop()
+			_history_display.append_text("\n\n")
 	
 	# Show partial response if currently typing.
 	if not _current_node.partial_response.is_empty():

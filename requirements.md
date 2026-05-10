@@ -10,7 +10,11 @@ REQ-PLGN-0001: Integrate a coding agent AI with Godot 4 to assist with scene cre
 
 REQ-NODE3D-0001: Provide a new 3D node type: `AIAgentAssisted3D`.
 
-... (existing AIAgentAssisted3D requirements) ...
+REQ-NODE3D-0002: The node shall accept a natural language prompt for scene generation.
+
+REQ-NODE3D-0003: The node shall support attaching multiple textures/images as visual references for the AI.
+
+REQ-NODE3D-0004: The node shall allow selecting between "Scripted Scene" (generates a `build()` method) and "Node Script" (generates a script extending `Node3D`).
 
 REQ-NODE3D-0005: The generated hierarchy or script attachment shall be persisted in the scene file.
 
@@ -20,7 +24,7 @@ REQ-CHAT-0001: Provide a new node type: `AIChat` that extends `Node`.
 
 REQ-CHAT-0002: The node shall maintain a conversational history (array of messages).
 
-REQ-CHAT-0003: The node shall provide a method `send_message(prompt: String)` to append a user message and trigger an AI response.
+REQ-CHAT-0003: The node shall provide a method `send_message(prompt: String, attachments: Array[String] = [])` to append a user message, process attachments, and trigger an AI response.
 
 REQ-CHAT-0004: The node shall emit signals for `chat_started`, `progress` (streaming), `chat_finished`, and `chat_error`.
 
@@ -33,6 +37,10 @@ REQ-CHAT-0007: The node shall allow overriding API settings (endpoint, key, mode
 REQ-CHAT-0008: The node shall provide a `clear_history()` method to reset the conversation.
 
 REQ-CHAT-0009: Ongoing chat requests shall be interruptible via a `cancel()` method.
+
+REQ-CHAT-0010: The `AIChat` node shall support attaching project resources to messages. Initially, this is limited to resources from which image data can be extracted (e.g., Textures).
+
+REQ-CHAT-0011: The content of attached picture resources shall be extracted, base64-encoded, and sent to the AI backend as part of a multi-modal message payload.
 
 ### AI Integration
 
@@ -69,6 +77,8 @@ REQ-EDITOR-0002: The plugin shall provide a custom editor dock for the AIAgentAs
 REQ-EDITOR-0003: Generation status shall be tracked as a node property.
 
 REQ-EDITOR-0004: AI-generated GDScript or TSCN code shall be accessible and viewable by the user within the editor dock UI.
+
+REQ-EDITOR-0005: The `AIChat` editor UI shall provide a mechanism (e.g., an attachment button and file dialog) to attach `res://` paths to the current prompt before sending.
 
 ### Persistence
 
