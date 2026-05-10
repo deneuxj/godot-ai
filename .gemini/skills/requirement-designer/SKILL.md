@@ -23,14 +23,19 @@ Compare the new requirements with the existing ones. Look for:
 ### 3. Refine into Design
 Once the requirements are clarified and consolidated, refine them into a concise design plan.
 
-**Design Constraints:**
+**Design Persistence & Convention:**
+- **Location:** All designs MUST be written into the `design/` directory.
+- **Naming:** Follow the `NNNN-category.md` convention (e.g., `0006-chat.md`). The number `NNNN` should correspond to the relative order of the requirement category in `requirements.md` (e.g., `0001` for the first category, `0002` for the second, etc.). If adding a design for an existing category, update the corresponding file.
+- **Traceability:** Every design file MUST include a **Requirements Coverage** table at the end, mapping each requirement ID (e.g., `REQ-CHAT-0001`) to its design/implementation detail.
+
+**Design Content Constraints:**
 - **Length:** Maximum 250 lines.
 - **Organization:** Specify which new files need to be created or which existing files need modification.
 - **Content:** Detail the classes, methods, and their responsibilities.
 - **Format:** Use high-level descriptions and pseudo-code. **Avoid writing final implementation code.**
 
 ### 4. Wait for Approval
-**DO NOT** start the implementation. Present the design to the user and wait for their explicit directive to proceed with the execution phase.
+**MANDATORY:** You MUST complete or update the design document in the `design/` directory BEFORE starting the implementation. Present the design to the user and wait for their explicit directive to proceed with the execution phase.
 
 ## When to Use
 - When the user proposes a new feature or change.
