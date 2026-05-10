@@ -24,6 +24,16 @@ func get_parameters() -> Dictionary:
 			"query": {
 				"type": "string",
 				"description": "Search keyword for filenames."
+			},
+			"start_line": {
+				"type": "integer",
+				"description": "The 1-based line number to start reading from (inclusive).",
+				"minimum": 1
+			},
+			"end_line": {
+				"type": "integer",
+				"description": "The 1-based line number to stop reading at (inclusive). Use -1 for end of file.",
+				"default": -1
 			}
 		},
 		"required": ["command"]
@@ -34,12 +44,14 @@ func execute(arguments: Dictionary) -> String:
 	var command = arguments.get("command", "")
 	var path = arguments.get("path", "res://")
 	var query = arguments.get("query", "")
+	var start_line = int(arguments.get("start_line", 1))
+	var end_line = int(arguments.get("end_line", -1))
 
 	match command:
 		"list_files":
 			return _list_files(path)
 		"get_file_content":
-			return _get_file_content(path)
+			return _get_file_content(path, start_line, end_line)
 		"search":
 			return _search(query)
 		_:
@@ -81,7 +93,7 @@ func _list_files(path: String) -> String:
 	return result
 
 
-func _get_file_content(path: String) -> String:
+func _get_file_content(path: String, start_line: int = 1, end_line: int = -1) -> String:
 	if not path.begins_with("res://"):
 		path = "res://" + path
 		
@@ -99,13 +111,36 @@ func _get_file_content(path: String) -> String:
 	if not file:
 		return "Error: Could not read file '%s'." % path
 		
-	var content = file.get_as_text()
+	var lines := []
+	while not file.eof_reached():
+		lines.append(file.get_line())
 	
-	# Truncate if too large to avoid context blowing up
-	if content.length() > 5000:
-		content = content.substr(0, 5000) + "\n\n... (file truncated for brevity)"
+	# Remove last empty line if it was just EOF
+	if not lines.is_empty() and lines.back().is_empty() and file.eof_reached():
+		lines.pop_back()
+
+	var total_lines = lines.size()
+	
+	# Clamp and adjust start/end lines
+	start_line = clampi(start_line, 1, total_lines)
+	if end_line == -1 or end_line > total_lines:
+		end_line = total_lines
+	
+	if start_line > end_line:
+		return "Error: start_line (%d) is greater than end_line (%d). Total lines: %d" % [start_line, end_line, total_lines]
+
+	var slice = lines.slice(start_line - 1, end_line)
+	var content = "\n".join(slice)
+	
+	var range_info = ""
+	if start_line > 1 or end_line < total_lines:
+		range_info = " (lines %d to %d of %d)" % [start_line, end_line, total_lines]
+	
+	# Truncate if the slice is still too large
+	if content.length() > 8000:
+		content = content.substr(0, 8000) + "\n\n... (content truncated for brevity)"
 		
-	return "Content of %s:\n```\n%s\n```" % [path, content]
+	return "Content of %s%s:\n```\n%s\n```" % [path, range_info, content]
 
 
 func _search(query: String) -> String:

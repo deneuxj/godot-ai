@@ -29,7 +29,9 @@ Uses `ClassDB` to list available classes and properties. For detailed documentat
 
 ### Specification
 - **Method**: `list_files(path: String = "res://", filter: String = "") -> Array`
-- **Method**: `get_resource_info(path: String) -> Dictionary`
+- **Method**: `get_resource_info(path: String, start_line: int = 1, end_line: int = -1) -> Dictionary`
+    - Returns metadata and content for text-based resources.
+    - Supports optional line range selection (`start_line` to `end_line`) for reading specific blocks of code/text.
 
 ### Implementation Detail
 Uses `DirAccess` for file listing. `get_resource_info` provides metadata about scenes (root node type) or scripts (class_name, exported properties).
