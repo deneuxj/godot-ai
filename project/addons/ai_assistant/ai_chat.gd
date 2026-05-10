@@ -186,6 +186,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_build_scene)
 
 	# 4. Create and configure handler.
+	status_updated.emit("Generating...")
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
 	
 	# 5. Connect signals.
