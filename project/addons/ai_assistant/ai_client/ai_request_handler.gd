@@ -118,7 +118,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 
 
 func _is_lm_studio(url: String) -> bool:
-	var check_url = url.replace("/v1", "") + "/api/v1/models"
+	var check_url = url + "/api/v1/models"
 	var http := HTTPRequest.new()
 	_parent.add_child(http)
 	

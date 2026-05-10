@@ -13,8 +13,7 @@ signal load_progress(percent: float)
 func load_model(model_id: String) -> Error:
 	_ensure_http_request()
 	
-	var base_url = endpoint.replace("/v1", "")
-	var url = base_url + "/api/v1/models/load"
+	var url = endpoint + "/api/v1/models/load"
 	var body = {"identifier": model_id}
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
@@ -44,8 +43,7 @@ func load_model(model_id: String) -> Error:
 func unload_model(model_id: String) -> Error:
 	_ensure_http_request()
 	
-	var base_url = endpoint.replace("/v1", "")
-	var url = base_url + "/api/v1/models/unload"
+	var url = endpoint + "/api/v1/models/unload"
 	var body = {"identifier": model_id}
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
@@ -75,8 +73,7 @@ func unload_model(model_id: String) -> Error:
 func get_local_models() -> Array:
 	_ensure_http_request()
 	
-	var base_url = endpoint.replace("/v1", "")
-	var url = base_url + "/api/v1/models"
+	var url = endpoint + "/api/v1/models"
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":

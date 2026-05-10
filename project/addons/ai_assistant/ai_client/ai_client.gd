@@ -13,9 +13,9 @@ const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 signal progress(chunks: Array[String])
 
 
-## AI endpoint URL (e.g. "http://localhost:1234/v1").
+## AI endpoint URL (e.g. "http://localhost:1234").
 @export
-var endpoint: String = "http://localhost:1234/v1"
+var endpoint: String = "http://localhost:1234"
 
 ## API key for authentication.
 @export
