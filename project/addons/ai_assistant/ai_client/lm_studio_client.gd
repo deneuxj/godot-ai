@@ -97,8 +97,11 @@ func get_local_models() -> Array:
 
 	if response_code == 200:
 		var parsed = JSON.parse_string(response_body)
-		if parsed and parsed.has("data"):
-			return parsed["data"]
+		if parsed:
+			if parsed.has("models"):
+				return parsed["models"]
+			elif parsed.has("data"):
+				return parsed["data"]
 	
 	return []
 

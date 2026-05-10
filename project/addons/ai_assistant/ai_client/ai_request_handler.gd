@@ -140,8 +140,8 @@ func _is_lm_studio(url: String) -> bool:
 	
 	if response_code == 200:
 		var parsed = JSON.parse_string(body)
-		if parsed and parsed.has("data"):
-			# LM Studio usually returns models in a "data" array
+		if parsed and (parsed.has("models") or parsed.has("data")):
+			# LM Studio returns models in a "models" or "data" array
 			return true
 	
 	return false
