@@ -85,6 +85,9 @@ var enable_modify_resources: bool = false
 @export
 var enable_validate_resources: bool = false
 
+@export
+var enable_build_scene: bool = true
+
 @export_group("Last Result")
 
 @export_multiline
@@ -296,10 +299,6 @@ func _set_owner_recursive(node: Node, scene_owner: Node) -> void:
 	node.owner = scene_owner
 	for child in node.get_children():
 		_set_owner_recursive(child, scene_owner)
-
-
-# --- Helpers ---
-ner)
 
 
 # --- Helpers ---

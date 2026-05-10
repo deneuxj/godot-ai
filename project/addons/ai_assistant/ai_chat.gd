@@ -53,6 +53,9 @@ var enable_modify_resources: bool = false
 var enable_validate_resources: bool = false
 
 @export
+var enable_build_scene: bool = true
+
+@export
 var use_router: bool = false
 
 
@@ -233,4 +236,3 @@ func clear_history() -> void:
 
 func _was_cancelled() -> bool:
 	return _active_handler != null and _active_handler.was_cancelled()
-_handler.was_cancelled()
