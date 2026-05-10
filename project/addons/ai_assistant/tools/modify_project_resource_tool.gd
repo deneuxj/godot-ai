@@ -116,19 +116,9 @@ func _patch_existing_file(path: String, target_line: int, old_content: String, n
 		return error_msg
 
 	# Apply the patch
-	var new_lines = lines.duplicate()
-	new_lines.remove_at(found_at - 1, old_line_count) # Godot 4.x remove_at doesn't have count?
-	# Correction: Godot 4 Array.remove_at(index) only removes ONE element. 
-	# Need to call it multiple times or use slice/concat.
-	
-	var result_lines := []
-	for i in range(found_at - 1):
-		result_lines.append(lines[i])
-	
+	var result_lines := lines.slice(0, found_at - 1)
 	result_lines.append_array(new_content.split("\n"))
-	
-	for i in range(found_at - 1 + old_line_count, total_lines):
-		result_lines.append(lines[i])
+	result_lines.append_array(lines.slice(found_at - 1 + old_line_count))
 
 	var write_file = FileAccess.open(path, FileAccess.WRITE)
 	if not write_file:
