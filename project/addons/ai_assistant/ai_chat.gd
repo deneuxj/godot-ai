@@ -16,6 +16,7 @@ signal chat_started()
 signal progress(chunks: Array[String])
 signal chat_finished(full_response: String)
 signal chat_error(error_message: String)
+signal status_updated(status: String)
 
 
 @export_group("API Overrides (Advanced)")
@@ -50,6 +51,9 @@ var enable_modify_resources: bool = false
 
 @export
 var enable_validate_resources: bool = false
+
+@export
+var use_router: bool = false
 
 
 # --- State ---
@@ -124,7 +128,34 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	chat_started.emit()
 
-	# 2. Prepare full message list and tools for the API.
+	# 2. Workload Routing (Optional)
+	var final_model := model
+	if use_router and final_model.is_empty():
+		status_updated.emit("Routing request...")
+		var router_model := AISettings.get_string(AISettings.CONN, "router_model")
+		if not router_model.is_empty():
+			var routing_messages: Array[Dictionary] = [
+				{"role": "system", "content": PromptBuilder.ROUTER_SYSTEM_PROMPT},
+				{"role": "user", "content": prompt}
+			]
+			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
+			var workload := await router_handler.execute(routing_messages)
+			workload = workload.strip_edges().to_lower()
+			
+			if workload.contains("analyst"):
+				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
+				status_updated.emit("Workload: Analyst")
+			elif workload.contains("technician"):
+				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
+				status_updated.emit("Workload: Technician")
+			else:
+				push_warning("AIChat: Router returned unrecognized workload: " + workload)
+				final_model = AISettings.get_string(AISettings.CONN, "model")
+		else:
+			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
+			final_model = AISettings.get_string(AISettings.CONN, "model")
+
+	# 3. Prepare full message list and tools for the API.
 	var messages: Array[Dictionary] = []
 	if not system_prompt.is_empty():
 		messages.append({"role": "system", "content": system_prompt})
@@ -132,20 +163,20 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources)
 
-	# 3. Create and configure handler.
-	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	# 4. Create and configure handler.
+	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
 	
-	# 4. Connect signals.
+	# 5. Connect signals.
 	_active_handler.progress.connect(func(chunks: Array[String]): 
 		for chunk in chunks:
 			partial_response += chunk
 		progress.emit(chunks)
 	)
 
-	# 5. Execute request.
+	# 6. Execute request.
 	var response = await _active_handler.execute(messages, tools)
 	
-	# 6. Cleanup and finish.
+	# 7. Cleanup and finish.
 	if response.is_empty() and not _was_cancelled():
 		chat_error.emit("Received empty response from AI.")
 	elif not response.is_empty():

@@ -94,6 +94,17 @@ Formatting:
 """
 
 
+## System prompt for routing requests between Analyst and Technician models.
+const ROUTER_SYSTEM_PROMPT := """\
+Analyze the user's latest request and categorize it into one of two workloads:
+
+1. analyst: The request is complex, involves high-level reasoning, architectural planning, or multi-step strategy. Use this for "how should I structure..." or "design a system for..." type questions.
+2. technician: The request is straightforward, involves implementing a specific feature, writing code for a known task, or using tools to perform project operations. Use this for "write a script that..." or "list the files in..." type questions.
+
+Respond with ONLY the word "analyst" or "technician". No other text.
+"""
+
+
 ## Main entry point to build the AI conversation history.
 static func build(prompt: String, textures: Array[Texture2D], mode: int) -> Array[Dictionary]:
 	var messages: Array[Dictionary] = []

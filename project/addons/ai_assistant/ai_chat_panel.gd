@@ -54,6 +54,8 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("chat_finished", _on_chat_finished)
 		if _current_node.is_connected("chat_error", _on_chat_error):
 			_current_node.disconnect("chat_error", _on_chat_error)
+		if _current_node.is_connected("status_updated", _on_status_updated):
+			_current_node.disconnect("status_updated", _on_status_updated)
 
 
 func _update_for_node(node: Node) -> void:
@@ -69,6 +71,7 @@ func _update_for_node(node: Node) -> void:
 		_current_node.connect("progress", _on_node_progress)
 		_current_node.connect("chat_finished", _on_chat_finished)
 		_current_node.connect("chat_error", _on_chat_error)
+		_current_node.connect("status_updated", _on_status_updated)
 
 		# Refresh UI state.
 		_update_display()
@@ -169,6 +172,11 @@ func _on_chat_error(err: String) -> void:
 	_status_label.text = "Status: Error - " + err
 	_send_button.disabled = false
 	_cancel_button.disabled = true
+	_update_status_theme()
+
+
+func _on_status_updated(status: String) -> void:
+	_status_label.text = "Status: " + status
 	_update_status_theme()
 
 

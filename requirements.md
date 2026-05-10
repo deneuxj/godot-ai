@@ -55,12 +55,21 @@ REQ-AIINTG-0005: When a compilation, parse, or load error occurs, the error mess
 REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/connection/base_url` - API endpoint URL
   - `ai/connection/api_key` - Authentication key (optional)
-  - `ai/connection/model` - Model name to use
+  - `ai/connection/model` - Default model name (general purpose)
+  - `ai/connection/router_model` - Fast model for workload analysis
+  - `ai/connection/analyst_model` - Complex model for reasoning and planning
+  - `ai/connection/technician_model` - Fast model for implementation and tools
   - `ai/generation/max_tokens` - Maximum response tokens
   - `ai/generation/max_retries` - Maximum number of correction attempts
   - `ai/generation/system_prompt` - Custom system prompt (optional override)
 
 REQ-AIINTG-0006: The maximum number of attempts to correct a generated script/scene shall be configurable in the project settings.
+
+REQ-AIINTG-0007: The `AIChat` node shall support an optional workload router:
+  - If `use_router` is enabled and no specific `model` override is set on the node, a fast `router_model` shall analyze the latest request.
+  - The router shall classify the request as either **Analyst** (complex tasks, planning) or **Technician** (implementation, tool calls).
+  - The request shall then be dispatched to the corresponding `analyst_model` or `technician_model`.
+  - The selected workload type shall be visible in the user interface.
 
 ### Editor UX
 
