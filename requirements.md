@@ -143,6 +143,13 @@ REQ-TOOL-0007: Provide a tool `validate_project_resource` that allows the AI to:
   - For scenes and other resources, it shall attempt to load them and check for errors.
   - The tool shall capture and return detailed engine errors and warnings encountered during validation.
 
+REQ-TOOL-0008: Provide a tool `build_dynamic_scene` that allows the AI to:
+  - Pass a complete GDScript string that defines a `build() -> Node` function.
+  - Execute the script securely and capture the returned `Node`.
+  - Optionally save the returned Node as a `.tscn` scene (only available when running in the Editor).
+  - Optionally add the returned Node to the current scene tree as a child of the node executing the request (available in Editor and Game).
+  - Capture and return execution errors if the `build()` function fails or returns null.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API

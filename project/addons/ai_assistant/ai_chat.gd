@@ -180,7 +180,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_build_scene)
 
 	# 4. Create and configure handler.
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
@@ -233,3 +233,4 @@ func clear_history() -> void:
 
 func _was_cancelled() -> bool:
 	return _active_handler != null and _active_handler.was_cancelled()
+_handler.was_cancelled()

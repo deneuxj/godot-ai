@@ -108,5 +108,37 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0003 | `ProjectResourcesTool` implementation details |
 | REQ-TOOL-0006 | `ModifyProjectResourceTool` implementation details |
 | REQ-TOOL-0007 | `ValidateProjectResourceTool` implementation details |
+| REQ-TOOL-0008 | `BuildDynamicSceneTool` implementation details |
+| REQ-TOOL-0004 | `@export` properties in node classes |
+| REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |
+_docs: bool = true
+@export var enable_project_resources: bool = true
+```
+
+When building the request, the `PromptBuilder` or the node will collect the definitions of enabled tools and pass them to the `AIClient`.
+
+---
+
+## Tool Execution Flow
+
+1. AI receives user prompt.
+2. AI decides to use a tool and returns a `tool_calls` message.
+3. `AIRequestHandler` intercepts the `tool_calls`.
+4. The corresponding Godot function is executed.
+5. The result is appended to the conversation as a `tool` role message.
+6. A new completion request is sent to the AI with the tool results.
+7. This repeats until the AI provides a final answer (or hits a loop limit).
+
+---
+
+## Requirements Coverage
+
+| Requirement | Covered By |
+|---|---|
+| REQ-TOOL-0001 | Design of the Tool System and `AIRequestHandler` loop |
+| REQ-TOOL-0002 | `GodotDocsTool` implementation details |
+| REQ-TOOL-0003 | `ProjectResourcesTool` implementation details |
+| REQ-TOOL-0006 | `ModifyProjectResourceTool` implementation details |
+| REQ-TOOL-0007 | `ValidateProjectResourceTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

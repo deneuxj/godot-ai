@@ -128,7 +128,7 @@ func generate() -> void:
 
 	# 1. Build initial prompt and tools.
 	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode)
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_build_scene)
 	var content: String = ""
 	var success: bool = false
 	
@@ -296,6 +296,10 @@ func _set_owner_recursive(node: Node, scene_owner: Node) -> void:
 	node.owner = scene_owner
 	for child in node.get_children():
 		_set_owner_recursive(child, scene_owner)
+
+
+# --- Helpers ---
+ner)
 
 
 # --- Helpers ---

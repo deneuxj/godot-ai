@@ -144,7 +144,7 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int) -> Arra
 
 
 ## Build the tools array based on node configuration.
-static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false) -> Array[Dictionary]:
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_build: bool = false) -> Array[Dictionary]:
 	var tools: Array[Dictionary] = []
 	
 	if enable_docs:
@@ -161,6 +161,10 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 	
 	if enable_validate:
 		var tool = load("res://addons/ai_assistant/tools/validate_project_resource_tool.gd").new()
+		tools.append(tool.get_definition())
+		
+	if enable_build:
+		var tool = load("res://addons/ai_assistant/tools/build_dynamic_scene_tool.gd").new()
 		tools.append(tool.get_definition())
 		
 	return tools

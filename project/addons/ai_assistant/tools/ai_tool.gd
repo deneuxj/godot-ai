@@ -12,6 +12,9 @@ var name: String = ""
 ## Description of what the tool does.
 var description: String = ""
 
+## Optional context node (e.g., the node that triggered the AI request).
+var context_node: Node = null
+
 
 func _init(p_name: String, p_description: String) -> void:
 	name = p_name
