@@ -159,6 +159,10 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/godot_docs_tool.gd").new()
 		"explore_project_resources":
 			tool = load("res://addons/ai_assistant/tools/project_resources_tool.gd").new()
+		"modify_project_resource":
+			tool = load("res://addons/ai_assistant/tools/modify_project_resource_tool.gd").new()
+		"validate_project_resource":
+			tool = load("res://addons/ai_assistant/tools/validate_project_resource_tool.gd").new()
 	
 	if tool:
 		print("AI calling tool: ", function_name, " with args: ", arguments)
