@@ -15,6 +15,9 @@ var _parent: Node
 var _active_client: AIClient = null
 var _cancelled: bool = false
 
+## True if any tool was called during the last execute() call.
+var tools_invoked: bool = false
+
 ## API endpoint URL override.
 var api_endpoint: String = ""
 ## API key override.
@@ -75,6 +78,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	# 4. Execute request loop (handles tool calls)
 	var final_response: String = ""
 	var current_messages = messages.duplicate()
+	tools_invoked = false
 	
 	const MAX_TOOL_LOOPS = 5
 	for i in range(MAX_TOOL_LOOPS):
@@ -84,6 +88,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			break
 			
 		if typeof(result) == TYPE_DICTIONARY and result.has("tool_calls"):
+			tools_invoked = true
 			var tool_calls = result["tool_calls"]
 			# Add the assistant message with tool calls to history
 			current_messages.append({
