@@ -58,6 +58,21 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0007: Validate Project Resource Tool (`validate_project_resource`)
+
+### Specification
+- **Method**: `validate_resource(path: String) -> Dictionary`
+- **Parameters**:
+    - `path`: The `res://` path to the resource to validate.
+
+### Implementation Detail
+1. **Script Validation**: For `.gd` files, use `GDScript.new()` and `reload()` to check for parse errors.
+2. **General Resource Validation**: For other extensions, use `ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_REPLACE)` to attempt loading.
+3. **Error Capture**: Wrap the validation logic with the `Logger` (similar to `ScriptExecutor`) to capture internal engine errors and warnings.
+4. **Detailed Feedback**: Return a structured response indicating success/failure and the captured errors.
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -92,5 +107,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0002 | `GodotDocsTool` implementation details |
 | REQ-TOOL-0003 | `ProjectResourcesTool` implementation details |
 | REQ-TOOL-0006 | `ModifyProjectResourceTool` implementation details |
+| REQ-TOOL-0007 | `ValidateProjectResourceTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

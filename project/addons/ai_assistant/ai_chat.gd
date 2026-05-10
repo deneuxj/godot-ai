@@ -48,6 +48,9 @@ var enable_project_resources: bool = true
 @export
 var enable_modify_resources: bool = false
 
+@export
+var enable_validate_resources: bool = false
+
 
 # --- State ---
 
@@ -127,7 +130,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		messages.append({"role": "system", "content": system_prompt})
 	messages.append_array(chat_history)
 	
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources)
 
 	# 3. Create and configure handler.
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)

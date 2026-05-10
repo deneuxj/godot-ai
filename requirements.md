@@ -113,6 +113,13 @@ REQ-TOOL-0006: Provide a tool `modify_project_resource` that allows the AI to:
   - If a mismatch occurs, the tool shall return an error instructing the AI to read the file again.
   - For new files, the `old_content` shall be empty and the tool shall create the file at the specified path.
 
+REQ-TOOL-0007: Provide a tool `validate_project_resource` that allows the AI to:
+  - Validate any resource in the project (scripts, scenes, resources, etc.).
+  - The tool shall take a path to the resource.
+  - For scripts, it shall perform parse validation.
+  - For scenes and other resources, it shall attempt to load them and check for errors.
+  - The tool shall capture and return detailed engine errors and warnings encountered during validation.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API

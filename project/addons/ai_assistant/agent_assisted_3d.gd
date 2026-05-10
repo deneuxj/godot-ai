@@ -82,6 +82,9 @@ var enable_project_resources: bool = true
 @export
 var enable_modify_resources: bool = false
 
+@export
+var enable_validate_resources: bool = false
+
 @export_group("Last Result")
 
 @export_multiline
@@ -125,7 +128,7 @@ func generate() -> void:
 
 	# 1. Build initial prompt and tools.
 	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode)
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources)
 	var content: String = ""
 	var success: bool = false
 	
