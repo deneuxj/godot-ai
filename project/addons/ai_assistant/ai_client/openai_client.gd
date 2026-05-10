@@ -55,8 +55,13 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
+	var request_url = endpoint
+	if not request_url.ends_with("/v1"):
+		request_url += "/v1"
+	request_url += "/chat/completions"
+
 	var error_code: int = _http_request.request(
-		endpoint + "/v1/chat/completions",
+		request_url,
 		headers,
 		HTTPClient.Method.METHOD_POST,
 		JSON.stringify(body),
@@ -121,9 +126,14 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
-	print("[%s] OpenAIClient: Sending streaming request to %s" % [Time.get_time_string_from_system(), endpoint + "/v1/chat/completions"])
+	var request_url = endpoint
+	if not request_url.ends_with("/v1"):
+		request_url += "/v1"
+	request_url += "/chat/completions"
+
+	print("[%s] OpenAIClient: Sending streaming request to %s" % [Time.get_time_string_from_system(), request_url])
 	var error_code: int = _http_request.request(
-		endpoint + "/v1/chat/completions",
+		request_url,
 		headers,
 		HTTPClient.Method.METHOD_POST,
 		JSON.stringify(body),
