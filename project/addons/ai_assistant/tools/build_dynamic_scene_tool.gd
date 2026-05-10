@@ -51,15 +51,20 @@ func execute(arguments: Dictionary) -> String:
 	if reload_err != OK:
 		return "Error: Script compilation failed (Code: %d)." % reload_err
 
-	var obj = Object.new()
-	obj.set_script(script)
+	var obj = script.new()
 	
 	if not obj.has_method("build"):
-		obj.free()
+		if obj is Node:
+			obj.free()
 		return "Error: Script does not define a 'build()' function."
 
 	var generated_node = obj.call("build")
-	obj.free()
+	if obj is Node:
+		obj.free()
+	elif obj is RefCounted:
+		pass
+	else:
+		obj.free()
 
 	if not generated_node is Node:
 		if generated_node != null and generated_node is Object:
@@ -67,11 +72,13 @@ func execute(arguments: Dictionary) -> String:
 		return "Error: 'build()' did not return a valid Node."
 
 	var result_msg = "Successfully executed build script."
+	var node_handled = false
 
 	# 2. Add to tree
 	if add_to_tree:
 		if context_node:
 			context_node.add_child(generated_node)
+			node_handled = true
 			if Engine.is_editor_hint():
 				generated_node.owner = context_node.get_tree().edited_scene_root
 			result_msg += " Node added to the scene tree under '%s'." % context_node.name
@@ -95,5 +102,8 @@ func execute(arguments: Dictionary) -> String:
 					result_msg += " Error: Failed to save scene to '%s' (Code: %d)." % [scene_path, save_err]
 			else:
 				result_msg += " Error: Failed to pack node into a scene (Code: %d)." % pack_err
+
+	if not node_handled and not generated_node.is_inside_tree():
+		generated_node.free()
 
 	return result_msg
