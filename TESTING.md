@@ -47,11 +47,11 @@ chat.send_message("Please help me.")
 ## Available Test Suites
 
 ### 1. Build Dynamic Scene Tool Test
-**Files:** `project/test_build_dynamic_scene_tool.tscn` / `.gd`
+**Files:** `project/testing/test_build_dynamic_scene_tool.tscn` / `.gd`
 **Purpose:** Verifies the `BuildDynamicSceneTool` can compile GDScript, instantiate nodes, handle memory correctly (no leaks), and report errors for invalid scripts.
 
 ### 2. Comprehensive Tool Mock Test
-**Files:** `project/test_all_tools_mock.tscn` / `.gd`
+**Files:** `project/testing/test_all_tools_mock.tscn` / `.gd`
 **Purpose:** Tests the integration of ALL available tools. It simulates an AI deciding to use each tool and verifies that the tools execute and return valid results.
 **Tools covered:**
 - `explore_godot_docs`
@@ -71,10 +71,10 @@ Navigate to the root of the repository and run:
 
 ```bash
 # Run the specific tool test
-./godot.sh --headless --path project/ test_build_dynamic_scene_tool.tscn
+./godot.sh --headless --path project/ testing/test_build_dynamic_scene_tool.tscn
 
 # Run the comprehensive mock test
-./godot.sh --headless --path project/ test_all_tools_mock.tscn
+./godot.sh --headless --path project/ testing/test_all_tools_mock.tscn
 ```
 
 ### Running in Editor

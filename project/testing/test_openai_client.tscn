@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d8k3naw2xp0o"]
 
-[ext_resource type="Script" uid="uid://cjamxtfo7v615" path="res://test_openai_client.gd" id="1_test"]
+[ext_resource type="Script" uid="uid://cjamxtfo7v615" path="res://testing/test_openai_client.gd" id="1_test"]
 
 [node name="TestOpenAIClient" type="Node2D" unique_id=816196078]
 script = ExtResource("1_test")

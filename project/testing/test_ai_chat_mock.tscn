@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://testchatmock"]
 
-[ext_resource type="Script" path="res://test_ai_chat_mock.gd" id="1_mock"]
+[ext_resource type="Script" path="res://testing/test_ai_chat_mock.gd" id="1_mock"]
 
 [node name="TestChatMock" type="Node"]
 script = ExtResource("1_mock")

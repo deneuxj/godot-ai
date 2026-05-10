@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://testalltoolsmock"]
 
-[ext_resource type="Script" path="res://test_all_tools_mock.gd" id="1_all"]
+[ext_resource type="Script" path="res://testing/test_all_tools_mock.gd" id="1_all"]
 
 [node name="TestAllToolsMock" type="Node"]
 script = ExtResource("1_all")

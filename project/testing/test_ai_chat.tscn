@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://k1rivw7wtl8v"]
 
-[ext_resource type="Script" uid="uid://caan8eqcva3g7" path="res://test_ai_chat_scene.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://caan8eqcva3g7" path="res://testing/test_ai_chat_scene.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://crgnmdl6n3d45" path="res://addons/ai_assistant/ai_chat.gd" id="2_chat"]
 
 [node name="TestAIChat" type="Control" unique_id=678501508]
@@ -380,7 +380,7 @@ Each wall includes:
 
 Would you like me to:
 1. [b]Test/validate the script[/b] first?
-2. Create the corresponding [.tscn](file://res://test_ai_chat.tscn) scene file?
+2. Create the corresponding [.tscn](file://res://testing/test_ai_chat.tscn) scene file?
 3. Move on to implementing **[i]point 2[/i]** (Guarderobe)?",
 "role": "assistant"
 }, {
@@ -412,7 +412,7 @@ The script returns the [b]Left Wall[/b] node, which can then be added to your sc
 
 Would you like me to:
 1. Test the script in the editor?
-2. Create the [.tscn](file://res://test_ai_chat.tscn) scene file?
+2. Create the [.tscn](file://res://testing/test_ai_chat.tscn) scene file?
 3. Move on to implementing **point 2** (Guarderobe)?",
 "role": "assistant"
 }])
