@@ -25,6 +25,9 @@ var api_key: String = ""
 ## Model name override.
 var model: String = ""
 
+## If set, this client will be used instead of creating a real one.
+var mock_client: AIClient = null
+
 
 func _init(parent: Node, endpoint: String = "", key: String = "", model_name: String = "") -> void:
 	_parent = parent
@@ -48,15 +51,20 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	# 1. Create client and configure with defaults.
 	var client: AIClient = null
 	
-	# Auto-detection of LM Studio
-	var endpoint_to_check = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
-	if await _is_lm_studio(endpoint_to_check):
-		client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
-		print("AIRequestHandler: LM Studio detected. Using LMStudioClient.")
+	if mock_client:
+		client = mock_client
 	else:
-		client = AIClient.create_openai_client()
+		# Auto-detection of LM Studio
+		var endpoint_to_check = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
+		if not mock_client and await _is_lm_studio(endpoint_to_check):
+
+			client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
+			print("AIRequestHandler: LM Studio detected. Using LMStudioClient.")
+		else:
+			client = AIClient.create_openai_client()
 	
-	_parent.add_child(client)
+	if not client.is_inside_tree():
+		_parent.add_child(client)
 	_active_client = client
 
 	# 2. Apply Overrides.
@@ -113,7 +121,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			break
 
 	# 5. Cleanup.
-	if is_instance_valid(client):
+	if is_instance_valid(client) and not mock_client:
 		client.queue_free()
 	
 	if _active_client == client:
@@ -236,6 +244,9 @@ func unload_model(model_id: String) -> Error:
 
 ## Check if a model supports vision capabilities.
 func supports_vision(model_id: String) -> bool:
+	if mock_client:
+		return mock_client.supports_vision(model_id)
+		
 	var endpoint_to_use = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
 	var is_lms = await _is_lm_studio(endpoint_to_use)
 	

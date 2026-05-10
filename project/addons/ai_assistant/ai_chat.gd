@@ -72,6 +72,9 @@ var partial_response: String = ""
 
 var _active_handler: AIRequestHandler = null
 
+## Optional mock client for testing.
+var mock_client: AIClient = null
+
 
 @export_group("Debug / Testing")
 
@@ -143,6 +146,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				{"role": "user", "content": prompt}
 			]
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
+			router_handler.mock_client = mock_client
 			var workload := await router_handler.execute(routing_messages)
 			workload = workload.strip_edges().to_lower()
 			
@@ -166,6 +170,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 	# 3. Vision Capability Check & Payload Stripping
 	var tools_handler := AIRequestHandler.new(self, api_endpoint, api_key)
+	tools_handler.mock_client = mock_client
 	var vision_ok = await tools_handler.supports_vision(final_model)
 	
 	var final_messages: Array[Dictionary] = []
@@ -188,6 +193,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	# 4. Create and configure handler.
 	status_updated.emit("Generating...")
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
+	_active_handler.mock_client = mock_client
 	
 	# 5. Connect signals.
 	_active_handler.progress.connect(func(chunks: Array[String]): 
