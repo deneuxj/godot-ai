@@ -212,3 +212,21 @@ func unload_model(model_id: String) -> Error:
 		client.queue_free()
 		return err
 	return OK
+
+
+## Check if a model supports vision capabilities.
+func supports_vision(model_id: String) -> bool:
+	var endpoint_to_use = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
+	var is_lms = await _is_lm_studio(endpoint_to_use)
+	
+	if is_lms:
+		var client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
+		client.set_endpoint(endpoint_to_use)
+		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+		client.set_api_key(key_to_use)
+		_parent.add_child(client)
+		var result = await client.supports_vision(model_id)
+		client.queue_free()
+		return result
+		
+	return true # Default for non-LM Studio

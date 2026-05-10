@@ -99,6 +99,11 @@ func get_local_models() -> Array:
 	return []
 
 
+## Check if a model supports vision capabilities.
+func supports_vision(model_id: String) -> bool:
+	return true
+
+
 ## Factory method that creates an [OpenAIClient] configured with project settings.
 ##
 ## Reads configuration from [member AISettings] defaults under the

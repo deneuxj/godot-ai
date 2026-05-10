@@ -101,3 +101,14 @@ func get_local_models() -> Array:
 			return parsed["data"]
 	
 	return []
+
+
+## Check if a model supports vision capabilities.
+func supports_vision(model_id: String) -> bool:
+	var models = await get_local_models()
+	for m in models:
+		# Check both key and display_name as identifiers
+		if m.get("key") == model_id or m.get("display_name") == model_id:
+			var caps = m.get("capabilities", {})
+			return caps.get("vision", false)
+	return true # Fallback to true

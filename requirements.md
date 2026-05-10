@@ -22,7 +22,7 @@ REQ-NODE3D-0005: The generated hierarchy or script attachment shall be persisted
 
 REQ-CHAT-0001: Provide a new node type: `AIChat` that extends `Node`.
 
-REQ-CHAT-0002: The node shall maintain a conversational history (array of messages).
+REQ-CHAT-0002: The node shall maintain a conversational history (array of messages) that is persisted across editor sessions via an exported property.
 
 REQ-CHAT-0003: The node shall provide a method `send_message(prompt: String, attachments: Array[String] = [])` to append a user message, process attachments, and trigger an AI response.
 

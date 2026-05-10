@@ -60,6 +60,7 @@ var use_router: bool = false
 
 ## Current conversation history as an array of message dictionaries:
 ## [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+@export
 var chat_history: Array[Dictionary] = []
 
 ## The partial response currently being received from the AI.
@@ -160,11 +161,24 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
 			final_model = AISettings.get_string(AISettings.CONN, "model")
 
-	# 3. Prepare full message list and tools for the API.
-	var messages: Array[Dictionary] = []
+	# 3. Vision Capability Check & Payload Stripping
+	var tools_handler := AIRequestHandler.new(self, api_endpoint, api_key)
+	var vision_ok = await tools_handler.supports_vision(final_model)
+	
+	var final_messages: Array[Dictionary] = []
 	if not system_prompt.is_empty():
-		messages.append({"role": "system", "content": system_prompt})
-	messages.append_array(chat_history)
+		final_messages.append({"role": "system", "content": system_prompt})
+	
+	for msg in chat_history:
+		var new_msg = msg.duplicate()
+		if not vision_ok and typeof(new_msg.content) == TYPE_ARRAY:
+			# Strip images from multimodal content
+			var text_only = ""
+			for part in new_msg.content:
+				if part.get("type") == "text":
+					text_only += part.get("text", "")
+			new_msg.content = text_only
+		final_messages.append(new_msg)
 	
 	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources)
 
@@ -179,11 +193,14 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	)
 
 	# 6. Execute request.
-	var response = await _active_handler.execute(messages, tools)
+	var response = await _active_handler.execute(final_messages, tools)
 	
 	# 7. Cleanup and finish.
 	if response.is_empty() and not _was_cancelled():
 		chat_error.emit("Received empty response from AI.")
+		# Fix: Remove last user message from history on error to avoid duplicates on retry
+		if not chat_history.is_empty() and chat_history.back().role == "user":
+			chat_history.pop_back()
 	elif not response.is_empty():
 		chat_history.append({"role": "assistant", "content": response})
 		partial_response = ""
