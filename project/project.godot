@@ -11,10 +11,10 @@ config_version=5
 [ai]
 
 connection/base_url="http://localhost:1234"
-connection/model="mistralai/mistral-7b-instruct"
-connection/router_model="qwen/qwen2.5-7b-instruct"
-connection/analyst_model="deepseek/deepseek-r1"
-connection/technician_model="mistralai/devstral-small-2-2512"
+connection/model=""
+connection/router_model="google/gemma-4-e2b"
+connection/analyst_model="qwen/qwen3.6-35b-a3b"
+connection/technician_model="google/gemma-4-e2b"
 generation/max_tokens=32768
 generation/max_retries=20
 generation/timeout_ms=10000

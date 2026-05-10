@@ -151,6 +151,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			else:
 				push_warning("AIChat: Router returned unrecognized workload: " + workload)
 				final_model = AISettings.get_string(AISettings.CONN, "model")
+			
+			# Ensure model is loaded (LM Studio Native)
+			if not final_model.is_empty():
+				status_updated.emit("Loading model: " + final_model)
+				await router_handler.load_model(final_model)
 		else:
 			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
 			final_model = AISettings.get_string(AISettings.CONN, "model")
@@ -189,6 +194,19 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 func cancel() -> void:
 	if _active_handler:
 		_active_handler.cancel()
+
+
+## Unload the current model (LM Studio Native).
+func unload_model(model_id: String = "") -> void:
+	var target = model_id
+	if target.is_empty():
+		target = model if not model.is_empty() else AISettings.get_string(AISettings.CONN, "model")
+	
+	if not target.is_empty():
+		var handler = AIRequestHandler.new(self, api_endpoint, api_key)
+		status_updated.emit("Unloading model: " + target)
+		await handler.unload_model(target)
+		status_updated.emit("Model unloaded")
 
 
 ## Reset the conversation history.

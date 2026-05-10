@@ -21,9 +21,12 @@ var _current_node: AIChat = null
 @onready var _attachment_dialog: EditorFileDialog = find_child("AttachmentDialog")
 @onready var _status_label: Label = find_child("StatusLabel")
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
+@onready var _unload_button: Button = find_child("UnloadButton")
 
 
 var _pending_attachments: Array[String] = []
+var _last_prompt: String = ""
+var _last_attachments: Array[String] = []
 
 
 func _on_ready() -> void:
@@ -36,6 +39,8 @@ func _on_ready() -> void:
 		_clear_button.pressed.connect(_on_clear_pressed)
 	if _attach_button:
 		_attach_button.pressed.connect(_on_attach_pressed)
+	if _unload_button:
+		_unload_button.pressed.connect(_on_unload_pressed)
 	if _attachment_dialog:
 		_attachment_dialog.file_selected.connect(_on_file_selected)
 
@@ -92,6 +97,10 @@ func _on_send_pressed() -> void:
 		if prompt.is_empty() and _pending_attachments.is_empty():
 			return
 		
+		# Store for potential retry on error
+		_last_prompt = prompt
+		_last_attachments = _pending_attachments.duplicate()
+		
 		_input_text_edit.text = ""
 		_current_node.send_message(prompt, _pending_attachments)
 		_pending_attachments.clear()
@@ -118,6 +127,11 @@ func _on_clear_pressed() -> void:
 func _on_attach_pressed() -> void:
 	if _attachment_dialog:
 		_attachment_dialog.popup_file_dialog()
+
+
+func _on_unload_pressed() -> void:
+	if is_instance_valid(_current_node):
+		_current_node.unload_model()
 
 
 func _on_file_selected(path: String) -> void:
@@ -164,6 +178,11 @@ func _on_chat_finished(_response: String) -> void:
 	_send_button.disabled = false
 	_cancel_button.disabled = true
 	_progress_bar.value = 100.0
+	
+	# Successful response, clear retry state
+	_last_prompt = ""
+	_last_attachments.clear()
+	
 	_update_display()
 	_update_status_theme()
 
@@ -172,6 +191,13 @@ func _on_chat_error(err: String) -> void:
 	_status_label.text = "Status: Error - " + err
 	_send_button.disabled = false
 	_cancel_button.disabled = true
+	
+	# Restore last message on error
+	if not _last_prompt.is_empty() or not _last_attachments.is_empty():
+		_input_text_edit.text = _last_prompt
+		_pending_attachments = _last_attachments.duplicate()
+		_update_attachments_ui()
+	
 	_update_status_theme()
 
 

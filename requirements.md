@@ -71,6 +71,18 @@ REQ-AIINTG-0007: The `AIChat` node shall support an optional workload router:
   - The request shall then be dispatched to the corresponding `analyst_model` or `technician_model`.
   - The selected workload type shall be visible in the user interface.
 
+### LM Studio Integration (Native)
+
+REQ-LMSTUDIO-0001: The plugin shall auto-detect if the AI backend is LM Studio and enable native REST API features (`/api/v1/*`) when available.
+
+REQ-LMSTUDIO-0002: Provide an `LMStudioClient` that implements programmatic model loading, unloading, and status tracking.
+
+REQ-LMSTUDIO-0003: The `AIChat` router shall ensure the required model (Analyst or Technician) is loaded into VRAM before sending requests, with a priority on keeping models loaded for speed.
+
+REQ-LMSTUDIO-0004: The editor UI shall display real-time loading progress (0-100%) when switching or initializing models.
+
+REQ-LMSTUDIO-0005: The plugin shall provide a mechanism to manually unload the active model to free up GPU memory.
+
 ### Editor UX
 
 REQ-EDITOR-0001: The plugin shall provide real-time progress feedback in the Godot editor during AI processing.
@@ -88,6 +100,8 @@ REQ-EDITOR-0003: Generation status shall be tracked as a node property.
 REQ-EDITOR-0004: AI-generated GDScript or TSCN code shall be accessible and viewable by the user within the editor dock UI.
 
 REQ-EDITOR-0005: The `AIChat` editor UI shall provide a mechanism (e.g., an attachment button and file dialog) to attach `res://` paths to the current prompt before sending.
+
+REQ-EDITOR-0006: If an `AIChat` request fails, the editor UI shall restore the last sent prompt and its attachments to the input field and attachment list for easy retry.
 
 ### Persistence
 

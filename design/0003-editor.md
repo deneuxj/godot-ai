@@ -75,6 +75,8 @@
     - Maintains a local list of paths to be sent with the next message.
     - Renders a list of current attachments with removal ("x") buttons.
     - Passes the list to `AIChat.send_message()` and clears it after sending.
+- **Error Recovery:** (REQ-EDITOR-0006)
+    - If `chat_error` is emitted, restores the last sent text and attachments from internal state back into the input fields.
 
 ---
 
@@ -87,3 +89,4 @@
 | REQ-NODE3D-0010 | "Cancel" button and `_on_cancel_pressed` controller logic |
 | REQ-EDITOR-0004 | TabContainer with `Generated Output` and `Error Log` |
 | REQ-EDITOR-0005 | "Attach" button, FileDialog, and attachment list in `ai_chat_panel` |
+| REQ-EDITOR-0006 | State restoration in `ai_chat_panel._on_chat_error` |

@@ -14,7 +14,7 @@ script = ExtResource("1_script")
 
 [node name="AIChat" type="Node" parent="." unique_id=767824470]
 script = ExtResource("2_chat")
-model = "qwen/qwen3.6-27b"
+use_router = true
 
 [node name="Panel" type="Panel" parent="." unique_id=612958820]
 layout_mode = 1

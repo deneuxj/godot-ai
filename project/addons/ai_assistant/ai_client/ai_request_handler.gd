@@ -43,7 +43,16 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	_cancelled = false
 
 	# 1. Create client and configure with defaults.
-	var client := AIClient.create_openai_client()
+	var client: AIClient = null
+	
+	# Auto-detection of LM Studio
+	var endpoint_to_check = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
+	if await _is_lm_studio(endpoint_to_check):
+		client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
+		print("AIRequestHandler: LM Studio detected. Using LMStudioClient.")
+	else:
+		client = AIClient.create_openai_client()
+	
 	_parent.add_child(client)
 	_active_client = client
 
@@ -108,6 +117,36 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	return final_response
 
 
+func _is_lm_studio(url: String) -> bool:
+	var check_url = url.replace("/v1", "") + "/api/v1/models"
+	var http := HTTPRequest.new()
+	_parent.add_child(http)
+	
+	var headers: PackedStringArray = ["Content-Type: application/json"]
+	var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+	if not key_to_use.is_empty():
+		headers.append("Authorization: Bearer " + key_to_use)
+	
+	var error := http.request(check_url, headers, HTTPClient.Method.METHOD_GET)
+	if error != OK:
+		http.queue_free()
+		return false
+		
+	var result = await http.request_completed
+	var response_code = result[1]
+	var body = result[3].get_string_from_utf8()
+	
+	http.queue_free()
+	
+	if response_code == 200:
+		var parsed = JSON.parse_string(body)
+		if parsed and parsed.has("data"):
+			# LM Studio usually returns models in a "data" array
+			return true
+	
+	return false
+
+
 func _execute_tool(tool_call: Dictionary) -> String:
 	var function_name = tool_call.function.name
 	var arguments = JSON.parse_string(tool_call.function.arguments)
@@ -143,3 +182,33 @@ func is_busy() -> bool:
 ## Returns true if the last request was cancelled.
 func was_cancelled() -> bool:
 	return _cancelled
+
+
+## Programmatically load a model if the backend is LM Studio.
+func load_model(model_id: String) -> Error:
+	var endpoint_to_use = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
+	if await _is_lm_studio(endpoint_to_use):
+		var client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
+		client.set_endpoint(endpoint_to_use)
+		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+		client.set_api_key(key_to_use)
+		_parent.add_child(client)
+		var err = await client.load_model(model_id)
+		client.queue_free()
+		return err
+	return OK
+
+
+## Programmatically unload a model if the backend is LM Studio.
+func unload_model(model_id: String) -> Error:
+	var endpoint_to_use = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
+	if await _is_lm_studio(endpoint_to_use):
+		var client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
+		client.set_endpoint(endpoint_to_use)
+		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+		client.set_api_key(key_to_use)
+		_parent.add_child(client)
+		var err = await client.unload_model(model_id)
+		client.queue_free()
+		return err
+	return OK

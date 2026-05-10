@@ -84,6 +84,21 @@ func cancel() -> void:
 	push_error("AIClient.cancel() not implemented. Override in subclass.")
 
 
+## Programmatically load a model (LM Studio specific).
+func load_model(model_id: String) -> Error:
+	return OK
+
+
+## Programmatically unload a model (LM Studio specific).
+func unload_model(model_id: String) -> Error:
+	return OK
+
+
+## Get a list of local models (LM Studio specific).
+func get_local_models() -> Array:
+	return []
+
+
 ## Factory method that creates an [OpenAIClient] configured with project settings.
 ##
 ## Reads configuration from [member AISettings] defaults under the
