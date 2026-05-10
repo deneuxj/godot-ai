@@ -94,6 +94,11 @@ func unload_model(model_id: String) -> Error:
 	return OK
 
 
+## Programmatically unload all models (LM Studio specific).
+func unload_all_models() -> Error:
+	return OK
+
+
 ## Get a list of local models (LM Studio specific).
 func get_local_models() -> Array:
 	return []

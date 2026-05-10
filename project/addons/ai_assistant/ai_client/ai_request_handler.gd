@@ -197,7 +197,15 @@ func load_model(model_id: String) -> Error:
 		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
 		client.set_api_key(key_to_use)
 		_parent.add_child(client)
+		
 		var err = await client.load_model(model_id)
+		if err != OK:
+			print("AIRequestHandler: First load attempt failed for '%s'. Unloading all models and retrying..." % model_id)
+			await client.unload_all_models()
+			err = await client.load_model(model_id)
+			if err != OK:
+				print("AIRequestHandler: Second load attempt also failed for '%s'. Giving up." % model_id)
+		
 		client.queue_free()
 		return err
 	return OK

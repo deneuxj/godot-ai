@@ -69,6 +69,18 @@ func unload_model(model_id: String) -> Error:
 	return ERR_CANT_CONNECT as Error
 
 
+## Unload all models from memory.
+func unload_all_models() -> Error:
+	var models = await get_local_models()
+	for m in models:
+		var instances = m.get("loaded_instances", [])
+		if instances.size() > 0:
+			var key = m.get("key", "")
+			if not key.is_empty():
+				await unload_model(key)
+	return OK
+
+
 ## List available local models.
 func get_local_models() -> Array:
 	_ensure_http_request()
