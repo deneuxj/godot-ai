@@ -176,8 +176,8 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/modify_project_resource_tool.gd").new()
 		"validate_project_resource":
 			tool = load("res://addons/ai_assistant/tools/validate_project_resource_tool.gd").new()
-		"build_dynamic_scene":
-			tool = load("res://addons/ai_assistant/tools/build_dynamic_scene_tool.gd").new()
+		"execute_script":
+			tool = load("res://addons/ai_assistant/tools/execute_script_tool.gd").new()
 	
 	if tool:
 		tool.context_node = _parent

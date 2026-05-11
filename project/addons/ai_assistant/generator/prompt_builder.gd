@@ -29,23 +29,19 @@ Tool Usage:
 - If you need to check if a specific resource (mesh, texture, scene) exists or what it contains, USE `explore_project_resources`.
 - If you need to modify an existing file or create a new one, USE `modify_project_resource`.
 - If you need to verify if a file has errors (parse errors, load errors, missing dependencies), USE `validate_project_resource`.
+- If you need to execute arbitrary GDScript or construct a scene hierarchy in the live tree, USE `execute_script`.
 - DO NOT guess property names or resource paths. Verify them using tools first.
 
 Example:
 ```gdscript
-func build() -> Node3D:
-	var root = Node3D.new()
-	root.name = "Root"
-
+static func execute(node: Node):
 	var mesh_node = MeshInstance3D.new()
 	mesh_node.name = "Cube"
 	var mesh = BoxMesh.new()
 	mesh.size = Vector3(1, 1, 1)
 	mesh_node.mesh = mesh
 
-	root.add_child(mesh_node)
-
-	return root
+	node.add_child(mesh_node)
 ```
 """
 
@@ -144,7 +140,7 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int) -> Arra
 
 
 ## Build the tools array based on node configuration.
-static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_build: bool = false) -> Array[Dictionary]:
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false) -> Array[Dictionary]:
 	var tools: Array[Dictionary] = []
 	
 	if enable_docs:
@@ -163,8 +159,8 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 		var tool = load("res://addons/ai_assistant/tools/validate_project_resource_tool.gd").new()
 		tools.append(tool.get_definition())
 		
-	if enable_build:
-		var tool = load("res://addons/ai_assistant/tools/build_dynamic_scene_tool.gd").new()
+	if enable_execute:
+		var tool = load("res://addons/ai_assistant/tools/execute_script_tool.gd").new()
 		tools.append(tool.get_definition())
 		
 	return tools

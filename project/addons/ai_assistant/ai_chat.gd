@@ -53,7 +53,7 @@ var enable_modify_resources: bool = false
 var enable_validate_resources: bool = false
 
 @export
-var enable_build_scene: bool = true
+var enable_execute_script: bool = true
 
 @export
 var use_router: bool = false
@@ -188,7 +188,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_build_scene)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_execute_script)
 
 	# 4. Create and configure handler.
 	status_updated.emit("Generating...")

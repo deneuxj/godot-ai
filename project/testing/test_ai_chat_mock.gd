@@ -31,7 +31,7 @@ func _ready() -> void:
 	await chat.chat_finished
 	
 	# --- Test 2: Tool Call Simulation ---
-	print("\n--- Test 2: Tool Call Simulation (build_dynamic_scene) ---")
+	print("\n--- Test 2: Tool Call Simulation (execute_script) ---")
 	
 	# The first response from AI is a tool call
 	var tool_call = {
@@ -40,10 +40,9 @@ func _ready() -> void:
 				"id": "call_123",
 				"type": "function",
 				"function": {
-					"name": "build_dynamic_scene",
+					"name": "execute_script",
 					"arguments": JSON.stringify({
-						"script_content": "extends Node\nfunc build() -> Node:\n\tvar n = Node3D.new()\n\tn.name = 'MockNode'\n\treturn n",
-						"add_to_tree": true
+						"script_content": "static func execute(node: Node):\n\tvar n = Node3D.new()\n\tn.name = 'MockNode'\n\tnode.add_child(n)"
 					})
 				}
 			}
@@ -52,9 +51,9 @@ func _ready() -> void:
 	mock.response_queue.append(tool_call)
 	
 	# The second response (after tool execution) is the final text
-	mock.response_queue.append("I have successfully built the MockNode for you.")
+	mock.response_queue.append("I have successfully executed the script for you.")
 	
-	chat.send_message("Please build a simple node.")
+	chat.send_message("Please execute a simple script to add a node.")
 	await chat.chat_finished
 	
 	var mock_node = chat.get_node_or_null("MockNode")

@@ -65,11 +65,10 @@ func _run_tests() -> void:
 		"path": "res://generated/mock_test_file.txt"
 	}, "Validating the newly created resource...")
 
-	# 6. Test BuildDynamicSceneTool
-	await _test_tool("build_dynamic_scene", {
-		"script_content": "extends Node\nfunc build() -> Node:\n\tvar n = Node.new()\n\tn.name = 'ToolTestNode'\n\treturn n",
-		"add_to_tree": true
-	}, "Building a dynamic node...")
+	# 6. Test ExecuteScriptTool
+	await _test_tool("execute_script", {
+		"script_content": "static func execute(node: Node):\n\tvar n = Node.new()\n\tn.name = 'ToolTestNode'\n\tnode.add_child(n)"
+	}, "Executing a dynamic script to add a node...")
 
 
 func _test_tool(tool_name: String, args: Dictionary, user_msg: String) -> void:
@@ -106,7 +105,7 @@ func _test_tool(tool_name: String, args: Dictionary, user_msg: String) -> void:
 					print("SUCCESS: Content matches expected: '%s'" % content)
 				else:
 					print("FAILURE: Content mismatch. Got: '%s'" % content)
-		"build_dynamic_scene":
+		"execute_script":
 			var node = chat.get_node_or_null("ToolTestNode")
 			if node:
 				print("SUCCESS: ToolTestNode found in tree.")

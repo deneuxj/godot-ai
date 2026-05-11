@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dw6cxmtk306nj"]
+
+[ext_resource type="Script" path="res://testing/test_execute_script_tool.gd" id="1_test"]
+
+[node name="TestBuildTool" type="Node"]
+script = ExtResource("1_test")
