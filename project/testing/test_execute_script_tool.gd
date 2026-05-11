@@ -90,5 +90,21 @@ static func execute(node: Node):
 	else:
 		print("FAILURE: Runtime error NOT reported. It was reported as: ", result)
 
+	# Test 5: Return value reporting
+	print("\n--- Test 5: Return value reporting ---")
+	var return_val_script = """
+static func execute(node: Node):
+	return "Calculated Value: 123"
+"""
+	args = {
+		"script_content": return_val_script
+	}
+	result = tool.execute(args)
+	print("Result: ", result)
+	if "Return value: Calculated Value: 123" in result:
+		print("SUCCESS: Return value correctly reported.")
+	else:
+		print("FAILURE: Return value NOT reported correctly.")
+
 	print("\n--- ExecuteScriptTool Test Complete ---")
 	get_tree().quit()

@@ -50,9 +50,17 @@ func execute(arguments: Dictionary) -> String:
 	if logger:
 		logger.call("start_capture")
 
-	script.call("execute", context_node)
+	var return_value = script.call("execute", context_node)
 	
 	var result_msg = "Successfully executed script via 'execute(node)'."
+
+	# 4. Handle return value if it's an easily printable type
+	match typeof(return_value):
+		TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING, \
+		TYPE_VECTOR2, TYPE_VECTOR2I, TYPE_RECT2, TYPE_RECT2I, \
+		TYPE_VECTOR3, TYPE_VECTOR3I, TYPE_VECTOR4, TYPE_VECTOR4I, \
+		TYPE_COLOR, TYPE_STRING_NAME, TYPE_ARRAY, TYPE_DICTIONARY:
+			result_msg += "\nReturn value: " + str(return_value)
 
 	if logger:
 		logger.call("stop_capture")
