@@ -18,6 +18,9 @@ var _cancelled: bool = false
 ## True if any tool was called during the last execute() call.
 var tools_invoked: bool = false
 
+## All new messages (assistant and tool) added during the last execute() call.
+var new_messages: Array[Dictionary] = []
+
 ## API endpoint URL override.
 var api_endpoint: String = ""
 ## API key override.
@@ -87,6 +90,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	var final_response: String = ""
 	var current_messages = messages.duplicate()
 	tools_invoked = false
+	new_messages.clear()
 	
 	const MAX_TOOL_LOOPS = 5
 	for i in range(MAX_TOOL_LOOPS):
@@ -99,25 +103,33 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			tools_invoked = true
 			var tool_calls = result["tool_calls"]
 			# Add the assistant message with tool calls to history
-			current_messages.append({
+			var assistant_msg = {
 				"role": "assistant",
 				"tool_calls": tool_calls
-			})
+			}
+			current_messages.append(assistant_msg)
+			new_messages.append(assistant_msg)
 			
 			# Execute each tool call
 			for tool_call in tool_calls:
 				var tool_result = _execute_tool(tool_call)
-				current_messages.append({
+				var tool_msg = {
 					"role": "tool",
 					"tool_call_id": tool_call.id,
 					"name": tool_call.function.name,
 					"content": tool_result
-				})
+				}
+				current_messages.append(tool_msg)
+				new_messages.append(tool_msg)
 			
 			# Continue loop to send tool results back to AI
 			continue
 		else:
 			final_response = str(result)
+			if not final_response.is_empty():
+				var final_msg = {"role": "assistant", "content": final_response}
+				current_messages.append(final_msg)
+				new_messages.append(final_msg)
 			break
 
 	# 5. Cleanup.

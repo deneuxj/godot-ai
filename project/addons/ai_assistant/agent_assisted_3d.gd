@@ -143,6 +143,9 @@ func generate() -> void:
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		content = await _call_ai(messages, tools)
 		
+		# Update history with tool calls and intermediate responses
+		messages.append_array(_active_handler.new_messages)
+		
 		# Immediately update the code property so the user can see it.
 		var extracted_code := ScriptExecutor.extract_code(content)
 		generated_code = extracted_code

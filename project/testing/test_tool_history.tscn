@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://testtoolhistory"]
+
+[ext_resource type="Script" path="res://testing/test_tool_history_scene.gd" id="1_script"]
+
+[node name="TestToolHistory" type="Node"]
+script = ExtResource("1_script")

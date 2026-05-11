@@ -218,13 +218,27 @@ func _update_display() -> void:
 		var role: String = msg.role.capitalize()
 		var color: String = "#4285f4" if msg.role == "user" else "#34a853"
 		
+		if msg.role == "tool":
+			color = "#fbbc05" # Yellow for tools
+		
 		_history_display.push_color(Color(color))
 		_history_display.append_text("[%s]: " % role)
 		_history_display.pop()
 		
-		if msg.content is String:
+		# Handle tool calls in assistant message
+		if msg.has("tool_calls"):
+			_history_display.push_italics()
+			for tool_call in msg.tool_calls:
+				var fn = tool_call.function.name
+				var args = tool_call.function.arguments
+				_history_display.append_text("(Calling tool: %s with args: %s)\n" % [fn, args])
+			_history_display.pop()
+		
+		if msg.role == "tool":
+			_history_display.append_text(msg.get("content", "") + "\n\n")
+		elif msg.get("content") is String:
 			_history_display.append_text(msg.content + "\n\n")
-		elif msg.content is Array:
+		elif msg.get("content") is Array:
 			# Multi-modal content
 			var text_content := ""
 			var images := 0

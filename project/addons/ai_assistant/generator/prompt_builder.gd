@@ -211,11 +211,18 @@ static func _get_system_prompt(mode: int) -> String:
 
 ## Append error details to the conversation history for the error-correction loop.
 static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary, last_content: String) -> Array[Dictionary]:
-	# Add the AI's previous (erroneous) response as an assistant message.
-	messages.append({
-		"role": "assistant",
-		"content": last_content
-	})
+	# Add the AI's previous (erroneous) response as an assistant message if not already present.
+	var already_present = false
+	if not messages.is_empty():
+		var last_msg = messages.back()
+		if last_msg.get("role") == "assistant" and last_msg.get("content") == last_content:
+			already_present = true
+	
+	if not already_present and not last_content.is_empty():
+		messages.append({
+			"role": "assistant",
+			"content": last_content
+		})
 	
 	# Add the error details as a new user message.
 	var error_msg := "The generated output failed validation with the following error:\n\n%s" % error_result.error

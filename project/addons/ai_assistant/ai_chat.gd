@@ -206,21 +206,19 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var response = await _active_handler.execute(final_messages, tools)
 	
 	# 7. Cleanup and finish.
-	if response.is_empty() and not _was_cancelled() and not _active_handler.tools_invoked:
-		chat_error.emit("Received empty response from AI.")
-		# Fix: Remove last user message from history on error to avoid duplicates on retry
-		if not chat_history.is_empty() and chat_history.back().role == "user":
-			chat_history.pop_back()
-	elif not _was_cancelled():
-		if not response.is_empty():
-			chat_history.append({"role": "assistant", "content": response})
-		elif _active_handler.tools_invoked:
-			# If tools were called but no final text response, add a small placeholder to the history
-			# or just emit finished.
-			chat_history.append({"role": "assistant", "content": "[i](Action completed)[/i]"})
-			
-		partial_response = ""
-		chat_finished.emit(response)
+	if not _was_cancelled():
+		# Append all new messages (tool calls, tool results, and final assistant text)
+		for msg in _active_handler.new_messages:
+			chat_history.append(msg)
+		
+		if response.is_empty() and not _active_handler.tools_invoked:
+			chat_error.emit("Received empty response from AI.")
+			# Fix: Remove last user message from history on error to avoid duplicates on retry
+			if not chat_history.is_empty() and chat_history.back().role == "user":
+				chat_history.pop_back()
+		else:
+			partial_response = ""
+			chat_finished.emit(response)
 
 
 ## Interrupt the ongoing AI request.
