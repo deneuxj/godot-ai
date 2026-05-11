@@ -5,6 +5,8 @@
 class_name ExecuteScriptTool
 extends AITool
 
+const ScriptExecutor = preload("res://addons/ai_assistant/generator/script_executor.gd")
+
 
 func _init() -> void:
 	super._init("execute_script", "Execute a GDScript that defines a 'static func execute(node: Node)' function. The 'node' argument is the context node (AIChat), allowing direct access to the scene tree for construction or manipulation.")
@@ -40,9 +42,22 @@ func execute(arguments: Dictionary) -> String:
 	if not script.has_method("execute"):
 		return "Error: Script does not define a 'static func execute(node: Node)' function."
 
-	# 3. Execute
-	if context_node:
-		script.call("execute", context_node)
-		return "Successfully executed script via 'execute(node)'."
-	else:
+	# 3. Execute with error capture
+	if not context_node:
 		return "Error: No context_node available for execution."
+		
+	var logger = ScriptExecutor._get_logger()
+	if logger:
+		logger.call("start_capture")
+
+	script.call("execute", context_node)
+	
+	var result_msg = "Successfully executed script via 'execute(node)'."
+
+	if logger:
+		logger.call("stop_capture")
+		var captured = logger.call("get_captured_errors")
+		if not captured.is_empty():
+			result_msg = "Error: Script executed but encountered runtime errors:\n" + captured
+
+	return result_msg

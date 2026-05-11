@@ -5,9 +5,16 @@
 extends Node
 
 const ExecuteScriptTool = preload("res://addons/ai_assistant/tools/execute_script_tool.gd")
+const CustomLogger = preload("res://addons/ai_assistant/generator/custom_logger.gd")
+const ScriptExecutor = preload("res://addons/ai_assistant/generator/script_executor.gd")
 
 func _ready() -> void:
 	print("--- Starting ExecuteScriptTool Test ---")
+	
+	# Setup Logger for testing
+	var logger = CustomLogger.new()
+	OS.add_logger(logger)
+	ScriptExecutor.register_logger(logger)
 	
 	var tool = ExecuteScriptTool.new()
 	tool.context_node = self # Set this node as the context
@@ -65,6 +72,23 @@ static func execute(node):
 		print("SUCCESS: Error correctly reported.")
 	else:
 		print("FAILURE: Error NOT reported for compilation error.")
+
+	# Test 4: Error handling - Script with runtime error
+	print("\n--- Test 4: Error handling (Runtime error) ---")
+	var runtime_error_script = """
+static func execute(node: Node):
+	var obj = null
+	obj.some_method() # This will crash (null reference)
+"""
+	args = {
+		"script_content": runtime_error_script
+	}
+	result = tool.execute(args)
+	print("Result: ", result)
+	if "Error" in result or "encounter" in result:
+		print("SUCCESS: Runtime error correctly reported.")
+	else:
+		print("FAILURE: Runtime error NOT reported. It was reported as: ", result)
 
 	print("\n--- ExecuteScriptTool Test Complete ---")
 	get_tree().quit()
