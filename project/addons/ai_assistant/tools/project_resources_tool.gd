@@ -151,7 +151,7 @@ func _search(query: String) -> String:
 	_search_recursive("res://", query, results)
 	
 	if results.is_empty():
-		return "No resources found matching '%s'." % query
+		return "Error: No resources found matching '%s'." % query
 	
 	if results.size() > 30:
 		return "Found %d results for '%s'. Here are the first 30:\n" % [results.size(), query] + "\n".join(results.slice(0, 30))

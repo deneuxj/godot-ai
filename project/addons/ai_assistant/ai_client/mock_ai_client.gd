@@ -24,7 +24,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 		return ""
 
 	if response_queue.is_empty():
-		return "Mock AI: No response configured in queue."
+		return "Error: Mock AI: No response configured in queue."
 	
 	return response_queue.pop_front()
 
@@ -37,7 +37,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		return ""
 
 	if response_queue.is_empty():
-		var msg = "Mock AI: No response configured in queue."
+		var msg = "Error: Mock AI: No response configured in queue."
 		var chunks: Array[String] = [msg]
 		progress.emit(chunks)
 		return msg

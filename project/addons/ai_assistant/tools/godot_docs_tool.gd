@@ -88,7 +88,7 @@ func _search(query: String) -> String:
 			break
 			
 	if results.is_empty():
-		return "No results found for '%s'." % query
+		return "Error: No results found for '%s'." % query
 	
 	return "Search results for '%s':\n" % query + "\n".join(results)
 
