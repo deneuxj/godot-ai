@@ -42,6 +42,10 @@ static func execute(node: Node):
 	mesh_node.mesh = mesh
 
 	node.add_child(mesh_node)
+	
+	# CRITICAL: If running in the editor, set the owner so the node is saved and visible in the Scene dock.
+	if Engine.is_editor_hint():
+		mesh_node.owner = node.get_tree().edited_scene_root
 ```
 """
 
