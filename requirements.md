@@ -171,6 +171,11 @@ REQ-TOOL-0008: Provide a tool `build_dynamic_scene` that allows the AI to:
   - Optionally add the returned Node to the current scene tree as a child of the node executing the request (available in Editor and Game).
   - Capture and return execution errors if the `build()` function fails or returns null.
 
+REQ-TOOL-0009: Provide a tool `capture_editor_view` that allows the AI to:
+  - Take a snapshot of the current 2D/3D editor viewport.
+  - The tool shall be only available when running in the Godot Editor.
+  - The snapshot shall be encoded (e.g., base64) and returned as an image attachment in a tool result message.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API
