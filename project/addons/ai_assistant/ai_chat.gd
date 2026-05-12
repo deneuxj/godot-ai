@@ -17,6 +17,8 @@ signal progress(chunks: Array[String])
 signal chat_finished(full_response: String)
 signal chat_error(error_message: String)
 signal status_updated(status: String)
+signal context_length_updated(tokens: int, characters: int)
+signal context_compressed()
 
 
 @export_group("API Overrides (Advanced)")
@@ -56,10 +58,16 @@ var enable_validate_resources: bool = false
 var enable_execute_script: bool = true
 
 @export
+var enable_capture_view: bool = true
+
+@export
 var use_router: bool = false
 
 
 # --- State ---
+
+## Reference to the EditorInterface (injected by the panel).
+var editor_interface: EditorInterface = null
 
 ## Current conversation history as an array of message dictionaries:
 ## [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
@@ -133,12 +141,24 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	chat_history.append({"role": "user", "content": user_content})
 	partial_response = ""
 	
+	_update_context_length()
+	
+	# REQ-CHAT-0013, REQ-CHAT-0014: Context Compression
+	if not compress_context():
+		chat_error.emit("Context limit reached: Base context (System Prompt + Task Spec) exceeds the token limit.")
+		# Remove the message we just added to allow user to edit/retry
+		chat_history.pop_back()
+		_update_context_length()
+		return
+
 	chat_started.emit()
 
 	# 2. Workload Routing (Optional)
 	var final_model := model
+	var active_system_prompt := system_prompt
+	
 	if use_router and final_model.is_empty():
-		status_updated.emit("Routing request...")
+		status_updated.emit("Processing...")
 		var router_model := AISettings.get_string(AISettings.CONN, "router_model")
 		if not router_model.is_empty():
 			var routing_messages: Array[Dictionary] = [
@@ -152,17 +172,21 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			
 			if workload.contains("analyst"):
 				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
-				status_updated.emit("Workload: Analyst")
+				active_system_prompt = PromptBuilder.ANALYST_SYSTEM_PROMPT
+				status_updated.emit("Thinking...")
 			elif workload.contains("technician"):
 				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
-				status_updated.emit("Workload: Technician")
+				active_system_prompt = PromptBuilder.TECHNICIAN_SYSTEM_PROMPT
+				status_updated.emit("Implementing...")
 			else:
 				push_warning("AIChat: Router returned unrecognized workload: " + workload)
 				final_model = AISettings.get_string(AISettings.CONN, "model")
 			
 			# Ensure model is loaded (LM Studio Native)
 			if not final_model.is_empty():
-				status_updated.emit("Loading model: " + final_model)
+				# We don't want to overwrite the "Thinking/Implementing" status with "Loading model"
+				# unless it's actually doing a REST call that takes time.
+				# For now, let's keep the user intent status.
 				await router_handler.load_model(final_model)
 		else:
 			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
@@ -174,8 +198,14 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var vision_ok = await tools_handler.supports_vision(final_model)
 	
 	var final_messages: Array[Dictionary] = []
-	if not system_prompt.is_empty():
-		final_messages.append({"role": "system", "content": system_prompt})
+	var base_system_prompt := active_system_prompt
+	if base_system_prompt.is_empty():
+		base_system_prompt = PromptBuilder.CHAT_SYSTEM_PROMPT
+		
+	final_messages.append({
+		"role": "system", 
+		"content": base_system_prompt + PromptBuilder.get_environment_context()
+	})
 	
 	for msg in chat_history:
 		var new_msg = msg.duplicate()
@@ -188,10 +218,12 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_execute_script)
+	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_execute_script, enable_capture_view)
 
 	# 4. Create and configure handler.
-	status_updated.emit("Generating...")
+	if not use_router or model != "":
+		status_updated.emit("Generating...")
+	
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
 	_active_handler.mock_client = mock_client
 	
@@ -219,6 +251,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		else:
 			partial_response = ""
 			chat_finished.emit(response)
+		
+		_update_context_length()
 
 
 ## Interrupt the ongoing AI request.
@@ -243,7 +277,92 @@ func unload_model(model_id: String = "") -> void:
 ## Reset the conversation history.
 func clear_history() -> void:
 	chat_history.clear()
+	_update_context_length()
 
 
 func _was_cancelled() -> bool:
 	return _active_handler != null and _active_handler.was_cancelled()
+
+
+## Returns the current conversational context length.
+## Returns a dictionary with "tokens" (estimate) and "characters" keys.
+func get_context_length() -> Dictionary:
+	var total_chars := 0
+	# Add system prompt length
+	total_chars += system_prompt.length()
+	
+	# Add history length
+	for msg in chat_history:
+		total_chars += _get_message_length(msg)
+	
+	# Tokens are roughly 4 characters each.
+	return {
+		"tokens": int(ceil(total_chars / 4.0)),
+		"characters": total_chars
+	}
+
+
+## Surgically prunes the conversation history to stay within token limits.
+## Returns true if the context is within limits after compression.
+func compress_context() -> bool:
+	var limit := AISettings.get_int(AISettings.GEN, "context_limit")
+	# print("Compressing context. Limit: %d, Current: %d" % [limit, get_context_length().tokens])
+	if limit <= 0: return true # No limit set
+	
+	var current := get_context_length()
+	if current.tokens <= limit:
+		return true
+	
+	var pruned := false
+	
+	# REQ-CHAT-0013: Intelligent pruning
+	# 1. Prune old tool interactions and successful correction cycles.
+	# We keep the first 2 messages (Initial Task Spec) and last 5 messages (Current Context).
+	var i := 2
+	while i < chat_history.size() - 5:
+		var msg = chat_history[i]
+		
+		var is_prunable := false
+		if msg.role == "tool" or msg.has("tool_calls"):
+			is_prunable = true
+		elif msg.role == "user" and str(msg.content).contains("failed validation"):
+			# This is part of an error correction loop. 
+			# If we have reached this point and are still going, we might be able to prune old ones.
+			is_prunable = true
+		
+		if is_prunable:
+			chat_history.remove_at(i)
+			pruned = true
+			if get_context_length().tokens <= limit:
+				break
+			continue # Don't increment i
+		i += 1
+	
+	# 2. If still over limit, remove oldest non-vital messages (after task spec).
+	while chat_history.size() > 7 and get_context_length().tokens > limit:
+		chat_history.remove_at(2)
+		pruned = true
+	
+	if pruned:
+		context_compressed.emit()
+		_update_context_length()
+	
+	return get_context_length().tokens <= limit
+
+
+func _get_message_length(msg: Dictionary) -> int:
+	var content = msg.get("content", "")
+	if content is String:
+		return content.length()
+	elif content is Array:
+		var length := 0
+		for part in content:
+			if part.get("type") == "text":
+				length += part.get("text", "").length()
+		return length
+	return 0
+
+
+func _update_context_length() -> void:
+	var length := get_context_length()
+	context_length_updated.emit(length.tokens, length.characters)

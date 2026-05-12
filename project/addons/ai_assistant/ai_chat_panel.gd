@@ -20,6 +20,7 @@ var _current_node: AIChat = null
 @onready var _attachments_container: HBoxContainer = find_child("AttachmentsContainer")
 @onready var _attachment_dialog: EditorFileDialog = find_child("AttachmentDialog")
 @onready var _status_label: Label = find_child("StatusLabel")
+@onready var _context_label: Label = find_child("ContextLabel")
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
 @onready var _unload_button: Button = find_child("UnloadButton")
 
@@ -61,6 +62,8 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("chat_error", _on_chat_error)
 		if _current_node.is_connected("status_updated", _on_status_updated):
 			_current_node.disconnect("status_updated", _on_status_updated)
+		if _current_node.is_connected("context_length_updated", _on_context_length_updated):
+			_current_node.disconnect("context_length_updated", _on_context_length_updated)
 
 
 func _update_for_node(node: Node) -> void:
@@ -70,6 +73,7 @@ func _update_for_node(node: Node) -> void:
 
 	if node is AIChat:
 		_current_node = node as AIChat
+		_current_node.editor_interface = _editor_interface
 
 		# Connect signals from the node.
 		_current_node.connect("chat_started", _on_chat_started)
@@ -77,14 +81,20 @@ func _update_for_node(node: Node) -> void:
 		_current_node.connect("chat_finished", _on_chat_finished)
 		_current_node.connect("chat_error", _on_chat_error)
 		_current_node.connect("status_updated", _on_status_updated)
+		_current_node.connect("context_length_updated", _on_context_length_updated)
 
 		# Refresh UI state.
 		_update_display()
 		_status_label.text = "Status: Ready"
 		_update_status_theme()
+		
+		# Initial context update
+		var len = _current_node.get_context_length()
+		_on_context_length_updated(len.tokens, len.characters)
 	else:
 		_history_display.text = ""
 		_status_label.text = "No AIChat selected"
+		_context_label.text = ""
 		_progress_bar.value = 0.0
 		_status_label.remove_theme_color_override("font_color")
 
@@ -204,6 +214,10 @@ func _on_chat_error(err: String) -> void:
 func _on_status_updated(status: String) -> void:
 	_status_label.text = "Status: " + status
 	_update_status_theme()
+
+
+func _on_context_length_updated(tokens: int, chars: int) -> void:
+	_context_label.text = "Context: %d tokens (%d chars)" % [tokens, chars]
 
 
 # --- Display ---

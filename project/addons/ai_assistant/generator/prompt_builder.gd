@@ -94,6 +94,47 @@ Formatting:
 """
 
 
+## System prompt for Analyst model (complex planning).
+const ANALYST_SYSTEM_PROMPT := """\
+You are a Godot 4 Architectural Analyst.
+Your goal is to understand complex user requests and design a robust implementation plan.
+
+Rules:
+1. Analyze the request and the current project context.
+2. Provide a step-by-step implementation plan.
+3. DO NOT implement the code or call tools that modify the project.
+4. End your response by asking the user if they want to proceed with this plan.
+
+The goal is to allow a Technician model to handle the actual implementation once the plan is approved.
+
+Formatting:
+- ALWAYS use Godot's BBCode for formatting your responses.
+- Use [b]bold[/b], [i]italic[/i], and [color=...]...[/color] for emphasis.
+- Use [code]...[/code] for inline code and [codeblock]...[/codeblock] for larger code snippets.
+- Use [url]...[/url] for links.
+- DO NOT use Markdown formatting (like **bold** or `code`).
+"""
+
+
+## System prompt for Technician model (implementation and tool use).
+const TECHNICIAN_SYSTEM_PROMPT := """\
+You are a Godot 4 Implementation Technician.
+Your goal is to execute specific technical tasks and tool calls.
+
+Rules:
+1. Perform the requested implementation or tool calls as efficiently as possible.
+2. Provide a concise summary of exactly what was done in your final response.
+3. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
+
+Formatting:
+- ALWAYS use Godot's BBCode for formatting your responses.
+- Use [b]bold[/b], [i]italic[/i], and [color=...]...[/color] for emphasis.
+- Use [code]...[/code] for inline code and [codeblock]...[/codeblock] for larger code snippets.
+- Use [url]...[/url] for links.
+- DO NOT use Markdown formatting (like **bold** or `code`).
+"""
+
+
 ## System prompt for routing requests between Analyst and Technician models.
 const ROUTER_SYSTEM_PROMPT := """\
 Analyze the user's latest request and categorize it into one of two workloads:
@@ -144,7 +185,7 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int) -> Arra
 
 
 ## Build the tools array based on node configuration.
-static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false) -> Array[Dictionary]:
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false) -> Array[Dictionary]:
 	var tools: Array[Dictionary] = []
 	
 	if enable_docs:
@@ -165,6 +206,10 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 		
 	if enable_execute:
 		var tool = load("res://addons/ai_assistant/tools/execute_script_tool.gd").new()
+		tools.append(tool.get_definition())
+	
+	if enable_capture:
+		var tool = load("res://addons/ai_assistant/tools/capture_editor_view_tool.gd").new()
 		tools.append(tool.get_definition())
 		
 	return tools
@@ -199,14 +244,25 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 ## Get the system prompt, checking the project setting override first.
 static func _get_system_prompt(mode: int) -> String:
 	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
-	if custom != "":
-		return custom
+	var base_prompt := ""
 	
-	# Enum mapping (must match AIAgentAssisted3D.GenerationMode)
-	if mode == 0: # SCRIPTED_SCENE
-		return SCRIPTED_SCENE_SYSTEM_PROMPT
-	else: # NODE_SCRIPT
-		return NODE_SCRIPT_SYSTEM_PROMPT
+	if custom != "":
+		base_prompt = custom
+	else:
+		# Enum mapping (must match AIAgentAssisted3D.GenerationMode)
+		if mode == 0: # SCRIPTED_SCENE
+			base_prompt = SCRIPTED_SCENE_SYSTEM_PROMPT
+		else: # NODE_SCRIPT
+			base_prompt = NODE_SCRIPT_SYSTEM_PROMPT
+			
+	var env_context := get_environment_context()
+	
+	return base_prompt + env_context
+
+
+## Returns a string describing the current execution environment.
+static func get_environment_context() -> String:
+	return "\n\nENVIRONMENT: You are currently running within the Godot Editor. You have access to Editor-only APIs and the edited scene tree." if Engine.is_editor_hint() else "\n\nENVIRONMENT: You are currently running in the Game/Runtime. Editor-only APIs are NOT available."
 
 
 ## Append error details to the conversation history for the error-correction loop.

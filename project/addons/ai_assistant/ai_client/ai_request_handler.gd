@@ -112,7 +112,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			
 			# Execute each tool call
 			for tool_call in tool_calls:
-				var tool_result = _execute_tool(tool_call)
+				var tool_result = await _execute_tool(tool_call)
 				var tool_msg = {
 					"role": "tool",
 					"tool_call_id": tool_call.id,
@@ -190,11 +190,13 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/validate_project_resource_tool.gd").new()
 		"execute_script":
 			tool = load("res://addons/ai_assistant/tools/execute_script_tool.gd").new()
+		"capture_editor_view":
+			tool = load("res://addons/ai_assistant/tools/capture_editor_view_tool.gd").new()
 	
 	if tool:
 		tool.context_node = _parent
 		print("AI calling tool: ", function_name, " with args: ", arguments)
-		return tool.execute(arguments)
+		return await tool.execute(arguments)
 	
 	return "Error: Tool " + function_name + " not found."
 

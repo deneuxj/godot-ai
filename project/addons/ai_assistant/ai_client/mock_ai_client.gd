@@ -17,7 +17,7 @@ var _is_cancelled: bool = false
 
 
 func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
-	if response_delay_ms > 0:
+	if response_delay_ms > 0 and get_tree():
 		await get_tree().create_timer(response_delay_ms / 1000.0).timeout
 	
 	if _is_cancelled:
@@ -30,7 +30,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 
 
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
-	if response_delay_ms > 0:
+	if response_delay_ms > 0 and get_tree():
 		await get_tree().create_timer(response_delay_ms / 1000.0).timeout
 	
 	if _is_cancelled:

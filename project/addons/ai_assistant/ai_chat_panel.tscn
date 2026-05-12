@@ -92,6 +92,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "No AIChat selected"
 
+[node name="ContextLabel" type="Label" parent="MarginContainer/VBoxContainer/StatusRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+text = "Context: 0 tokens (0 chars)"
+
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/StatusRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
