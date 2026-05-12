@@ -8,9 +8,14 @@
 - All dimensions are in meters.
 - Wall thickness is assumed to be **0.50m** for external walls and **0.10m** for internal walls.
 
+## Technical Requirements
+- Each wall must have both [b]collision geometry[/b] ([code]CollisionShape3D[/code] with [code]BoxShape3D[/code]) and [b]visual geometry[/b] ([code]MeshInstance3D[/code] with [code]BoxMesh[/code]).
+- All dynamically created nodes must have their [code]owner[/code] set to the [b]root scene node[/b] (the node passed to [code]execute()[/code]), not just any ancestor. The root scene node must be added to the tree [b]before[/b] setting owners on its children to avoid "Invalid owner" errors.
+- Each room should be grouped under a [code]Node3D[/code] named after the room (e.g., "Garage", "Guarderobe").
+
 ## Wall Construction Instructions
 
-### 1. Garage
+### 1. Garage [color=green][b]✓ DONE[/b][/color]
 - **Dimensions:** 5.99m width x 7.249m height
 - **Walls:**
   - **Left Wall:** External wall from (0, 0) to (0, 7.249)
