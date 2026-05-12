@@ -68,9 +68,10 @@
 ### Dock Controller (`ai_chat_panel.gd`)
 
 - Detects selection of `AIChat` nodes in the scene tree.
-- Binds to `chat_started`, `progress`, `chat_finished`, and `context_length_updated` signals.
+- Binds to `chat_started`, `progress`, `chat_finished`, `context_length_updated`, and `status_updated` signals.
 - Updates the `HistoryDisplay` in real-time during streaming.
 - Updates the context length label when `context_length_updated` is received.
+- Updates the status label (e.g., "Processing", "Thinking", "Implementing") when `status_updated` is received. (REQ-EDITOR-0008)
 - Manages button enabled/disabled states based on request status.
 - **Attachment Handling:**
     - Opens an `EditorFileDialog` for resource selection when "Attach" is clicked.
@@ -93,3 +94,4 @@
 | REQ-EDITOR-0005 | "Attach" button, FileDialog, and attachment list in `ai_chat_panel` |
 | REQ-EDITOR-0006 | State restoration in `ai_chat_panel._on_chat_error` |
 | REQ-EDITOR-0007 | Context length label in `ai_chat_panel` UI |
+| REQ-EDITOR-0008 | Granular status feedback label in `ai_chat_panel` UI |

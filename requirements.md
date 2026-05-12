@@ -124,6 +124,11 @@ REQ-EDITOR-0006: If an `AIChat` request fails, the editor UI shall restore the l
 
 REQ-EDITOR-0007: The `AIChat` editor UI shall display the current conversation or context length (in tokens or characters) to the user.
 
+REQ-EDITOR-0008: The `AIChat` editor UI shall provide granular status feedback based on the AI's current activity:
+  - "Processing": When the workload router is analyzing the request.
+  - "Thinking": When the Analyst model (complex reasoning) is active.
+  - "Implementing": When the Technician model (tool use/implementation) is active.
+
 ### Persistence
 
 REQ-PERSIST-0001: The result of a successful generation shall be saved to disk as a `.tscn` or `.gd` file, typically in `res://generated/`.
