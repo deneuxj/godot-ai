@@ -13,7 +13,13 @@ Uses standard OpenAI Chat Completions API with streaming support.
 
 ### Prompt Builder (`generator/prompt_builder.gd`)
 
-The `PromptBuilder` constructs the system prompt based on the selected `GenerationMode`.
+The `PromptBuilder` constructs the system prompt based on the selected `GenerationMode` and execution environment.
+
+#### Context Injection (REQ-AIINTG-0008)
+The `PromptBuilder` automatically includes runtime information:
+- **Environment:** `Engine.is_editor_hint()` determines if running in "Godot Editor" or "Game".
+- **Node Context:** The name and path of the node initiating the request.
+- **Reference Resolution:** Explicitly instructs the AI that "this node" refers to the owner of the `AIChat` or `AIAgentAssisted3D` instance.
 
 #### Scripted Scene Mode System Prompt
 ```text
@@ -82,4 +88,5 @@ When an error occurs, the conversation history is updated as follows:
 | REQ-AIINTG-0005 | `AIAgentAssisted3D` validation loop and `PromptBuilder.build_error_correction()` |
 | REQ-AIINTG-0004 | `AISettings` manages configuration under `ai/connection/` and `ai/generation/` |
 | REQ-AIINTG-0006 | Configurable `max_retries` in `AISettings` |
+| REQ-AIINTG-0008 | `PromptBuilder` context injection logic |
 | REQ-NODE3D-0010 | `AIClient.cancel()` method implementation |

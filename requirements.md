@@ -42,6 +42,20 @@ REQ-CHAT-0010: The `AIChat` node shall support attaching project resources to me
 
 REQ-CHAT-0011: The content of attached picture resources shall be extracted, base64-encoded, and sent to the AI backend as part of a multi-modal message payload.
 
+REQ-CHAT-0012: The `AIChat` node shall provide a way to retrieve the current conversational history length, measured in tokens (if supported by the backend/tokenizer) or characters as a fallback.
+
+REQ-CHAT-0013: The `AIChat` node shall implement intelligent context compression to stay within token limits.
+  - Pruning shall be based on information cost and value.
+  - **Always Preserve:** System prompts and tool/function definitions.
+  - **High Value:** Initial task specifications and recent conversational turns.
+  - **Prunable:** Old tool execution results and superseded error correction cycles (fixes that have been successfully applied).
+  - **Recent Context:** Ongoing fixes and the most recent N messages shall be kept to maintain continuity.
+
+REQ-CHAT-0014: If the context still exceeds the limit after compression (due to large system prompts, tool definitions, or initial task specs), the node shall:
+  - Refuse to send the AI request.
+  - Emit a specific `chat_error` indicating that the essential context is too large.
+  - Never automatically truncate the system prompt or the initial task specification.
+
 ### AI Integration
 
 REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends.
@@ -60,6 +74,7 @@ REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/connection/analyst_model` - Complex model for reasoning and planning
   - `ai/connection/technician_model` - Fast model for implementation and tools
   - `ai/generation/max_tokens` - Maximum response tokens
+  - `ai/generation/context_limit` - Maximum allowed context tokens before compression triggers
   - `ai/generation/max_retries` - Maximum number of correction attempts
   - `ai/generation/system_prompt` - Custom system prompt (optional override)
 
@@ -70,6 +85,10 @@ REQ-AIINTG-0007: The `AIChat` node shall support an optional workload router:
   - The router shall classify the request as either **Analyst** (complex tasks, planning) or **Technician** (implementation, tool calls).
   - The request shall then be dispatched to the corresponding `analyst_model` or `technician_model`.
   - The selected workload type shall be visible in the user interface.
+
+REQ-AIINTG-0008: The prompt builder shall automatically inject context about the current execution environment into the system message or as a hidden user prefix. This context must include:
+  - Whether the AI is running in the Godot Editor or during Gameplay.
+  - The fact that the AI is attached to a specific Godot Node, enabling it to resolve references like "this node" to its owner.
 
 ### LM Studio Integration (Native)
 
@@ -102,6 +121,8 @@ REQ-EDITOR-0004: AI-generated GDScript or TSCN code shall be accessible and view
 REQ-EDITOR-0005: The `AIChat` editor UI shall provide a mechanism (e.g., an attachment button and file dialog) to attach `res://` paths to the current prompt before sending.
 
 REQ-EDITOR-0006: If an `AIChat` request fails, the editor UI shall restore the last sent prompt and its attachments to the input field and attachment list for easy retry.
+
+REQ-EDITOR-0007: The `AIChat` editor UI shall display the current conversation or context length (in tokens or characters) to the user.
 
 ### Persistence
 
