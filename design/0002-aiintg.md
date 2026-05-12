@@ -45,6 +45,17 @@ You MAY use markdown code blocks (```gdscript ... ```).
 The script should extend Node3D and implement logic based on the user request.
 ```
 
+#### Analyst Mode System Prompt (REQ-AIINTG-0009)
+```text
+You are a Godot 4 Architectural Analyst.
+Your goal is to understand complex user requests and design a robust implementation plan.
+1. Analyze the request and the current project context.
+2. Provide a step-by-step implementation plan.
+3. DO NOT implement the code or call tools that modify the project.
+4. End your response by asking the user if they want to proceed with this plan.
+The goal is to allow a Technician model to handle the actual implementation once the plan is approved.
+```
+
 ### Prompt Construction
 ```gdscript
 static func build(prompt: String, textures: Array[Texture2D], mode: GenerationMode) -> Array[Dictionary]:
@@ -89,4 +100,5 @@ When an error occurs, the conversation history is updated as follows:
 | REQ-AIINTG-0004 | `AISettings` manages configuration under `ai/connection/` and `ai/generation/` |
 | REQ-AIINTG-0006 | Configurable `max_retries` in `AISettings` |
 | REQ-AIINTG-0008 | `PromptBuilder` context injection logic |
+| REQ-AIINTG-0009 | `PromptBuilder` Analyst-specific system prompt |
 | REQ-NODE3D-0010 | `AIClient.cancel()` method implementation |

@@ -90,6 +90,11 @@ REQ-AIINTG-0008: The prompt builder shall automatically inject context about the
   - Whether the AI is running in the Godot Editor or during Gameplay.
   - The fact that the AI is attached to a specific Godot Node, enabling it to resolve references like "this node" to its owner.
 
+REQ-AIINTG-0009: When the workload router selects the **Analyst** model:
+  - The model shall prioritize creating a detailed implementation plan.
+  - The model shall explicitly ask the user for confirmation to proceed before performing any implementation or tool calls.
+  - This handoff ensures that subsequent implementation steps can be routed to the **Technician** model.
+
 ### LM Studio Integration (Native)
 
 REQ-LMSTUDIO-0001: The plugin shall auto-detect if the AI backend is LM Studio and enable native REST API features (`/api/v1/*`) when available.
