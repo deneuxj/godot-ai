@@ -95,6 +95,10 @@ REQ-AIINTG-0009: When the workload router selects the **Analyst** model:
   - The model shall explicitly ask the user for confirmation to proceed before performing any implementation or tool calls.
   - This handoff ensures that subsequent implementation steps can be routed to the **Technician** model.
 
+REQ-AIINTG-0010: When the workload router selects the **Technician** model:
+  - The final response shall include a concise summary of the actions performed (e.g., files created, nodes modified).
+  - If the task could not be completed, the response shall explicitly state the failure and describe the specific obstacle or error encountered.
+
 ### LM Studio Integration (Native)
 
 REQ-LMSTUDIO-0001: The plugin shall auto-detect if the AI backend is LM Studio and enable native REST API features (`/api/v1/*`) when available.

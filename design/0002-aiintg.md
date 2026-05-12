@@ -56,6 +56,15 @@ Your goal is to understand complex user requests and design a robust implementat
 The goal is to allow a Technician model to handle the actual implementation once the plan is approved.
 ```
 
+#### Technician Mode System Prompt (REQ-AIINTG-0010)
+```text
+You are a Godot 4 Implementation Technician.
+Your goal is to execute specific technical tasks and tool calls.
+1. Perform the requested implementation or tool calls as efficiently as possible.
+2. Provide a concise summary of exactly what was done in your final response.
+3. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
+```
+
 ### Prompt Construction
 ```gdscript
 static func build(prompt: String, textures: Array[Texture2D], mode: GenerationMode) -> Array[Dictionary]:
@@ -101,4 +110,5 @@ When an error occurs, the conversation history is updated as follows:
 | REQ-AIINTG-0006 | Configurable `max_retries` in `AISettings` |
 | REQ-AIINTG-0008 | `PromptBuilder` context injection logic |
 | REQ-AIINTG-0009 | `PromptBuilder` Analyst-specific system prompt |
+| REQ-AIINTG-0010 | `PromptBuilder` Technician-specific system prompt and reporting |
 | REQ-NODE3D-0010 | `AIClient.cancel()` method implementation |
