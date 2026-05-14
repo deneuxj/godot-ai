@@ -183,7 +183,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				{"role": "system", "content": PromptBuilder.get_router_prompt(router_system_prompt)}
 			]
 			
+			var filtered_history: Array[Dictionary] = []
 			for msg in chat_history:
+				if msg.role == "tool" or msg.has("tool_calls"):
+					continue
+				
 				var new_msg = msg.duplicate()
 				if typeof(new_msg.content) == TYPE_ARRAY:
 					# Strip images from multimodal content for routing
@@ -192,7 +196,12 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 						if part.get("type") == "text":
 							text_only += part.get("text", "")
 					new_msg.content = text_only
-				routing_messages.append(new_msg)
+				filtered_history.append(new_msg)
+			
+			# Keep only the last 6 messages for context-aware routing
+			var slice_start = max(0, filtered_history.size() - 6)
+			for i in range(slice_start, filtered_history.size()):
+				routing_messages.append(filtered_history[i])
 			
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
 			router_handler.mock_client = mock_client
