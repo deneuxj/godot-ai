@@ -269,43 +269,47 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	if not use_router or model != "":
 		status_updated.emit("Generating...")
 	
-	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
-	_active_handler.mock_client = mock_client
+	var handler := AIRequestHandler.new(self, api_endpoint, api_key, final_model)
+	handler.mock_client = mock_client
+	_active_handler = handler
 	
 	# Sync session state to handler
-	_active_handler._active_tools = session_tools
-	_active_handler._activated_skill_ids = activated_skill_ids
+	handler._active_tools = session_tools
+	handler._activated_skill_ids = activated_skill_ids
 	
 	# 5. Connect signals.
-	_active_handler.progress.connect(func(chunks: Array[String]): 
+	handler.progress.connect(func(chunks: Array[String]): 
 		for chunk in chunks:
 			partial_response += chunk
 		progress.emit(chunks)
 	)
 
 	# 6. Execute request.
-	var response = await _active_handler.execute(final_messages, tools)
+	var response = await handler.execute(final_messages, tools)
 	
 	# 7. Cleanup and finish.
-	if not _was_cancelled():
+	if not handler.was_cancelled():
 		# Append all new messages (tool calls, tool results, and final assistant text)
-		for msg in _active_handler.new_messages:
+		for msg in handler.new_messages:
 			chat_history.append(msg)
 		
-		if response.is_empty() and not _active_handler.tools_invoked:
+		if response.is_empty() and not handler.tools_invoked:
 			chat_error.emit("Received empty response from AI.")
 			# Fix: Remove last user message from history on error to avoid duplicates on retry
 			if not chat_history.is_empty() and chat_history.back().role == "user":
 				chat_history.pop_back()
 		else:
 			# Sync back activated skills/tools
-			session_tools = _active_handler._active_tools
-			activated_skill_ids = _active_handler._activated_skill_ids
+			session_tools = handler._active_tools
+			activated_skill_ids = handler._activated_skill_ids
 			
 			partial_response = ""
 			chat_finished.emit(response)
 		
 		_update_context_length()
+	
+	if _active_handler == handler:
+		_active_handler = null
 
 
 ## Interrupt the ongoing AI request.
@@ -348,10 +352,6 @@ func activate_skill(skill_name: String) -> String:
 	activated_skill_ids = _active_handler._activated_skill_ids
 	
 	return result
-
-
-func _was_cancelled() -> bool:
-	return _active_handler != null and _active_handler.was_cancelled()
 
 
 func get_current_tool_definitions() -> Array[Dictionary]:

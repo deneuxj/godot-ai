@@ -133,6 +133,10 @@ func _ready() -> void:
 # --- Generation pipeline ---
 
 func generate() -> void:
+	if _active_handler and _active_handler.is_busy():
+		push_warning("AIAgentAssisted3D: A generation is already in progress. Cancel it first or wait for completion.")
+		return
+
 	generation_status = GenerationStatus.GENERATING
 	status_message = "Processing..."
 	last_error = ""
@@ -248,16 +252,20 @@ func activate_skill(skill_name: String) -> String:
 
 
 func _call_ai(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> String:
-	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	var handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	_active_handler = handler
 	
 	# Sync session state
-	_active_handler._active_tools = session_tools
-	_active_handler._activated_skill_ids = activated_skill_ids
+	handler._active_tools = session_tools
+	handler._activated_skill_ids = activated_skill_ids
 	
 	# Relay progress signal to the editor dock
-	_active_handler.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
+	handler.progress.connect(func(chunks: Array[String]): progress.emit(chunks))
 
-	return await _active_handler.execute(messages, tools)
+	var result = await handler.execute(messages, tools)
+	if _active_handler == handler:
+		_active_handler = null
+	return result
 
 
 # --- Persistence helpers ---

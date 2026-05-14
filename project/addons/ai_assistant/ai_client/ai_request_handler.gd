@@ -79,16 +79,24 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 		# Auto-detection of LM Studio
 		var endpoint_to_check = api_endpoint if not api_endpoint.is_empty() else AISettings.get_string(AISettings.CONN, "base_url")
 		if not mock_client and await _is_lm_studio(endpoint_to_check):
+			if _cancelled:
+				return ""
 
 			client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
 			print("AIRequestHandler: LM Studio detected. Using LMStudioClient.")
 		else:
+			if _cancelled:
+				return ""
 			client = AIClient.create_openai_client()
 	
 	if not client.is_inside_tree():
 		var host = get_persistent_host(_parent)
 		host.add_child(client)
 	_active_client = client
+
+	if _cancelled:
+		_cleanup(client)
+		return ""
 
 	# 2. Apply Overrides.
 	if not api_endpoint.is_empty():
@@ -146,6 +154,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			
 			# Execute each tool call
 			for tool_call in tool_calls:
+				if _cancelled: break
 				var tool_result = await _execute_tool(tool_call)
 				var tool_msg = {
 					"role": "tool",
@@ -167,6 +176,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 						if not found:
 							all_tools.append(tool_instance.get_definition())
 			
+			if _cancelled: break
 			# Continue loop to send tool results back to AI
 			continue
 		else:
@@ -178,13 +188,17 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			break
 
 	# 5. Cleanup.
+	_cleanup(client)
+	
+	return final_response
+
+
+func _cleanup(client: AIClient) -> void:
 	if is_instance_valid(client) and not mock_client:
 		client.queue_free()
 	
 	if _active_client == client:
 		_active_client = null
-	
-	return final_response
 
 
 func _is_lm_studio(url: String) -> bool:
@@ -290,9 +304,10 @@ func _execute_tool(tool_call: Dictionary) -> String:
 
 ## Interrupt the ongoing AI request.
 func cancel() -> void:
+	_cancelled = true
 	if is_instance_valid(_active_client):
-		_cancelled = true
 		_active_client.cancel()
+		_active_client = null
 
 
 ## Returns true if a request is currently active.
