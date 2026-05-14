@@ -88,6 +88,11 @@ var enable_validate_resources: bool = false
 @export
 var enable_build_scene: bool = true
 
+## List of IDs for skills that should be available in this generation session.
+## If empty, all discovered skills are listed.
+@export
+var active_skills: Array[String] = []
+
 @export_group("Last Result")
 
 @export_multiline
@@ -101,6 +106,11 @@ var generated_code: String = ""
 
 
 # --- Internal status tracking (not exported) ---
+
+## Map of tool_name -> AITool instance (persists for session)
+var session_tools: Dictionary = {}
+## IDs of skills that have been activated in this session.
+var activated_skill_ids: Array[String] = []
 
 var generation_status: GenerationStatus = GenerationStatus.IDLE
 var status_message: String = "":
@@ -130,7 +140,7 @@ func generate() -> void:
 	generation_started.emit()
 
 	# 1. Build initial prompt and tools.
-	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode)
+	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode, active_skills)
 	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_build_scene)
 	var content: String = ""
 	var success: bool = false
@@ -142,6 +152,10 @@ func generate() -> void:
 		# Call AI.
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
 		content = await _call_ai(messages, tools)
+		
+		# Sync back session state
+		session_tools = _active_handler._active_tools
+		activated_skill_ids = _active_handler._activated_skill_ids
 		
 		# Update history with tool calls and intermediate responses
 		messages.append_array(_active_handler.new_messages)
@@ -213,10 +227,32 @@ func cancel_generation() -> void:
 	status_message = "Generation cancelled"
 	generation_finished.emit()
 
+
+## Explicitly activate a skill for this session.
+func activate_skill(skill_name: String) -> String:
+	if not _active_handler:
+		_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+		_active_handler._active_tools = session_tools
+		_active_handler._activated_skill_ids = activated_skill_ids
+		
+	var result = await _active_handler.activate_skill(skill_name)
+	
+	# Sync back
+	session_tools = _active_handler._active_tools
+	activated_skill_ids = _active_handler._activated_skill_ids
+	
+	return result
+
+
 # --- AI call ---
+
 
 func _call_ai(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> String:
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	
+	# Sync session state
+	_active_handler._active_tools = session_tools
+	_active_handler._activated_skill_ids = activated_skill_ids
 	
 	# Relay progress signal to the editor dock
 	_active_handler.progress.connect(func(chunks: Array[String]): progress.emit(chunks))

@@ -15,6 +15,11 @@ var _parent: Node
 var _active_client: AIClient = null
 var _cancelled: bool = false
 
+## Map of tool_name -> AITool instance
+var _active_tools: Dictionary = {}
+## IDs of skills that have been activated in this session.
+var _activated_skill_ids: Array[String] = []
+
 ## True if any tool was called during the last execute() call.
 var tools_invoked: bool = false
 
@@ -92,9 +97,20 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	tools_invoked = false
 	new_messages.clear()
 	
+	# Prepare the full list of tools (passed ones + dynamically registered ones)
+	var all_tools = tools.duplicate()
+	for tool_instance in _active_tools.values():
+		var found = false
+		for t in all_tools:
+			if t.function.name == tool_instance.name:
+				found = true
+				break
+		if not found:
+			all_tools.append(tool_instance.get_definition())
+	
 	const MAX_TOOL_LOOPS = 5
 	for i in range(MAX_TOOL_LOOPS):
-		var result = await client.chat_stream(current_messages, tools)
+		var result = await client.chat_stream(current_messages, all_tools)
 		
 		if _cancelled:
 			break
@@ -124,6 +140,17 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 				}
 				current_messages.append(tool_msg)
 				new_messages.append(tool_msg)
+				
+				# If activate_skill was called, we might have new tools for the NEXT turn
+				if tool_call.function.name == "activate_skill":
+					for tool_instance in _active_tools.values():
+						var found = false
+						for t in all_tools:
+							if t.function.name == tool_instance.name:
+								found = true
+								break
+						if not found:
+							all_tools.append(tool_instance.get_definition())
 			
 			# Continue loop to send tool results back to AI
 			continue
@@ -175,13 +202,51 @@ func _is_lm_studio(url: String) -> bool:
 	return false
 
 
+## Register a tool instance to be used in AI requests.
+func register_tool(tool: RefCounted) -> void:
+	if tool:
+		tool.context_node = _parent
+		_active_tools[tool.name] = tool
+
+
+## Activates a skill, injecting its tools and returning its instructions.
+func activate_skill(skill_id: String) -> String:
+	if _activated_skill_ids.has(skill_id):
+		return "Skill '%s' is already active." % skill_id
+		
+	var sm = load("res://addons/ai_assistant/skills/skill_manager.gd")
+	var skill = sm.get_skill(skill_id)
+	if not skill:
+		return "Error: Skill '%s' not found." % skill_id
+		
+	# Register tools
+	for script_path in skill.tool_scripts:
+		var script = load(script_path)
+		if script:
+			var tool = script.new()
+			# We check if it has the required methods instead of using 'is AITool' 
+			# which might fail if AITool class is not globally registered.
+			if tool.has_method("get_definition") and tool.has_method("execute"):
+				register_tool(tool)
+	
+	_activated_skill_ids.append(skill_id)
+	return "<activated_skill name=\"%s\">\n%s\n</activated_skill>" % [skill_id, skill.instructions]
+
+
 func _execute_tool(tool_call: Dictionary) -> String:
 	var function_name = tool_call.function.name
 	var arguments = JSON.parse_string(tool_call.function.arguments)
 	if arguments == null:
 		arguments = {}
 		
-	var tool: AITool = null
+	# Check dynamically registered tools first
+	if _active_tools.has(function_name):
+		var tool = _active_tools[function_name]
+		print("AI calling dynamic tool: ", function_name, " with args: ", arguments)
+		return await tool.execute(arguments)
+		
+	# Fallback/Built-in tools
+	var tool: RefCounted = null
 	match function_name:
 		"explore_godot_docs":
 			tool = load("res://addons/ai_assistant/tools/godot_docs_tool.gd").new()
@@ -195,6 +260,9 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/execute_script_tool.gd").new()
 		"capture_editor_view":
 			tool = load("res://addons/ai_assistant/tools/capture_editor_view_tool.gd").new()
+		"activate_skill":
+			# Special handling for activate_skill which is built-in but stateful
+			return activate_skill(arguments.get("name", ""))
 	
 	if tool:
 		tool.context_node = _parent

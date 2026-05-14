@@ -75,6 +75,11 @@ var enable_capture_view: bool = true
 @export
 var use_router: bool = false
 
+## List of IDs for skills that should be available in this chat session.
+## If empty, all discovered skills are listed.
+@export
+var active_skills: Array[String] = []
+
 
 # --- State ---
 
@@ -85,6 +90,11 @@ var editor_interface: EditorInterface = null
 ## [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
 @export
 var chat_history: Array[Dictionary] = []
+
+## Map of tool_name -> AITool instance (persists for session)
+var session_tools: Dictionary = {}
+## IDs of skills that have been activated in this session.
+var activated_skill_ids: Array[String] = []
 
 ## The partial response currently being received from the AI.
 ## This is cleared when a new request starts and populated during streaming.
@@ -207,10 +217,13 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	var final_messages: Array[Dictionary] = []
 	var base_system_prompt := PromptBuilder.get_chat_prompt(active_system_prompt)
+	
+	# Add skills discovery context to the system prompt
+	var skills_context = PromptBuilder.get_skills_discovery_context(active_skills)
 		
 	final_messages.append({
 		"role": "system", 
-		"content": base_system_prompt + PromptBuilder.get_environment_context()
+		"content": base_system_prompt + PromptBuilder.get_environment_context() + skills_context
 	})
 	
 	for msg in chat_history:
@@ -232,6 +245,10 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, final_model)
 	_active_handler.mock_client = mock_client
+	
+	# Sync session state to handler
+	_active_handler._active_tools = session_tools
+	_active_handler._activated_skill_ids = activated_skill_ids
 	
 	# 5. Connect signals.
 	_active_handler.progress.connect(func(chunks: Array[String]): 
@@ -255,6 +272,10 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			if not chat_history.is_empty() and chat_history.back().role == "user":
 				chat_history.pop_back()
 		else:
+			# Sync back activated skills/tools
+			session_tools = _active_handler._active_tools
+			activated_skill_ids = _active_handler._activated_skill_ids
+			
 			partial_response = ""
 			chat_finished.emit(response)
 		
@@ -284,6 +305,23 @@ func unload_model(model_id: String = "") -> void:
 func clear_history() -> void:
 	chat_history.clear()
 	_update_context_length()
+
+
+## Explicitly activate a skill for this session.
+func activate_skill(skill_name: String) -> String:
+	if not _active_handler:
+		_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+		_active_handler.mock_client = mock_client
+		_active_handler._active_tools = session_tools
+		_active_handler._activated_skill_ids = activated_skill_ids
+		
+	var result = await _active_handler.activate_skill(skill_name)
+	
+	# Sync back
+	session_tools = _active_handler._active_tools
+	activated_skill_ids = _active_handler._activated_skill_ids
+	
+	return result
 
 
 func _was_cancelled() -> bool:
