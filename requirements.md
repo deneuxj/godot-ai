@@ -190,6 +190,30 @@ REQ-TOOL-0009: Provide a tool `capture_editor_view` that allows the AI to:
   - The tool shall be only available when running in the Godot Editor.
   - The snapshot shall be encoded (e.g., base64) and returned as an image attachment in a tool result message.
 
+### AI Skills
+
+REQ-SKILL-0001: The plugin shall support a "Skill System" to provide specialized capabilities to the AI agent.
+
+REQ-SKILL-0002: A "Skill" shall be a structured resource (folder) containing:
+  - `SKILL.md`: Expert procedural guidance and instructions for the AI.
+  - `tools/`: Optional GDScript files defining specialized tools for the skill.
+  - `examples/`: Optional reference scenes or scripts for the AI to learn from.
+
+REQ-SKILL-0003: Skills shall be discoverable in specific project directories (e.g., `res://ai_skills/` and `res://addons/ai_assistant/skills/`).
+
+REQ-SKILL-0004: The `AIChat` and `AIAgentAssisted3D` nodes shall provide a property to select one or more active skills for a session.
+
+REQ-SKILL-0005: To optimize context usage, when multiple skills are available:
+  - Initially, only the name and a brief description of each skill shall be included in the system prompt.
+  - The full content of a skill's `SKILL.md` shall be injected into the context (wrapped in `<activated_skill>` tags) ONLY when the AI specifically requests to "activate" or "use" that skill, or when a tool provided by that skill is called.
+  - Once activated, its specialized tools shall be registered and made available to the AI.
+  - Examples shall be used to provide few-shot context if necessary after activation.
+
+REQ-SKILL-0006: Provide a built-in "skill-creator" meta-skill that allows the AI to autonomously create new skills.
+  - The skill-creator shall take a description of the desired capability.
+  - It shall generate the complete skill directory structure, the `SKILL.md` expert instructions, and any necessary `AITool` GDScript files.
+  - The generated skill shall be saved to the project's skill directory (e.g., `res://ai_skills/`).
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API
