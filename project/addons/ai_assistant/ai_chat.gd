@@ -180,9 +180,20 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		var router_model := AISettings.get_string(AISettings.CONN, "router_model")
 		if not router_model.is_empty():
 			var routing_messages: Array[Dictionary] = [
-				{"role": "system", "content": PromptBuilder.get_router_prompt(router_system_prompt)},
-				{"role": "user", "content": prompt}
+				{"role": "system", "content": PromptBuilder.get_router_prompt(router_system_prompt)}
 			]
+			
+			for msg in chat_history:
+				var new_msg = msg.duplicate()
+				if typeof(new_msg.content) == TYPE_ARRAY:
+					# Strip images from multimodal content for routing
+					var text_only = ""
+					for part in new_msg.content:
+						if part.get("type") == "text":
+							text_only += part.get("text", "")
+					new_msg.content = text_only
+				routing_messages.append(new_msg)
+			
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
 			router_handler.mock_client = mock_client
 			var workload := await router_handler.execute(routing_messages)
