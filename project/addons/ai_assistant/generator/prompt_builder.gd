@@ -147,6 +147,66 @@ Respond with ONLY the word "analyst" or "technician". No other text.
 """
 
 
+## Get the system prompt for generic chat, following the hierarchy:
+## 1. Explicit override
+## 2. Project setting override (if not empty)
+## 3. Hardcoded CHAT_SYSTEM_PROMPT constant
+static func get_chat_prompt(override: String = "") -> String:
+	if not override.is_empty():
+		return override
+	
+	var setting = AISettings.get_string(AISettings.GEN, "system_prompt")
+	if not setting.is_empty():
+		return setting
+		
+	return CHAT_SYSTEM_PROMPT
+
+
+## Get the system prompt for routing, following the hierarchy:
+## 1. Explicit override
+## 2. Project setting override (if not empty)
+## 3. Hardcoded ROUTER_SYSTEM_PROMPT constant
+static func get_router_prompt(override: String = "") -> String:
+	if not override.is_empty():
+		return override
+	
+	var setting = AISettings.get_string(AISettings.GEN, "router_system_prompt")
+	if not setting.is_empty():
+		return setting
+		
+	return ROUTER_SYSTEM_PROMPT
+
+
+## Get the system prompt for analyst mode, following the hierarchy:
+## 1. Explicit override
+## 2. Project setting override (if not empty)
+## 3. Hardcoded ANALYST_SYSTEM_PROMPT constant
+static func get_analyst_prompt(override: String = "") -> String:
+	if not override.is_empty():
+		return override
+	
+	var setting = AISettings.get_string(AISettings.GEN, "analyst_system_prompt")
+	if not setting.is_empty():
+		return setting
+		
+	return ANALYST_SYSTEM_PROMPT
+
+
+## Get the system prompt for technician mode, following the hierarchy:
+## 1. Explicit override
+## 2. Project setting override (if not empty)
+## 3. Hardcoded TECHNICIAN_SYSTEM_PROMPT constant
+static func get_technician_prompt(override: String = "") -> String:
+	if not override.is_empty():
+		return override
+	
+	var setting = AISettings.get_string(AISettings.GEN, "technician_system_prompt")
+	if not setting.is_empty():
+		return setting
+		
+	return TECHNICIAN_SYSTEM_PROMPT
+
+
 ## Main entry point to build the AI conversation history.
 static func build(prompt: String, textures: Array[Texture2D], mode: int) -> Array[Dictionary]:
 	var messages: Array[Dictionary] = []

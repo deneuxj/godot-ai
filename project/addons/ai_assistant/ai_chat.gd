@@ -25,7 +25,19 @@ signal context_compressed()
 
 ## System prompt to prepend to the conversation.
 @export_multiline
-var system_prompt: String = PromptBuilder.CHAT_SYSTEM_PROMPT
+var system_prompt: String = ""
+
+## System prompt override for the Router workload analysis.
+@export_multiline
+var router_system_prompt: String = ""
+
+## System prompt override for the Analyst workload.
+@export_multiline
+var analyst_system_prompt: String = ""
+
+## System prompt override for the Technician workload.
+@export_multiline
+var technician_system_prompt: String = ""
 
 ## API endpoint URL (overrides project settings if not empty).
 @export
@@ -158,7 +170,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		var router_model := AISettings.get_string(AISettings.CONN, "router_model")
 		if not router_model.is_empty():
 			var routing_messages: Array[Dictionary] = [
-				{"role": "system", "content": PromptBuilder.ROUTER_SYSTEM_PROMPT},
+				{"role": "system", "content": PromptBuilder.get_router_prompt(router_system_prompt)},
 				{"role": "user", "content": prompt}
 			]
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
@@ -168,11 +180,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			
 			if workload.contains("analyst"):
 				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
-				active_system_prompt = PromptBuilder.ANALYST_SYSTEM_PROMPT
+				active_system_prompt = PromptBuilder.get_analyst_prompt(analyst_system_prompt)
 				status_updated.emit("Thinking...")
 			elif workload.contains("technician"):
 				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
-				active_system_prompt = PromptBuilder.TECHNICIAN_SYSTEM_PROMPT
+				active_system_prompt = PromptBuilder.get_technician_prompt(technician_system_prompt)
 				status_updated.emit("Implementing...")
 			else:
 				push_warning("AIChat: Router returned unrecognized workload: " + workload)
@@ -194,9 +206,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var vision_ok = await tools_handler.supports_vision(final_model)
 	
 	var final_messages: Array[Dictionary] = []
-	var base_system_prompt := active_system_prompt
-	if base_system_prompt.is_empty():
-		base_system_prompt = PromptBuilder.CHAT_SYSTEM_PROMPT
+	var base_system_prompt := PromptBuilder.get_chat_prompt(active_system_prompt)
 		
 	final_messages.append({
 		"role": "system", 
@@ -296,10 +306,8 @@ func get_current_tool_definitions() -> Array[Dictionary]:
 func get_context_length() -> Dictionary:
 	var total_chars := 0
 	
-	# Add system prompt length
-	var active_prompt = system_prompt
-	if active_prompt.is_empty():
-		active_prompt = PromptBuilder.CHAT_SYSTEM_PROMPT
+	# Add system prompt length (following hierarchy)
+	var active_prompt = PromptBuilder.get_chat_prompt(system_prompt)
 	total_chars += active_prompt.length()
 	
 	# Add environment context
