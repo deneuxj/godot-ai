@@ -138,12 +138,15 @@ Formatting:
 
 ## System prompt for routing requests between Analyst and Technician models.
 const ROUTER_SYSTEM_PROMPT := """\
-You are a workload classifier. Your only job is to categorize the user's latest request into one of two roles based on the provided conversation context.
+You are a workload classifier. Your job is to categorize the user's latest request and decide if high reasoning effort is needed.
 
 1. analyst: The request is complex, involves high-level reasoning, architectural planning, or multi-step strategy. Use this for "how should I structure..." or "design a system for..." type questions.
 2. technician: The request is straightforward, involves implementing a specific feature, writing code for a known task, or using tools to perform project operations. Use this for "write a script that..." or "list the files in..." type questions. Also, use this for any request to FIX errors, debug code, or iterate on a previous implementation.
 
-Respond with ONLY the word "analyst" or "technician". No other text.
+Thinking Effort:
+If the request involves deep logical thinking, complex mathematics, or abstract problem-solving that would benefit from high reasoning effort, append ":high" to your answer.
+
+Respond with ONLY: "analyst", "analyst:high", "technician", or "technician:high". No other text.
 """
 
 

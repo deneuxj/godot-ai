@@ -174,6 +174,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	# 2. Workload Routing (Optional)
 	var final_model := model
 	var active_system_prompt := system_prompt
+	var final_effort := ""
 	
 	if use_router and final_model.is_empty():
 		status_updated.emit("Processing...")
@@ -211,19 +212,29 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
 			router_handler.mock_client = mock_client
-			var workload := await router_handler.execute(routing_messages)
-			workload = workload.strip_edges().to_lower()
+			var workload_raw := await router_handler.execute(routing_messages)
+			var workload = workload_raw.strip_edges().to_lower()
+			
+			var effort := ""
+			if workload.contains(":high"):
+				effort = "high"
+				workload = workload.replace(":high", "")
 			
 			if workload.contains("analyst"):
 				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
 				active_system_prompt = PromptBuilder.get_analyst_prompt(analyst_system_prompt)
+				
+				# REQ-LMSTUDIO-0004: Set analyst effort to low by default.
+				if effort.is_empty():
+					effort = "low"
+					
 				status_updated.emit("Thinking...")
 			elif workload.contains("technician"):
 				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
 				active_system_prompt = PromptBuilder.get_technician_prompt(technician_system_prompt)
 				status_updated.emit("Implementing...")
 			else:
-				push_warning("AIChat: Router returned unrecognized workload: " + workload)
+				push_warning("AIChat: Router returned unrecognized workload: " + workload_raw)
 				final_model = AISettings.get_string(AISettings.CONN, "model")
 			
 			# Ensure model is loaded (LM Studio Native)
@@ -232,6 +243,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				# unless it's actually doing a REST call that takes time.
 				# For now, let's keep the user intent status.
 				await router_handler.load_model(final_model)
+			
+			final_effort = effort
 		else:
 			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
 			final_model = AISettings.get_string(AISettings.CONN, "model")
@@ -270,6 +283,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		status_updated.emit("Generating...")
 	
 	var handler := AIRequestHandler.new(self, api_endpoint, api_key, final_model)
+	handler.reasoning_effort = final_effort
 	handler.mock_client = mock_client
 	_active_handler = handler
 	

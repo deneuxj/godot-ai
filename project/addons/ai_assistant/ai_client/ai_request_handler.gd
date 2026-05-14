@@ -32,6 +32,8 @@ var api_endpoint: String = ""
 var api_key: String = ""
 ## Model name override.
 var model: String = ""
+## Reasoning effort override.
+var reasoning_effort: String = ""
 
 ## If set, this client will be used instead of creating a real one.
 var mock_client: AIClient = null
@@ -106,6 +108,8 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 		client.set_api_key(api_key)
 	if not model.is_empty():
 		client.set_model(model)
+	
+	client.set_reasoning_effort(reasoning_effort)
 	
 	# Ensure max_tokens is fresh from AISettings.
 	client.set_max_tokens(AISettings.get_int(AISettings.GEN, "max_tokens"))

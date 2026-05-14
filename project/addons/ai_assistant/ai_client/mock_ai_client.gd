@@ -15,8 +15,18 @@ var response_delay_ms: int = 100
 
 var _is_cancelled: bool = false
 
+## Captured parameters from the last request.
+var last_request_params: Dictionary = {}
+
 
 func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
+	last_request_params = {
+		"model": model,
+		"messages": messages,
+		"tools": tools,
+		"reasoning_effort": reasoning_effort
+	}
+	
 	if response_delay_ms > 0 and get_tree():
 		await get_tree().create_timer(response_delay_ms / 1000.0).timeout
 	
@@ -30,6 +40,13 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 
 
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
+	last_request_params = {
+		"model": model,
+		"messages": messages,
+		"tools": tools,
+		"reasoning_effort": reasoning_effort
+	}
+	
 	var tree = get_tree()
 	if response_delay_ms > 0 and tree:
 		await tree.create_timer(response_delay_ms / 1000.0).timeout
