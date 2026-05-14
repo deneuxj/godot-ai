@@ -10,8 +10,10 @@
 
 ## Technical Requirements
 - Each wall must have both [b]collision geometry[/b] ([code]CollisionShape3D[/code] with [code]BoxShape3D[/code]) and [b]visual geometry[/b] ([code]MeshInstance3D[/code] with [code]BoxMesh[/code]).
-- All dynamically created nodes must have their [code]owner[/code] set to the [b]root scene node[/b] (the node passed to [code]execute()[/code]), not just any ancestor. The root scene node must be added to the tree [b]before[/b] setting owners on its children to avoid "Invalid owner" errors.
+- All dynamically created nodes must have their [code]owner[/code] set to the [b]same owner as the context node[/b]. Use [code]node.owner[/code] if it is not null; otherwise, use [code]node[/code] itself as the owner. This ensures nodes are persisted correctly in the scene file.
+- The owner must be set [b]after[/b] the node is added to the scene tree (via [code]add_child()[/code]) to avoid "Invalid owner" errors.
 - Each room should be grouped under a [code]Node3D[/code] named after the room (e.g., "Garage", "Guarderobe").
+- When removing existing nodes before rebuilding, use [code]queue_free()[/code] and wait or check from the scene root to ensure proper cleanup.
 
 ## Wall Construction Instructions
 
@@ -23,7 +25,7 @@
   - **Bottom Wall:** External wall from (0, 0) to (5.99, 0)
   - **Right Wall:** Open (no wall)
 
-### 2. Guarderobe
+## 2. Closet (Guarderobe)
 - **Dimensions:** 4.74m width x 2.00m height
 - **Position:** Starts at (5.99, 5.249)
 - **Walls:**
