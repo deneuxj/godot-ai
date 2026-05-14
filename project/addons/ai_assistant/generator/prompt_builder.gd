@@ -44,8 +44,9 @@ static func execute(node: Node):
 	node.add_child(mesh_node)
 	
 	# CRITICAL: If running in the editor, set the owner so the node is saved and visible in the Scene dock.
-	if Engine.is_editor_hint():
-		mesh_node.owner = node.get_tree().edited_scene_root
+	# The 'node' (AIChat) owner is typically the root of the scene.
+	if node.owner:
+		mesh_node.owner = node.owner
 ```
 """
 
