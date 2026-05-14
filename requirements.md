@@ -138,6 +138,8 @@ REQ-EDITOR-0008: The `AIChat` editor UI shall provide granular status feedback b
   - "Thinking": When the Analyst model (complex reasoning) is active.
   - "Implementing": When the Technician model (tool use/implementation) is active.
 
+REQ-EDITOR-0009: AI generation shall be persistent and shall not be interrupted when the user switches between scenes, closes the scene tab containing the active AIChat node, or performs other tasks in the editor. The process must continue in the background until completion, error, or manual cancellation.
+
 ### Persistence
 
 REQ-PERSIST-0001: The result of a successful generation shall be saved to disk as a `.tscn` or `.gd` file, typically in `res://generated/`.

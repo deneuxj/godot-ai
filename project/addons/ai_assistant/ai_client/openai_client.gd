@@ -21,12 +21,20 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	if is_instance_valid(_http_request):
-		_http_request.queue_free()
-		_http_request_ready = false
+		# If it's still busy, we DON'T want to free it if we are trying to be persistent.
+		# However, if it's being freed, it's usually because the host is being freed.
+		# If hosted on the EditorPlugin, this only happens when plugin is disabled.
+		if _http_request.get_http_client_status() == HTTPClient.STATUS_DISCONNECTED:
+			_http_request.queue_free()
+			_http_request_ready = false
+		else:
+			# If it's busy, it's better to let it finish if possible, but if the node is being freed,
+			# it will be freed anyway. The persistent host prevents this in the editor.
+			pass
 
 
 func _ensure_http_request() -> void:
-	if not _http_request_ready:
+	if not _http_request_ready or not is_instance_valid(_http_request):
 		_http_request = HTTPRequest.new()
 		add_child(_http_request)
 		_http_request_ready = true

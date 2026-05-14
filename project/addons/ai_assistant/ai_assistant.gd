@@ -9,6 +9,7 @@ const AI_ASSISTED_3D_NODE = "res://addons/ai_assistant/agent_assisted_3d.gd"
 const PANEL_SCENE = "res://addons/ai_assistant/agent_assisted_3d_panel.tscn"
 const CHAT_PANEL_SCENE = "res://addons/ai_assistant/ai_chat_panel.tscn"
 const CUSTOM_LOGGER = preload("res://addons/ai_assistant/generator/custom_logger.gd")
+const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
 
 var _dock: Control = null
 var _chat_dock: Control = null
@@ -22,6 +23,8 @@ func _enter_tree() -> void:
 	
 	# Also register it with ScriptExecutor for easy access.
 	ScriptExecutor.register_logger(_logger)
+
+	AIRequestHandler.set_persistent_host(self)
 
 	_register_project_settings()
 	_create_docks()

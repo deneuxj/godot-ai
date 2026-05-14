@@ -37,6 +37,20 @@ var model: String = ""
 var mock_client: AIClient = null
 
 
+static var _persistent_host: Node = null
+
+## Set a persistent host node (e.g. the EditorPlugin) to anchor requests.
+static func set_persistent_host(host: Node) -> void:
+	_persistent_host = host
+
+
+## Get the persistent host if valid, otherwise return the fallback.
+static func get_persistent_host(fallback: Node) -> Node:
+	if _persistent_host and is_instance_valid(_persistent_host):
+		return _persistent_host
+	return fallback
+
+
 func _init(parent: Node, endpoint: String = "", key: String = "", model_name: String = "") -> void:
 	_parent = parent
 	api_endpoint = endpoint
@@ -72,7 +86,8 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			client = AIClient.create_openai_client()
 	
 	if not client.is_inside_tree():
-		_parent.add_child(client)
+		var host = get_persistent_host(_parent)
+		host.add_child(client)
 	_active_client = client
 
 	# 2. Apply Overrides.
@@ -175,7 +190,8 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 func _is_lm_studio(url: String) -> bool:
 	var check_url = url + "/api/v1/models"
 	var http := HTTPRequest.new()
-	_parent.add_child(http)
+	var host = get_persistent_host(_parent)
+	host.add_child(http)
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
 	var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
