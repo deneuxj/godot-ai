@@ -88,7 +88,10 @@ func _update_for_node(node: Node) -> void:
 
 		# Refresh UI state.
 		_update_display()
-		_status_label.text = "Status: Ready"
+		var busy = _current_node.is_busy()
+		_status_label.text = "Status: Typing..." if busy else "Status: Ready"
+		_send_button.disabled = busy
+		_cancel_button.disabled = not busy
 		_update_status_theme()
 		
 		# Initial context update

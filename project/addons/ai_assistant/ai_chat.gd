@@ -354,6 +354,11 @@ func activate_skill(skill_name: String) -> String:
 	return result
 
 
+## Returns true if a request is currently active.
+func is_busy() -> bool:
+	return _active_handler != null and _active_handler.is_busy()
+
+
 func get_current_tool_definitions() -> Array[Dictionary]:
 	return PromptBuilder.get_tool_definitions(
 		enable_godot_docs, 

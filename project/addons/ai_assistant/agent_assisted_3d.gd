@@ -232,6 +232,11 @@ func cancel_generation() -> void:
 	generation_finished.emit()
 
 
+## Returns true if a generation is currently in progress.
+func is_busy() -> bool:
+	return _active_handler != null and _active_handler.is_busy()
+
+
 ## Explicitly activate a skill for this session.
 func activate_skill(skill_name: String) -> String:
 	if not _active_handler:
