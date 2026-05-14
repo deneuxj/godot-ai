@@ -1,0 +1,184 @@
+================================================================================
+GODOT 4 - NODE CREATION BEST PRACTICES (Lessons Learned)
+================================================================================
+Document: scripted-node-creation.txt
+Date: [CURRENT DATE]
+Author: AI Assistant
+Topic: Node Tree Registration & Ownership
+
+================================================================================
+LESSON #1: REGISTER FIRST, OWN LATER
+================================================================================
+
+⚠️ CRITICAL LESSON LEARNED FROM THIS SESSION:
+
+When creating new nodes programmatically in Godot 4, you MUST follow this
+order to avoid ownership errors and ensure proper scene tree integration:
+
+CORRECT ORDER:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Create the node (using @global_new() or similar)
+2. Add it to its parent's tree [node.add_node(child_node)]
+3. NOW set properties like owner, custom_properties, etc.
+4. Configure additional settings
+
+WRONG ORDER (CAUSES ERRORS):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ Create node → Set owner → Add to tree = POTENTIAL ERROR
+
+
+WHY THIS MATTERS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Godot's ownership system requires nodes to be "registered" (added to tree)
+  before ownership can be properly established.
+- Setting owner on a node that isn't in the tree yet may not take effect
+  or could cause runtime warnings.
+- The scene tree is the authoritative source of parent-child relationships.
+
+REFERENCE IMPLEMENTATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[GDScript]
+# ✓ CORRECT - Add to tree first, then set owner:
+
+@global_new()
+func _ready():
+    # Create child nodes
+    var garage = BoxMesh.new()
+    
+    # STEP 1: CREATE NODE
+    # STEP 2: ADD TO TREE FIRST (registers the node)
+    add_child(garage, false, Node.INTERNAL)
+    
+    # STEP 3: NOW SET OWNER (safe after registration)
+    garage.owner = self
+    
+    # Continue with other configurations...
+
+================================================================================
+LESSON #2: USE PROPER ADD_CHILD() PARAMETERS
+================================================================================
+
+When adding nodes programmatically, use these parameters correctly:
+
+add_child(node, recursive, INTERNAL|EXTERNAL)
+
+- [node] The node to add
+- [recursive] Whether children of this node should also be added (false = false)
+- [INTERNAL|EXTERNAL] Ownership behavior:
+  - Node.INTERNAL: Standard child relationship, owned by parent
+  - Node.EXTERNAL: Loose association, not automatically owned
+
+RECOMMENDED DEFAULT:
+    add_child(child_node, false, Node.INTERNAL)
+
+================================================================================
+LESSON #3: NODE CREATION PATTERN FOR ROOM/OBJECT SCENES
+================================================================================
+
+When creating multiple similar nodes (like room boxes in a house scene):
+
+```gdscript
+func create_room_nodes(owner_node: Node) -> Array[MeshInstance3D]:
+    var rooms = []
+    
+    for room_data in room_definitions:
+        # Create mesh instance
+        var mesh = BoxMesh.new()
+        mesh.size = Vector3(room_data.width, room_data.depth, 0.05)
+        
+        # Create mesh instance material (optional)
+        var material = StandardMaterial3D.new()
+        material.albedo_color = Color.WHITE
+        
+        var instance = Instance.new()
+        instance.mesh = mesh
+        instance.material = material
+        
+        # ✓ STEP 1: CREATE THE NODE
+        var room_node = MeshInstance3D.new()
+        
+        # ✓ STEP 2: ADD TO TREE FIRST (critical!)
+        owner_node.add_child(room_node, false, Node.INTERNAL)
+        
+        # ✓ STEP 3: NOW SET POSITION AND OTHER PROPERTIES
+        room_node.position = Vector3(
+            room_data.position.x, 
+            room_data.position.y, 
+            0
+        )
+        
+        # ✓ STEP 4: NOW SET OWNER (after registration)
+        room_node.owner = owner_node
+        
+        # Configure additional properties...
+        
+        rooms.append(room_node)
+    
+    return rooms
+```
+
+================================================================================
+LESSON #4: OWNERSHIP CHAIN VERIFICATION
+================================================================================
+
+Always verify ownership after node creation by checking the scene tree:
+
+[GDScript]
+func _verify_ownership(node: Node, expected_owner: Node) -> bool:
+    if not node in expected_owner.get_children():
+        print("❌ Node is NOT a child of expected owner!")
+        return false
+    
+    if not node.owner == expected_owner:
+        print("⚠️  Node has wrong owner! Expected:", expected_owner)
+        print("      Actual owner:", node.owner)
+        return false
+    
+    print("✓ Ownership verified correctly")
+    return true
+```
+
+================================================================================
+LESSON #5: COMMON ERRORS & FIXES
+================================================================================
+
+ERROR: "Node not in tree when setting owner"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX: Add node to parent before calling .owner = value
+
+ERROR: "Property 'owner' not callable for type 'MeshInstance3D'"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX: Ensure node is added to tree first (add_child)
+
+ERROR: Child nodes disappear after scene reload
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIX: Use proper add_child() with Node.INTERNAL, or 
+     mark child as persistent in scene tree
+
+================================================================================
+LESSON #6: TESTING CHECKLIST FOR NODE CREATION SCRIPTS
+================================================================================
+
+When debugging node creation issues, verify:
+
+☐ [ ] All nodes added via add_child() before owner assignment
+☐ [ ] Children added with Node.INTERNAL ownership flag (default)
+☐ [ ] No duplicate add_child() calls for same node
+☐ [ ] Parent relationship verified in scene tree inspector
+☐ [ ] Owner property set after registration completes
+☐ [ ] Mesh instances using proper size/position vectors
+☐ [ ] No circular parent relationships created
+
+================================================================================
+LESSON #7: GODOT 4 SPECIFICS
+================================================================================
+
+- Godot 4 uses Node3D as base class for all 3D nodes
+- MeshInstance3D requires a mesh assigned before adding to scene
+- SceneTree nodes are "registered" when added via add_child()
+- The owner property can be set anytime after tree registration
+- get_parent() returns null if node has no parent in scene
+
+================================================================================
+END OF DOCUMENT
+================================================================================
