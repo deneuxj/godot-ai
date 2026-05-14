@@ -23,6 +23,7 @@ var _current_node: AIChat = null
 @onready var _context_label: Label = find_child("ContextLabel")
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
 @onready var _unload_button: Button = find_child("UnloadButton")
+@onready var _compress_button: Button = find_child("CompressButton")
 
 
 var _pending_attachments: Array[String] = []
@@ -42,6 +43,8 @@ func _on_ready() -> void:
 		_attach_button.pressed.connect(_on_attach_pressed)
 	if _unload_button:
 		_unload_button.pressed.connect(_on_unload_pressed)
+	if _compress_button:
+		_compress_button.pressed.connect(_on_compress_pressed)
 	if _attachment_dialog:
 		_attachment_dialog.file_selected.connect(_on_file_selected)
 
@@ -142,6 +145,12 @@ func _on_attach_pressed() -> void:
 func _on_unload_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.unload_model()
+
+
+func _on_compress_pressed() -> void:
+	if is_instance_valid(_current_node):
+		_current_node.compress_context(true)
+		_update_display()
 
 
 func _on_file_selected(path: String) -> void:

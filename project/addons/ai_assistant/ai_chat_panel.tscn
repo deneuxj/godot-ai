@@ -97,6 +97,11 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
 text = "Context: 0 tokens (0 chars)"
 
+[node name="CompressButton" type="Button" parent="MarginContainer/VBoxContainer/StatusRow"]
+layout_mode = 2
+tooltip_text = "Force context compression (prune old tool interactions and non-vital messages)"
+text = "Compress"
+
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/StatusRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2

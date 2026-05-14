@@ -322,14 +322,15 @@ func get_context_length() -> Dictionary:
 
 
 ## Surgically prunes the conversation history to stay within token limits.
+## If [param force] is true, it will prune as much as possible regardless of current length.
 ## Returns true if the context is within limits after compression.
-func compress_context() -> bool:
+func compress_context(force: bool = false) -> bool:
 	var limit := AISettings.get_int(AISettings.GEN, "context_limit")
 	# print("Compressing context. Limit: %d, Current: %d" % [limit, get_context_length().tokens])
-	if limit <= 0: return true # No limit set
+	if limit <= 0 and not force: return true # No limit set
 	
 	var current := get_context_length()
-	if current.tokens <= limit:
+	if not force and current.tokens <= limit:
 		return true
 	
 	var pruned := false
@@ -370,16 +371,30 @@ func compress_context() -> bool:
 
 
 func _get_message_length(msg: Dictionary) -> int:
+	var total_len := 0
+	
+	# 1. Standard content
 	var content = msg.get("content", "")
 	if content is String:
-		return content.length()
+		total_len += content.length()
 	elif content is Array:
-		var length := 0
 		for part in content:
 			if part.get("type") == "text":
-				length += part.get("text", "").length()
-		return length
-	return 0
+				total_len += part.get("text", "").length()
+	
+	# 2. Tool calls (AI side)
+	if msg.has("tool_calls"):
+		total_len += JSON.stringify(msg["tool_calls"]).length()
+		
+	# 3. Tool call ID (Tool side results)
+	if msg.has("tool_call_id"):
+		total_len += str(msg["tool_call_id"]).length()
+		
+	# 4. Name (used in tool responses)
+	if msg.has("name"):
+		total_len += str(msg["name"]).length()
+		
+	return total_len
 
 
 func _update_context_length() -> void:
