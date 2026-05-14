@@ -237,6 +237,10 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			elif workload.contains("technician"):
 				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
 				active_system_prompt = PromptBuilder.get_technician_prompt(technician_system_prompt)
+				
+				# Disable reasoning for technician to avoid formatting issues (XML/stop) with Qwen
+				reasoning_val = "off"
+				
 				status_updated.emit("Implementing...")
 			else:
 				push_warning("AIChat: Router returned unrecognized workload: " + workload_raw)
@@ -290,7 +294,13 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		status_updated.emit("Generating...")
 	
 	var handler := AIRequestHandler.new(self, api_endpoint, api_key, final_model)
-	handler.reasoning = final_reasoning
+	
+	# Disable reasoning if using tools and model is likely Qwen (lm-studio or local-model)
+	if not tools.is_empty() and (final_model.to_lower().contains("qwen") or api_endpoint.contains("localhost") or api_endpoint.is_empty()):
+		handler.reasoning = "off"
+	else:
+		handler.reasoning = final_reasoning
+		
 	handler.mock_client = mock_client
 	_active_handler = handler
 	

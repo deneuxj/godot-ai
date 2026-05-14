@@ -119,14 +119,56 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 		return ""
 
 	var message = (choices[0] as Dictionary).get("message", {})
+	var content = message.get("content", "")
 	
 	if message.has("tool_calls"):
 		return {
-			"content": message.get("content", ""),
+			"content": content,
 			"tool_calls": message["tool_calls"]
 		}
+	
+	# Fallback: Parse XML tool calls from content if standard tool_calls is empty
+	if content is String and "<tool_call>" in content:
+		var xml_tool_calls: Array = []
+		var start_idx = content.find("<tool_call>")
+		while start_idx != -1:
+			var end_idx = content.find("</tool_call>", start_idx)
+			if end_idx == -1: break
+			
+			var inner = content.substr(start_idx + 11, end_idx - (start_idx + 11)).strip_edges()
+			var parsed_inner = JSON.parse_string(inner)
+			if typeof(parsed_inner) == TYPE_DICTIONARY:
+				xml_tool_calls.append({
+					"id": "xml_" + str(xml_tool_calls.size()),
+					"type": "function",
+					"function": {
+						"name": parsed_inner.get("name", ""),
+						"arguments": JSON.stringify(parsed_inner.get("arguments", {}))
+					}
+				})
+			else:
+				var name_match = RegEx.create_from_string("name:\\s*([^,\\n]+)").search(inner)
+				var args_match = RegEx.create_from_string("arguments:\\s*({.*})").search(inner)
+				if name_match:
+					var func_name = name_match.get_string(1).strip_edges()
+					var func_args = args_match.get_string(1).strip_edges() if args_match else "{}"
+					xml_tool_calls.append({
+						"id": "xml_" + str(xml_tool_calls.size()),
+						"type": "function",
+						"function": {
+							"name": func_name,
+							"arguments": func_args
+						}
+					})
+			start_idx = content.find("<tool_call>", end_idx)
 		
-	return message.get("content", "")
+		if not xml_tool_calls.is_empty():
+			return {
+				"content": "",
+				"tool_calls": xml_tool_calls
+			}
+		
+	return content
 
 
 ## Streaming chat: sends [param messages] and emits [signal progress] per chunk.
@@ -213,7 +255,19 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 
 		var choice: Dictionary = (parsed as Dictionary).get("choices", [{}])[0]
 		var delta: Dictionary = choice.get("delta", {})
+		var finish_reason = choice.get("finish_reason")
+		if finish_reason:
+			print("[%s] OpenAIClient: Chunk finish_reason: %s" % [Time.get_time_string_from_system(), finish_reason])
 		
+		# Handle reasoning content if present (common in LM Studio/Qwen/DeepSeek)
+		var reasoning_chunk: String = delta.get("reasoning_content", "")
+		if reasoning_chunk != "":
+			# We can treat reasoning as content for now, or emit it separately.
+			# For debugging the "stop" issue, let's include it.
+			var typed_chunks: Array[String] = [reasoning_chunk]
+			progress.emit(typed_chunks)
+			full_content += reasoning_chunk
+
 		# Handle tool calls in streaming
 		if delta.has("tool_calls"):
 			var delta_tool_calls = delta["tool_calls"]
@@ -234,6 +288,9 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 
 		var chunk_content: String = delta.get("content", "")
 		if chunk_content != "":
+			# Heuristic for Qwen: if it sends XML-like tool calls in content despite instructions, 
+			# we might want to capture them. However, standard tool_calls is preferred.
+			# For now, let's stick to standard and see if the prompt fix works.
 			chunks.append(chunk_content)
 			full_content += chunk_content
 			# Emit chunks immediately if needed. We must use a typed array to match the signal.
@@ -245,5 +302,53 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			"content": full_content,
 			"tool_calls": tool_calls
 		}
+	
+	# Fallback: Parse XML tool calls from full_content if standard tool_calls is empty
+	# Pattern: <tool_call>{ "name": "...", "arguments": { ... } }</tool_call>
+	# Or sometimes: <tool_call>name: ..., arguments: ...</tool_call>
+	if "<tool_call>" in full_content:
+		var xml_tool_calls: Array = []
+		var start_idx = full_content.find("<tool_call>")
+		while start_idx != -1:
+			var end_idx = full_content.find("</tool_call>", start_idx)
+			if end_idx == -1: break
+			
+			var inner = full_content.substr(start_idx + 11, end_idx - (start_idx + 11)).strip_edges()
+			
+			# Try to parse as JSON first
+			var parsed_inner = JSON.parse_string(inner)
+			if typeof(parsed_inner) == TYPE_DICTIONARY:
+				xml_tool_calls.append({
+					"id": "xml_" + str(xml_tool_calls.size()),
+					"type": "function",
+					"function": {
+						"name": parsed_inner.get("name", ""),
+						"arguments": JSON.stringify(parsed_inner.get("arguments", {}))
+					}
+				})
+			else:
+				# Heuristic for non-JSON XML (e.g. name: ..., arguments: ...)
+				var name_match = RegEx.create_from_string("name:\\s*([^,\\n]+)").search(inner)
+				var args_match = RegEx.create_from_string("arguments:\\s*({.*})").search(inner)
+				if name_match:
+					var func_name = name_match.get_string(1).strip_edges()
+					var func_args = args_match.get_string(1).strip_edges() if args_match else "{}"
+					xml_tool_calls.append({
+						"id": "xml_" + str(xml_tool_calls.size()),
+						"type": "function",
+						"function": {
+							"name": func_name,
+							"arguments": func_args
+						}
+					})
+			
+			start_idx = full_content.find("<tool_call>", end_idx)
+		
+		if not xml_tool_calls.is_empty():
+			print("[%s] OpenAIClient: Detected %d XML tool calls in content." % [Time.get_time_string_from_system(), xml_tool_calls.size()])
+			return {
+				"content": "", # Clear content to avoid showing the XML to user
+				"tool_calls": xml_tool_calls
+			}
 
 	return full_content

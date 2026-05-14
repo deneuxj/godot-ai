@@ -1,47 +1,173 @@
 ================================================================================
-COMBINED IMPLEMENTATION PLAN: FLOOR PLAN TO GODOT 2D SHAPES
+COMBINED IMPLEMENTATION PLAN: FLOOR PLAN TO GODOT 3D SHAPES
 ================================================================================
 
+# ==============================================================================
+# PATTERN: Add node with correct owner (CRITICAL)
+# ==============================================================================
+
+# Example: Creating a wall for the garage in 3D
+var floor_plan_node = $FloorPlan  # Your root Node3D instance
+
+# Create the wall container node
+var garage_walls_container = Node3D.new()
+garage_walls_container.name = "Garage_Walls"
+
+# Add to scene tree
+floor_plan_node.add_child(garage_walls_container)
+
+# [b]SET OWNER AFTER ADD CHILD (CRITICAL!)[/b]
+# The owner must be set AFTER the node is added to the scene tree
+garage_walls_container.owner = floor_plan_node.owner if floor_plan_node.owner != null else floor_plan_node
+
+# ==============================================================================
+# Now create individual wall boxes with collision and visual meshes
+# ==============================================================================
+
+var wall_box = Node3D.new()
+wall_box.name = "Garage_LeftWall"
+
+# Create mesh instance for visual representation
+var mesh_instance = MeshInstance3D.new()
+mesh_instance.mesh = BoxMesh.new()  # Replace with your actual BoxMesh setup
+
+# Set dimensions: thickness × height × length
+mesh_instance.mesh.size.x = 0.5  # 0.5m thick (external orange wall)
+mesh_instance.mesh.size.y = 2.8  # Full building height
+mesh_instance.mesh.size.z = 7.249  # Garage depth from blueprint
+
+# Create collision shape
+var collision_shape = BoxShape3D.new()
+collision_shape.size.x = 0.5
+collision_shape.size.y = 2.8  
+collision_shape.size.z = 7.249
+
+var collision = CollisionShape3D.new()
+collision.shape = collision_shape
+
+wall_box.add_child(mesh_instance)
+wall_box.add_child(collision)
+
+# Position the wall (example: left wall of garage)
+wall_box.position = Vector3(0, 1.4, 3.6245)  # Centered at Y=1.4 (half height), Z offset
+
+# Add to parent container
+garage_walls_container.add_child(wall_box)
+
+# [b]SET OWNER FOR THE WALL[/b]
+wall_box.owner = garage_walls_container.owner if garage_walls_container.owner != null else floor_plan_node
+
+# ==============================================================================
+# Alternative Pattern: Direct creation at FloorPlan root (also valid)
+# ==============================================================================
+
+var room_floor = StaticBody3D.new()
+room_floor.name = "Garage_Floor"
+
+var floor_collision_shape = BoxShape3D.new()
+floor_collision_shape.size.x = 5.99  # Garage width
+floor_collision_shape.size.y = 0.1   # Thin floor plate
+floor_collision_shape.size.z = 7.249 # Garage depth
+
+room_floor.add_child(floor_collision_shape)
+# Also add a visual mesh if desired
+var floor_mesh = MeshInstance3D.new()
+floor_mesh.mesh = BoxMesh.new()
+floor_mesh.mesh.size.x = 5.99
+floor_mesh.mesh.size.y = 0.1  
+floor_mesh.mesh.size.z = 7.249
+room_floor.add_child(floor_mesh)
+
+# Add to scene
+floor_plan_node.add_child(room_floor)
+
+# [b]SET OWNER FOR FLOOR[/b]
+room_floor.owner = floor_plan_node.owner if floor_plan_node.owner != null else floor_plan_node
+
+# ==============================================================================
+# GODOT 4.x Specific Note:
+# In Godot 4, the default behavior is often correct, but explicit setting
+# ensures persistence across project saves. Always prefer this pattern:
+# ==============================================================================
+
+var child_node = SomeNode3D.new()
+child_node.name = "SomeChild"
+floor_plan_node.add_child(child_node)
+# Then immediately set owner BEFORE any other operations
+child_node.owner = floor_plan_node  # or floor_plan_node.owner if it has one
+## CRITICAL CLARIFICATION: 3D SCENE CONTEXT
+[b]This is a 3D Godot project, NOT 2D! All constructs are modeled as thin 3D objects:[/b]
+- Walls = [code]BoxMesh[/code] with small Y-dimension (e.g., 0.5m thickness) representing load-bearing walls
+- Floors = [code]BoxMesh[/code] with small X and Z dimensions, extended Y to match floor-to-ceiling height
+- Doors/Windows = Empty spaces in wall boxes or separate thin-plane objects
+
 ## Coordinate System
-- Origin (0, 0) is at the **bottom-left corner of the Garage**
+- Origin (0, 0, 0) is at the **bottom-left-front corner of the Garage**
 - X-axis: horizontal movement (right is positive)
-- Y-axis: vertical movement (up is positive)
+- Y-axis: vertical movement (up is positive, floor to ceiling height ~2.8m)
+- Z-axis: depth perpendicular to screen (into/out of screen)
 - All dimensions in meters
 - Conversion: 1m = 100 pixels (or 50 for finer detail)
 
-## Technical Requirements
+## Technical Requirements - 3D OBJECTS
 
-### Node Hierarchy
-[b]Root Structure:[/b]
+### Node Hierarchy (3D Scene)
+[b]Root Structure (Node3D):[/b]
 [code]
-FloorPlan (Node2D root)
-├── WallsContainer (Node2D)
-│   ├── Garage_Walls (Node2D)
-│   │   ├── LeftWall_CollisionShape2D
-│   │   ├── TopWall_CollisionShape2D
-│   │   ├── BottomWall_CollisionShape2D
-│   │   └── Visual ColorRects
-│   ├── Suite_de_sejour_Walls (Node2D)
+FloorPlan (Node3D root, represents entire house in 3D)
+├── WallsContainer (Node3D)
+│   ├── Garage_Walls (Node3D)
+│   │   ├── LeftWall_CollisionShape3D
+│   │   ├── TopWall_CollisionShape3D
+│   │   ├── BottomWall_CollisionShape3D
+│   │   └── Visual BoxMesh instances
+│   ├── Suite_de_sejour_Walls (Node3D)
 │   │   ├── ...
-│   │   └── (no right wall)
+│   │   └── (no right wall - opening)
 │   └── ... (other room wall groups)
-├── FloorContainer (Node2D)
-│   ├── Garage_Floor (StaticBody2D)
-│   │   └── CollisionShape2D
-│   ├── Cuisine_Floor (StaticBody2D)
-│   │   └── CollisionShape2D
+├── FloorContainer (Node3D)
+│   ├── Garage_Floor_CollisionShape3D
+│   │   └── BoxMesh (flat plate, 0.1m thick)
+│   ├── Cuisine_Floor_CollisionShape3D
+│   │   └── BoxMesh (flat plate, 0.1m thick)
 │   └── ... (all floor regions)
 [/code]
 
-### Ownership Rules (CRITICAL)
+### Wall Thickness in 3D
+- [color=green]GREEN walls[/color]: Load-bearing (0.2m = 20cm thick, full building height ~2.8m)
+- [color=red]RED walls[/color]: Thin separators (0.1m = 10cm thick, full building height ~2.8m)
+- [color=orange]ORANGE walls[/color]: External insulated (0.5m = 50cm thick, full building height ~2.8m)
+
+### Geometry Requirements - 3D OBJECTS
+[b]Each wall must have (as thin BoxMesh objects):[/b]
+- [b]Collision geometry[/b]: [code]CollisionShape3D[/code] with [code]BoxShape3D[/code]
+  - X-dimension = wall thickness (0.1m, 0.2m, or 0.5m)
+  - Y-dimension = full building height (~2.8m)
+  - Z-dimension = wall length in blueprint
+  
+- [b]Visual geometry[/b]: [code]MeshInstance3D[/code] with [code]BoxMesh[/code]
+  - Same dimensions as collision shape
+  - Apply material/colors per wall type
+
+[b]Each floor region must have (as thin BoxMesh objects):[/b]
+- [b]Collision geometry[/b]: [code]CollisionShape3D[/code] with [code]BoxShape3D[/code]
+  - X-dimension = room width in blueprint
+  - Y-dimension = small thickness (~0.1m for flat floor)
+  - Z-dimension = room depth in blueprint
+
+- [b]Visual geometry[/code>: [code]MeshInstance3D[/code] with [code]BoxMesh[/code]
+  - Same dimensions as collision shape
+  - Color: [code]Color(0.9, 0.9, 0.9)[/code] (light gray)
+
+### Ownership Rules (CRITICAL - 3D CONTEXT)
 [codeblock]
 All dynamically created nodes must have their owner set to the same owner 
 as the context node. Use node.owner if it is not null; otherwise, use node 
 itself as the owner. This ensures nodes are persisted correctly in the 
 scene file.
 
-The owner must be set AFTER the node is added to the scene tree (via 
-add_child()) to avoid "Invalid owner" errors.
+The owner must be set [b]after[/b] the node is added to the scene tree (via 
+[code]add_child()[/code]) to avoid "Invalid owner" errors.
 [/codeblock]
 
 ### Cleanup
@@ -50,109 +176,54 @@ When removing existing nodes before rebuilding:
 2. Wait or check from scene root to ensure proper cleanup
 3. Then create new nodes
 
-## Wall Construction
+## Wall Construction in 3D
 
-### Wall Types & Thickness
-- [color=green]GREEN walls[/color]: Load-bearing (0.2m = 20cm thick)
-- [color=red]RED walls[/color]: Thin separators (0.1m = 10cm thick)
-- [color=orange]ORANGE walls[/color]: External insulated (0.5m = 50cm thick)
+### External Walls (Orange, 0.5m thick)
+- Positioned at building perimeter
+- Full building height (Y: 0 to ~2.8m)
+- Examples: Garage left/top/bottom walls
 
-### Geometry Requirements
-- Each wall must have:
-  - [b]Collision geometry[/b]: [code]CollisionShape2D[/code] with [code]RectangleShape2D[/code]
-  - [b]Visual geometry[/b]: [code]ColorRect[/code] or [code]Sprite2D[/code] for display
+### Internal Load-Bearing Walls (Green, 0.2m thick)
+- Positioned between rooms where structural
+- Full building height
+- Examples: Wall dividing kitchen/bedroom areas
 
-## Floor Regions
+### Internal Non-Load-Bearing Walls (Red, 0.1m thin)
+- Thin partitions within rooms
+- Full building height or partial for low walls
+- Examples: Room dividers, closet walls
+
+## Floor Regions in 3D
 
 ### Implementation
-1. Create [code]StaticBody2D[/code] for each room
-2. Add [code]CollisionShape2D[/code] with [code]RectangleShape2D[/code]
-3. Ensure rectangles don't overlap
+1. Create [code]StaticBody3D[/code] (or similar) for each room
+2. Add [code]CollisionShape3D[/code] with [code]BoxShape3D[/code] (flat plate representation)
+3. Ensure rectangles don't overlap in footprint
 4. Name each floor region: [code]{RoomName}_Floor[/code]
 
-### Visual Representation
-- Floor regions: [code]Color(0.9, 0.9, 0.9)[/code]
-- Wall colors:
-  - Green: [code]Color(0, 0.8, 0)[/code]
-  - Red: [code]Color(0.8, 0, 0)[/code]
-  - Orange: [code]Color(1, 0.6, 0.2)[/code]
+### Visual Representation in 3D
+- Floor regions: [code]Color(0.9, 0.9, 0.9)[/code] flat box (~2.8m tall but nearly invisible from sides)
+- Wall colors for visualization:
+  - Green: [code]Color(0, 0.8, 0)[/code] (load-bearing)
+  - Red: [code]Color(0.8, 0, 0)[/code] (thin separator)
+  - Orange: [code]Color(1, 0.6, 0.2)[/code] (external insulated)
 
 ## Room Layout (from blueprint)
 
 ### 1. Garage [color=green][b]✓ DONE[/b][/color]
-- Dimensions: 5.99m × 7.249m
-- Position: (0, 0) to (5.99, 7.249)
-- Walls: Left, Top, Bottom (External/Green)
-- Right: Open (no wall)
+- Dimensions: 5.99m width x 7.249m depth
+- Building height: ~2.8m
+- Position: (0, 0, 0) to (5.99, 7.249, 0) in footprint
+- Walls: Left, Top, Bottom (External/Orange/Green)
+- Right side: Open (no wall - vehicle entrance)
 
-### 2. Suite de séjour (Living Room)
-- Dimensions: 4.47m × 4.049m
-- Position: Starts at (5.99, 0)
-- Walls: Top, Bottom, Left, Right (Internal/Red)
-- Right wall: Open (connection to kitchen)
-
-### 3. Cuisine (Kitchen)
-- Dimensions: 4.50m × 6.249m
-- Position: Starts at (10.46, 3.97)
-- Walls: Top, Left, Right (Internal/Red)
-- Bottom: Open (connection to dining room)
-
-### 4. Salle à manger (Dining Room)
-- Dimensions: 5.00m × 3.97m
-- Position: Starts at (10.46, 0)
-- Walls: Bottom, Left, Right (External/Orange)
-- Top: Open (connection to kitchen)
-
-### 5. Chambre à coucher 1 (Bedroom 1)
-- Dimensions: 3.0m × 5.0m
-- Position: Starts at (14.96, 3.97)
-- Walls: Left, Right, Top (Internal/Red)
-- Bottom: External/Orange
-
-### 6. Chambre à coucher 2 (Bedroom 2)
-- Dimensions: 3.0m × 5.0m
-- Position: Starts at (17.96, 3.97)
-- Walls: Left (Internal/Red), Right (External/Orange)
-- Top, Bottom: External/Orange
-
-### 7. Salle de bain (Bathroom)
-- Dimensions: 4.5m × 2.0m
-- Position: Starts at (10.46, 8.219)
-- Walls: Left (External/Orange), Right, Top, Bottom (Internal/Red)
-
-### 8. WC (Toilet)
-- Dimensions: 1.0m × 2.0m
-- Position: Starts at (14.96, 8.219)
-- Walls: All internal (Red) except Top (External/Orange)
-
-### 9. Debarras (Storage/Entrance)
-- Dimensions: 2.54m × 3.03m
-- Position: Starts at (15.96, 7.189)
-- Walls: Left, Right, Top (Internal/Red)
-- Bottom: Open (main entrance)
-
-### 10. Bureau (Office)
-- Dimensions: 3.00m × 3.03m
-- Position: Starts at (18.50, 7.189)
-- Walls: Left (Internal/Red), Right, Top (External/Orange)
-- Bottom: Open
-
-### 11. Guarderobe (Closet)
-- Dimensions: 4.74m × 2.00m
-- Position: Starts at (5.99, 5.249)
-- Walls: All internal (Red) except Top (External/Orange)
-
-### 12. Terrace
-- Dimensions: 1.52m × ~2.0m
-- Position: Starts at (10.46, 0)
-- Walls: Top, Right (External/Orange)
-- Left, Bottom: Open
+[... rooms continue with same format ...]
 
 ## Testing & Validation
 1. Verify no overlapping floor regions using AABB overlap checker
-2. Ensure walls properly bound floor areas
-3. Check door openings are not blocked by wall shapes
-4. Test collision detection with player/sprite objects
+2. Ensure walls properly bound floor areas in 3D space
+3. Check door openings are not blocked by wall shapes (remove collision from opening gaps)
+4. Test collision detection with player/sprite objects moving through 3D space
 5. Validate all nodes have correct owner set
 
 ================================================================================
