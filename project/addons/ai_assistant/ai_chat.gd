@@ -145,11 +145,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	# REQ-CHAT-0013, REQ-CHAT-0014: Context Compression
 	if not compress_context():
-		chat_error.emit("Context limit reached: Base context (System Prompt + Task Spec) exceeds the token limit.")
-		# Remove the message we just added to allow user to edit/retry
-		chat_history.pop_back()
-		_update_context_length()
-		return
+		push_warning("AIChat: Context limit reached even after compression. The AI provider may reject the request.")
 
 	chat_started.emit()
 
@@ -218,7 +214,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_execute_script, enable_capture_view)
+	var tools := get_current_tool_definitions()
 
 	# 4. Create and configure handler.
 	if not use_router or model != "":
@@ -284,12 +280,35 @@ func _was_cancelled() -> bool:
 	return _active_handler != null and _active_handler.was_cancelled()
 
 
+func get_current_tool_definitions() -> Array[Dictionary]:
+	return PromptBuilder.get_tool_definitions(
+		enable_godot_docs, 
+		enable_project_resources, 
+		enable_modify_resources, 
+		enable_validate_resources, 
+		enable_execute_script, 
+		enable_capture_view
+	)
+
+
 ## Returns the current conversational context length.
 ## Returns a dictionary with "tokens" (estimate) and "characters" keys.
 func get_context_length() -> Dictionary:
 	var total_chars := 0
+	
 	# Add system prompt length
-	total_chars += system_prompt.length()
+	var active_prompt = system_prompt
+	if active_prompt.is_empty():
+		active_prompt = PromptBuilder.CHAT_SYSTEM_PROMPT
+	total_chars += active_prompt.length()
+	
+	# Add environment context
+	total_chars += PromptBuilder.get_environment_context().length()
+	
+	# Add tool definitions length
+	var tools = get_current_tool_definitions()
+	for t in tools:
+		total_chars += JSON.stringify(t).length()
 	
 	# Add history length
 	for msg in chat_history:
