@@ -174,7 +174,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	# 2. Workload Routing (Optional)
 	var final_model := model
 	var active_system_prompt := system_prompt
-	var final_effort := ""
+	var final_reasoning := ""
 	
 	if use_router and final_model.is_empty():
 		status_updated.emit("Processing...")
@@ -215,18 +215,18 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			var workload_raw := await router_handler.execute(routing_messages)
 			var workload = workload_raw.strip_edges().to_lower()
 			
-			var effort := ""
-			if workload.contains(":high"):
-				effort = "high"
-				workload = workload.replace(":high", "")
+			var reasoning_val := ""
+			if workload.contains(":on"):
+				reasoning_val = "on"
+				workload = workload.replace(":on", "")
 			
 			if workload.contains("analyst"):
 				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
 				active_system_prompt = PromptBuilder.get_analyst_prompt(analyst_system_prompt)
 				
-				# REQ-LMSTUDIO-0004: Set analyst effort to low by default.
-				if effort.is_empty():
-					effort = "low"
+				# REQ-LMSTUDIO-0004: Set analyst reasoning to "off" by default for Qwen.
+				if reasoning_val.is_empty():
+					reasoning_val = "off"
 					
 				status_updated.emit("Thinking...")
 			elif workload.contains("technician"):
@@ -244,7 +244,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				# For now, let's keep the user intent status.
 				await router_handler.load_model(final_model)
 			
-			final_effort = effort
+			final_reasoning = reasoning_val
 		else:
 			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
 			final_model = AISettings.get_string(AISettings.CONN, "model")
@@ -283,7 +283,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		status_updated.emit("Generating...")
 	
 	var handler := AIRequestHandler.new(self, api_endpoint, api_key, final_model)
-	handler.reasoning_effort = final_effort
+	handler.reasoning = final_reasoning
 	handler.mock_client = mock_client
 	_active_handler = handler
 	

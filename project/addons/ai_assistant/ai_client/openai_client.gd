@@ -56,8 +56,11 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 		"max_tokens": max_tokens,
 	}
 	
-	if not reasoning_effort.is_empty():
-		body["reasoning_effort"] = reasoning_effort
+	if not reasoning.is_empty():
+		if reasoning in ["on", "off"]:
+			body["reasoning"] = reasoning
+		else:
+			body["reasoning_effort"] = reasoning
 	
 	if not tools.is_empty():
 		body["tools"] = tools
@@ -130,8 +133,11 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		"stream": true,
 	}
 	
-	if not reasoning_effort.is_empty():
-		body["reasoning_effort"] = reasoning_effort
+	if not reasoning.is_empty():
+		if reasoning in ["on", "off"]:
+			body["reasoning"] = reasoning
+		else:
+			body["reasoning_effort"] = reasoning
 	
 	if not tools.is_empty():
 		body["tools"] = tools

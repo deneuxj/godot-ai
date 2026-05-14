@@ -29,10 +29,10 @@ var model: String = "local-model"
 @export
 var max_tokens: int = 4096
 
-## Reasoning effort for models that support it (e.g. OpenAI o1, LM Studio 0.4.8+).
-## Typical values are "low", "medium", "high".
+## Reasoning setting for models that support it.
+## Typical values: "on", "off" (LM Studio/Qwen), or "low", "medium", "high" (OpenAI o1).
 @export
-var reasoning_effort: String = ""
+var reasoning: String = ""
 
 
 ## Set the API endpoint URL.
@@ -63,10 +63,10 @@ func set_max_tokens(tokens: int) -> AIClient:
 	return self
 
 
-## Set the reasoning effort.
+## Set the reasoning setting.
 ## Returns self for method chaining.
-func set_reasoning_effort(effort: String) -> AIClient:
-	reasoning_effort = effort
+func set_reasoning(value: String) -> AIClient:
+	reasoning = value
 	return self
 
 

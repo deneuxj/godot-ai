@@ -144,9 +144,9 @@ You are a workload classifier. Your job is to categorize the user's latest reque
 2. technician: The request is straightforward, involves implementing a specific feature, writing code for a known task, or using tools to perform project operations. Use this for "write a script that..." or "list the files in..." type questions. Also, use this for any request to FIX errors, debug code, or iterate on a previous implementation.
 
 Thinking Effort:
-If the request involves deep logical thinking, complex mathematics, or abstract problem-solving that would benefit from high reasoning effort, append ":high" to your answer.
+If the request involves deep logical thinking, complex mathematics, or abstract problem-solving that would benefit from high reasoning effort, append ":on" to your answer.
 
-Respond with ONLY: "analyst", "analyst:high", "technician", or "technician:high". No other text.
+Respond with ONLY: "analyst", "analyst:on", "technician", or "technician:on". No other text.
 """
 
 

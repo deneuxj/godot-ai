@@ -24,7 +24,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 		"model": model,
 		"messages": messages,
 		"tools": tools,
-		"reasoning_effort": reasoning_effort
+		"reasoning": reasoning
 	}
 	
 	if response_delay_ms > 0 and get_tree():
@@ -44,7 +44,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		"model": model,
 		"messages": messages,
 		"tools": tools,
-		"reasoning_effort": reasoning_effort
+		"reasoning": reasoning
 	}
 	
 	var tree = get_tree()
