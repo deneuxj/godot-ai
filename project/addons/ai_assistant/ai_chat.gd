@@ -198,10 +198,16 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 					new_msg.content = text_only
 				filtered_history.append(new_msg)
 			
-			# Keep only the last 6 messages for context-aware routing
+			# Present the context as a single text block to keep the router in an observer role
+			var presentation := ""
 			var slice_start = max(0, filtered_history.size() - 6)
 			for i in range(slice_start, filtered_history.size()):
-				routing_messages.append(filtered_history[i])
+				var msg = filtered_history[i]
+				presentation += "%s said: %s\n" % [msg.role, msg.content]
+			
+			presentation += "\nWhat role is best suited for answering the last request from the user? Answer with a single word: analyst or technician"
+			
+			routing_messages.append({"role": "user", "content": presentation})
 			
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
 			router_handler.mock_client = mock_client
