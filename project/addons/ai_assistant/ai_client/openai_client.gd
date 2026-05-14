@@ -100,7 +100,10 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 	var message = (choices[0] as Dictionary).get("message", {})
 	
 	if message.has("tool_calls"):
-		return {"tool_calls": message["tool_calls"]}
+		return {
+			"content": message.get("content", ""),
+			"tool_calls": message["tool_calls"]
+		}
 		
 	return message.get("content", "")
 
@@ -202,6 +205,9 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			progress.emit(typed_chunks)
 
 	if not tool_calls.is_empty():
-		return {"tool_calls": tool_calls}
+		return {
+			"content": full_content,
+			"tool_calls": tool_calls
+		}
 
 	return full_content

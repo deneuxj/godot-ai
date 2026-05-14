@@ -107,6 +107,9 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 				"role": "assistant",
 				"tool_calls": tool_calls
 			}
+			if result.has("content") and not str(result["content"]).is_empty():
+				assistant_msg["content"] = result["content"]
+				
 			current_messages.append(assistant_msg)
 			new_messages.append(assistant_msg)
 			

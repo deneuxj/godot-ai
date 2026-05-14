@@ -30,8 +30,9 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 
 
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
-	if response_delay_ms > 0 and get_tree():
-		await get_tree().create_timer(response_delay_ms / 1000.0).timeout
+	var tree = get_tree()
+	if response_delay_ms > 0 and tree:
+		await tree.create_timer(response_delay_ms / 1000.0).timeout
 	
 	if _is_cancelled:
 		return ""
@@ -52,7 +53,8 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			var chunk = words[i] + (" " if i < words.size() - 1 else "")
 			var chunks: Array[String] = [chunk]
 			progress.emit(chunks)
-			await get_tree().create_timer(0.01).timeout # Small chunk delay
+			if tree:
+				await tree.create_timer(0.01).timeout # Small chunk delay
 		return response
 	
 	return response
