@@ -91,6 +91,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	
 	if not client.is_inside_tree():
 		var host = get_persistent_host(_parent)
+		client.name = "AIClient_%d" % client.get_instance_id()
 		host.add_child(client)
 	_active_client = client
 
