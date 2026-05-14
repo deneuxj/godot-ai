@@ -32,11 +32,26 @@ func execute(arguments: Dictionary) -> String:
 		return "Error: script_content is empty."
 
 	# 1. Compile script
+	var logger = ScriptExecutor._get_logger()
+	if logger:
+		logger.call("start_capture")
+
 	var script = GDScript.new()
 	script.source_code = script_content
 	var reload_err = script.reload()
+	
 	if reload_err != OK:
-		return "Error: Script compilation failed (Code: %d)." % reload_err
+		var err_msg = "Error: Script compilation failed (Code: %d)." % reload_err
+		if logger:
+			logger.call("stop_capture")
+			var captured = logger.call("get_captured_errors")
+			if not captured.is_empty():
+				err_msg += "\nDetails:\n" + captured
+		return err_msg
+
+	if logger:
+		# Keep capturing for execution
+		pass
 
 	# 2. Check for execute method
 	if not script.has_method("execute"):
@@ -46,10 +61,6 @@ func execute(arguments: Dictionary) -> String:
 	if not context_node:
 		return "Error: No context_node available for execution."
 		
-	var logger = ScriptExecutor._get_logger()
-	if logger:
-		logger.call("start_capture")
-
 	var return_value = script.call("execute", context_node)
 	
 	var result_msg = "Successfully executed script via 'execute(node)'."
