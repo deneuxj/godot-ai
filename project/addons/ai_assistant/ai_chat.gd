@@ -211,7 +211,12 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			routing_messages.append({"role": "user", "content": presentation})
 			
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
+			router_handler.max_tokens = 64 # Small response for routing
 			router_handler.mock_client = mock_client
+			
+			# Ensure router model is loaded
+			await router_handler.load_model(router_model)
+			
 			var workload_raw := await router_handler.execute(routing_messages)
 			var workload = workload_raw.strip_edges().to_lower()
 			
@@ -236,6 +241,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			else:
 				push_warning("AIChat: Router returned unrecognized workload: " + workload_raw)
 				final_model = AISettings.get_string(AISettings.CONN, "model")
+				if final_model.is_empty():
+					final_model = AISettings.get_string(AISettings.CONN, "technician_model")
 			
 			# Ensure model is loaded (LM Studio Native)
 			if not final_model.is_empty():

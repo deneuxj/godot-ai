@@ -50,15 +50,22 @@ func cancel() -> void:
 ## [param tools] is an optional array of tool definition dictionaries.
 func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
+	
+	var model_to_use = model
+	if model_to_use.is_empty():
+		model_to_use = "local-model"
+		
 	var body: Dictionary = {
-		"model": model,
+		"model": model_to_use,
 		"messages": messages,
 		"max_tokens": max_tokens,
 	}
 	
 	if not reasoning.is_empty():
-		if reasoning in ["on", "off"]:
-			body["reasoning"] = reasoning
+		if reasoning == "on":
+			body["reasoning"] = true
+		elif reasoning == "off":
+			body["reasoning"] = false
 		else:
 			body["reasoning_effort"] = reasoning
 	
@@ -126,16 +133,23 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 ## [param tools] is an optional array of tool definition dictionaries.
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
+	
+	var model_to_use = model
+	if model_to_use.is_empty():
+		model_to_use = "local-model"
+		
 	var body: Dictionary = {
-		"model": model,
+		"model": model_to_use,
 		"messages": messages,
 		"max_tokens": max_tokens,
 		"stream": true,
 	}
 	
 	if not reasoning.is_empty():
-		if reasoning in ["on", "off"]:
-			body["reasoning"] = reasoning
+		if reasoning == "on":
+			body["reasoning"] = true
+		elif reasoning == "off":
+			body["reasoning"] = false
 		else:
 			body["reasoning_effort"] = reasoning
 	
@@ -172,7 +186,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		return ""
 
 	if response_code != 200:
-		push_error("API error: HTTP %d" % response_code)
+		push_error("API error: HTTP %d - Response: %s" % [response_code, response_body])
 		return ""
 
 	var chunks: PackedStringArray = []
@@ -181,6 +195,8 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	
 	var lines: PackedStringArray = response_body.split("\n")
 	print("[%s] OpenAIClient: Found %d lines in response body." % [Time.get_time_string_from_system(), lines.size()])
+	for i in range(min(lines.size(), 10)):
+		print("[%s] OpenAIClient: Line %d: %s" % [Time.get_time_string_from_system(), i, lines[i].left(100)])
 
 	for line in lines:
 		line = line.strip_edges()

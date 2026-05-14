@@ -1,125 +1,160 @@
-# Implementation Plan: Building the Geometry of Each Wall
-# This file contains instructions to build the geometry of each wall based on the blueprint.
+================================================================================
+COMBINED IMPLEMENTATION PLAN: FLOOR PLAN TO GODOT 2D SHAPES
+================================================================================
 
 ## Coordinate System
-- The origin (0, 0, 0) is placed at the **bottom-left corner of the Garage**.
-- The X-axis represents horizontal movement (right is positive).
-- The Y-axis represents vertical movement (up is positive).
-- All dimensions are in meters.
-- Wall thickness is assumed to be **0.50m** for external walls and **0.10m** for internal walls.
+- Origin (0, 0) is at the **bottom-left corner of the Garage**
+- X-axis: horizontal movement (right is positive)
+- Y-axis: vertical movement (up is positive)
+- All dimensions in meters
+- Conversion: 1m = 100 pixels (or 50 for finer detail)
 
 ## Technical Requirements
-- Each wall must have both [b]collision geometry[/b] ([code]CollisionShape3D[/code] with [code]BoxShape3D[/code]) and [b]visual geometry[/b] ([code]MeshInstance3D[/code] with [code]BoxMesh[/code]).
-- All dynamically created nodes must have their [code]owner[/code] set to the [b]same owner as the context node[/b]. Use [code]node.owner[/code] if it is not null; otherwise, use [code]node[/code] itself as the owner. This ensures nodes are persisted correctly in the scene file.
-- The owner must be set [b]after[/b] the node is added to the scene tree (via [code]add_child()[/code]) to avoid "Invalid owner" errors.
-- Each room should be grouped under a [code]Node3D[/code] named after the room (e.g., "Garage", "Guarderobe").
-- When removing existing nodes before rebuilding, use [code]queue_free()[/code] and wait or check from the scene root to ensure proper cleanup.
 
-## Wall Construction Instructions
+### Node Hierarchy
+[b]Root Structure:[/b]
+[code]
+FloorPlan (Node2D root)
+├── WallsContainer (Node2D)
+│   ├── Garage_Walls (Node2D)
+│   │   ├── LeftWall_CollisionShape2D
+│   │   ├── TopWall_CollisionShape2D
+│   │   ├── BottomWall_CollisionShape2D
+│   │   └── Visual ColorRects
+│   ├── Suite_de_sejour_Walls (Node2D)
+│   │   ├── ...
+│   │   └── (no right wall)
+│   └── ... (other room wall groups)
+├── FloorContainer (Node2D)
+│   ├── Garage_Floor (StaticBody2D)
+│   │   └── CollisionShape2D
+│   ├── Cuisine_Floor (StaticBody2D)
+│   │   └── CollisionShape2D
+│   └── ... (all floor regions)
+[/code]
+
+### Ownership Rules (CRITICAL)
+[codeblock]
+All dynamically created nodes must have their owner set to the same owner 
+as the context node. Use node.owner if it is not null; otherwise, use node 
+itself as the owner. This ensures nodes are persisted correctly in the 
+scene file.
+
+The owner must be set AFTER the node is added to the scene tree (via 
+add_child()) to avoid "Invalid owner" errors.
+[/codeblock]
+
+### Cleanup
+When removing existing nodes before rebuilding:
+1. Use [code]queue_free()[/code] on nodes to remove
+2. Wait or check from scene root to ensure proper cleanup
+3. Then create new nodes
+
+## Wall Construction
+
+### Wall Types & Thickness
+- [color=green]GREEN walls[/color]: Load-bearing (0.2m = 20cm thick)
+- [color=red]RED walls[/color]: Thin separators (0.1m = 10cm thick)
+- [color=orange]ORANGE walls[/color]: External insulated (0.5m = 50cm thick)
+
+### Geometry Requirements
+- Each wall must have:
+  - [b]Collision geometry[/b]: [code]CollisionShape2D[/code] with [code]RectangleShape2D[/code]
+  - [b]Visual geometry[/b]: [code]ColorRect[/code] or [code]Sprite2D[/code] for display
+
+## Floor Regions
+
+### Implementation
+1. Create [code]StaticBody2D[/code] for each room
+2. Add [code]CollisionShape2D[/code] with [code]RectangleShape2D[/code]
+3. Ensure rectangles don't overlap
+4. Name each floor region: [code]{RoomName}_Floor[/code]
+
+### Visual Representation
+- Floor regions: [code]Color(0.9, 0.9, 0.9)[/code]
+- Wall colors:
+  - Green: [code]Color(0, 0.8, 0)[/code]
+  - Red: [code]Color(0.8, 0, 0)[/code]
+  - Orange: [code]Color(1, 0.6, 0.2)[/code]
+
+## Room Layout (from blueprint)
 
 ### 1. Garage [color=green][b]✓ DONE[/b][/color]
-- **Dimensions:** 5.99m width x 7.249m height
-- **Walls:**
-  - **Left Wall:** External wall from (0, 0) to (0, 7.249)
-  - **Top Wall:** External wall from (0, 7.249) to (5.99, 7.249)
-  - **Bottom Wall:** External wall from (0, 0) to (5.99, 0)
-  - **Right Wall:** Open (no wall)
+- Dimensions: 5.99m × 7.249m
+- Position: (0, 0) to (5.99, 7.249)
+- Walls: Left, Top, Bottom (External/Green)
+- Right: Open (no wall)
 
-## 2. Closet (Guarderobe)
-- **Dimensions:** 4.74m width x 2.00m height
-- **Position:** Starts at (5.99, 5.249)
-- **Walls:**
-  - **Left Wall:** Internal wall from (5.99, 5.249) to (5.99, 7.249)
-  - **Top Wall:** External wall from (5.99, 7.249) to (10.73, 7.249)
-  - **Bottom Wall:** Internal wall from (5.99, 5.249) to (10.73, 5.249)
-  - **Right Wall:** Internal wall from (10.73, 5.249) to (10.73, 7.249)
+### 2. Suite de séjour (Living Room)
+- Dimensions: 4.47m × 4.049m
+- Position: Starts at (5.99, 0)
+- Walls: Top, Bottom, Left, Right (Internal/Red)
+- Right wall: Open (connection to kitchen)
 
-### 3. Salle de séjour (Living Room)
-- **Dimensions:** 4.47m width x 4.049m height
-- **Position:** Starts at (5.99, 0)
-- **Walls:**
-  - **Top Wall:** Internal wall from (5.99, 4.049) to (10.46, 4.049)
-  - **Bottom Wall:** External wall from (5.99, 0) to (10.46, 0)
-  - **Left Wall:** Internal wall from (5.99, 0) to (5.99, 4.049)
-  - **Right Wall:** Internal wall from (10.46, 0) to (10.46, 4.049)
+### 3. Cuisine (Kitchen)
+- Dimensions: 4.50m × 6.249m
+- Position: Starts at (10.46, 3.97)
+- Walls: Top, Left, Right (Internal/Red)
+- Bottom: Open (connection to dining room)
 
-### 4. Terrace
-- **Dimensions:** 1.52m width x ~2.0m height
-- **Position:** Starts at (10.46, 0)
-- **Walls:**
-  - **Top Wall:** External wall from (10.46, 2.0) to (11.98, 2.0)
-  - **Right Wall:** External wall from (11.98, 0) to (11.98, 2.0)
-  - **Bottom Wall:** Open (no wall)
-  - **Left Wall:** Open (no wall)
+### 4. Salle à manger (Dining Room)
+- Dimensions: 5.00m × 3.97m
+- Position: Starts at (10.46, 0)
+- Walls: Bottom, Left, Right (External/Orange)
+- Top: Open (connection to kitchen)
 
-### 5. Salle à manger (Dining Room)
-- **Dimensions:** 5.00m width x 3.97m height
-- **Position:** Starts at (10.46, 0)
-- **Walls:**
-  - **Top Wall:** Open (connection to Kitchen)
-  - **Bottom Wall:** External wall from (10.46, 0) to (15.46, 0)
-  - **Left Wall:** External wall from (10.46, 0) to (10.46, 3.97)
-  - **Right Wall:** External wall from (15.46, 0) to (15.46, 3.97)
+### 5. Chambre à coucher 1 (Bedroom 1)
+- Dimensions: 3.0m × 5.0m
+- Position: Starts at (14.96, 3.97)
+- Walls: Left, Right, Top (Internal/Red)
+- Bottom: External/Orange
 
-### 6. Cuisine (Kitchen)
-- **Dimensions:** 4.50m width x 6.249m height
-- **Position:** Starts at (10.46, 3.97)
-- **Walls:**
-  - **Top Wall:** Internal wall from (10.46, 10.219) to (14.96, 10.219)
-  - **Bottom Wall:** Open (connection to Dining Room)
-  - **Left Wall:** Internal wall from (10.46, 3.97) to (10.46, 10.219)
-  - **Right Wall:** Internal wall from (14.96, 3.97) to (14.96, 10.219)
+### 6. Chambre à coucher 2 (Bedroom 2)
+- Dimensions: 3.0m × 5.0m
+- Position: Starts at (17.96, 3.97)
+- Walls: Left (Internal/Red), Right (External/Orange)
+- Top, Bottom: External/Orange
 
-### 7. Chambre à coucher 1 (Bedroom 1)
-- **Dimensions:** 3.0m width x 5.0m height
-- **Position:** Starts at (14.96, 3.97)
-- **Walls:**
-  - **Left Wall:** Internal wall from (14.96, 3.97) to (14.96, 8.97)
-  - **Right Wall:** Internal wall from (17.96, 3.97) to (17.96, 8.97)
-  - **Top Wall:** Internal wall from (14.96, 8.97) to (17.96, 8.97)
-  - **Bottom Wall:** External wall from (14.96, 3.97) to (17.96, 3.97)
+### 7. Salle de bain (Bathroom)
+- Dimensions: 4.5m × 2.0m
+- Position: Starts at (10.46, 8.219)
+- Walls: Left (External/Orange), Right, Top, Bottom (Internal/Red)
 
-### 8. Chambre à coucher 2 (Bedroom 2)
-- **Dimensions:** 3.0m width x 5.0m height
-- **Position:** Starts at (17.96, 3.97)
-- **Walls:**
-  - **Left Wall:** Internal wall from (17.96, 3.97) to (17.96, 8.97)
-  - **Right Wall:** External wall from (20.96, 3.97) to (20.96, 8.97)
-  - **Top Wall:** Internal wall from (17.96, 8.97) to (20.96, 8.97)
-  - **Bottom Wall:** External wall from (17.96, 3.97) to (20.96, 3.97)
+### 8. WC (Toilet)
+- Dimensions: 1.0m × 2.0m
+- Position: Starts at (14.96, 8.219)
+- Walls: All internal (Red) except Top (External/Orange)
 
-### 9. Salle de bain (Bathroom)
-- **Dimensions:** 4.5m width x 2.0m height
-- **Position:** Starts at (10.46, 8.219)
-- **Walls:**
-  - **Left Wall:** External wall from (10.46, 8.219) to (10.46, 10.219)
-  - **Right Wall:** Internal wall from (14.96, 8.219) to (14.96, 10.219)
-  - **Top Wall:** Internal wall from (10.46, 10.219) to (14.96, 10.219)
-  - **Bottom Wall:** Internal wall from (10.46, 8.219) to (14.96, 8.219)
+### 9. Debarras (Storage/Entrance)
+- Dimensions: 2.54m × 3.03m
+- Position: Starts at (15.96, 7.189)
+- Walls: Left, Right, Top (Internal/Red)
+- Bottom: Open (main entrance)
 
-### 10. WC (Toilet)
-- **Dimensions:** 1.0m width x 2.0m height
-- **Position:** Starts at (14.96, 8.219)
-- **Walls:**
-  - **Left Wall:** Internal wall from (14.96, 8.219) to (14.96, 10.219)
-  - **Right Wall:** Internal wall from (15.96, 8.219) to (15.96, 10.219)
-  - **Top Wall:** External wall from (14.96, 10.219) to (15.96, 10.219)
-  - **Bottom Wall:** Internal wall from (14.96, 8.219) to (15.96, 8.219)
+### 10. Bureau (Office)
+- Dimensions: 3.00m × 3.03m
+- Position: Starts at (18.50, 7.189)
+- Walls: Left (Internal/Red), Right, Top (External/Orange)
+- Bottom: Open
 
-### 11. Debarras (Main Entrance)
-- **Dimensions:** 2.54m width x 3.03m height
-- **Position:** Starts at (15.96, 7.189)
-- **Walls:**
-  - **Left Wall:** Internal wall from (15.96, 7.189) to (15.96, 10.219)
-  - **Right Wall:** Internal wall from (18.50, 7.189) to (18.50, 10.219)
-  - **Top Wall:** External wall from (15.96, 10.219) to (18.50, 10.219)
-  - **Bottom Wall:** Open (no wall)
+### 11. Guarderobe (Closet)
+- Dimensions: 4.74m × 2.00m
+- Position: Starts at (5.99, 5.249)
+- Walls: All internal (Red) except Top (External/Orange)
 
-### 12. Bureau (Office)
-- **Dimensions:** 3.00m width x 3.03m height
-- **Position:** Starts at (18.50, 7.189)
-- **Walls:**
-  - **Left Wall:** Internal wall from (18.50, 7.189) to (18.50, 10.219)
-  - **Right Wall:** External wall from (21.50, 7.189) to (21.50, 10.219)
-  - **Top Wall:** External wall from (18.50, 10.219) to (21.50, 10.219)
-  - **Bottom Wall:** Open (no wall)
+### 12. Terrace
+- Dimensions: 1.52m × ~2.0m
+- Position: Starts at (10.46, 0)
+- Walls: Top, Right (External/Orange)
+- Left, Bottom: Open
+
+## Testing & Validation
+1. Verify no overlapping floor regions using AABB overlap checker
+2. Ensure walls properly bound floor areas
+3. Check door openings are not blocked by wall shapes
+4. Test collision detection with player/sprite objects
+5. Validate all nodes have correct owner set
+
+================================================================================
+END OF PLAN
+================================================================================

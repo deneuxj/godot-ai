@@ -2,13 +2,6 @@
 
 [ext_resource type="Script" uid="uid://caan8eqcva3g7" path="res://testing/test_ai_chat_scene.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://crgnmdl6n3d45" path="res://addons/ai_assistant/ai_chat.gd" id="2_chat"]
-[ext_resource type="Texture2D" uid="uid://1plp53asplvi" path="res://blueprint.jpg" id="3_u7nt4"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_b3167"]
-size = Vector2(29.7, 21)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kvtcp"]
-albedo_texture = ExtResource("3_u7nt4")
 
 [node name="TestAIChat" type="Control" unique_id=678501508]
 layout_mode = 3
@@ -194,16 +187,3 @@ placeholder_text = "Type your message here..."
 unique_name_in_owner = true
 layout_mode = 2
 text = "Send"
-
-[node name="BlueprintReference" type="MeshInstance3D" parent="." unique_id=672140104]
-transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 12.556839, -0.021253586, 4.776621)
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_b3167")
-surface_material_override/0 = SubResource("StandardMaterial3D_kvtcp")
-
-[node name="Implementer" type="Node" parent="BlueprintReference" unique_id=1602323419]
-script = ExtResource("2_chat")
-enable_modify_resources = true
-enable_validate_resources = true
-use_router = true
-metadata/_custom_type_script = "uid://crgnmdl6n3d45"

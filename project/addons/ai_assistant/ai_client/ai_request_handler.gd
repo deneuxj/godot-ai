@@ -34,6 +34,8 @@ var api_key: String = ""
 var model: String = ""
 ## Reasoning setting override.
 var reasoning: String = ""
+## Max tokens override. If 0, uses project settings.
+var max_tokens: int = 0
 
 ## If set, this client will be used instead of creating a real one.
 var mock_client: AIClient = null
@@ -111,8 +113,11 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	
 	client.set_reasoning(reasoning)
 	
-	# Ensure max_tokens is fresh from AISettings.
-	client.set_max_tokens(AISettings.get_int(AISettings.GEN, "max_tokens"))
+	# Ensure max_tokens is fresh from AISettings, or use override.
+	if max_tokens > 0:
+		client.set_max_tokens(max_tokens)
+	else:
+		client.set_max_tokens(AISettings.get_int(AISettings.GEN, "max_tokens"))
 
 	# 3. Connect signals.
 	client.progress.connect(func(chunks: Array[String]):
