@@ -21,6 +21,10 @@ signal status_updated(status: String)
 signal context_length_updated(tokens: int, characters: int)
 signal context_compressed()
 
+## Emitted when a new AIRequestHandler is created but before execution.
+## Use this to register dynamic tools or apply overrides.
+signal request_handler_created(handler: AIRequestHandler)
+
 
 @export_group("API Overrides (Advanced)")
 
@@ -153,8 +157,18 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		
 		for path in attachments:
 			var res = load(path)
+			var tex: Texture2D = null
+			
 			if res is Texture2D:
-				var b64 = PromptBuilder._encode_texture(res)
+				tex = res
+			else:
+				# Try loading as image directly if load() fails (common for temporary files)
+				var img = Image.load_from_file(path)
+				if img:
+					tex = ImageTexture.create_from_image(img)
+			
+			if tex:
+				var b64 = PromptBuilder._encode_texture(tex)
 				if b64:
 					content_array.append({
 						"type": "image_url",
@@ -312,6 +326,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	handler._active_tools = session_tools
 	handler._activated_skill_ids = activated_skill_ids
 	
+	request_handler_created.emit(handler)
+	
 	# 5. Connect signals.
 	handler.progress.connect(func(chunks: Array[String]): 
 		for chunk in chunks:
@@ -352,6 +368,24 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			
 			partial_response = ""
 			chat_finished.emit(response)
+			
+			# --- Agentic Hand-off for Viewport Capture ---
+			# If capture_editor_view was successfully called, automatically trigger a follow-up
+			var capture_successful = false
+			for msg in handler.new_messages:
+				if msg.get("role") == "tool" and msg.get("name") == "capture_editor_view":
+					if not str(msg.get("content")).begins_with("Error"):
+						capture_successful = true
+						break
+			
+			if capture_successful:
+				var img_path = "res://.gemini/tmp/snapshot.jpg"
+				if FileAccess.file_exists(img_path):
+					print("AIChat: Capture detected. Triggering agentic hand-off...")
+					# We wait a bit to ensure the UI has processed the previous turn signals
+					await get_tree().process_frame
+					# We send a follow-up message from the system (acting as user)
+					send_message("The snapshot you requested is now attached. Please analyze it.", [img_path])
 		
 		_update_context_length()
 	

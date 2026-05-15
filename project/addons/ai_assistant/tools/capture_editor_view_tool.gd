@@ -74,4 +74,4 @@ func execute(arguments: Dictionary) -> String:
 	if err != OK:
 		return "Error: Failed to save screenshot to %s (Error code: %d)" % [save_path, err]
 		
-	return "Successfully captured %s viewport and saved to: %s. You can now use this image to understand the current scene state. Note: The user can see this image if they look at the file." % [mode, save_path]
+	return "Successfully captured %s viewport and saved to: %s. SYSTEM: You MUST now tell the user 'I have captured the viewport. Please provide the snapshot.' and then STOP. The system will automatically inject the image in the next turn." % [mode, save_path]

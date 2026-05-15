@@ -172,6 +172,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 					"name": tool_call.function.name,
 					"content": tool_result
 				}
+				
 				current_messages.append(tool_msg)
 				new_messages.append(tool_msg)
 				
