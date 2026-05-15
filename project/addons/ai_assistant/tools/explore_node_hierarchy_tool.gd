@@ -122,7 +122,9 @@ func _get_node_info(node: Node) -> Dictionary:
 
 
 func _inspect_property(node: Node, property_path: String) -> Dictionary:
-	var parts = property_path.split(":", true)
+	# Normalize: support both dot and colon notation for sub-properties
+	var normalized_path = property_path.replace(".", ":")
+	var parts = normalized_path.split(":", true)
 	var current: Variant = node
 	
 	for i in range(parts.size()):
