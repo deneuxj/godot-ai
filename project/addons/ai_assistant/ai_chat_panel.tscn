@@ -83,6 +83,15 @@ layout_mode = 2
 tooltip_text = "Unload current model from memory (LM Studio)"
 text = "Unload"
 
+[node name="AdvancedRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AggressiveCompression" type="CheckButton" parent="MarginContainer/VBoxContainer/AdvancedRow"]
+layout_mode = 2
+tooltip_text = "If enabled, tool calls and results are stripped from history after completion to save tokens."
+text = "Aggressive Compression"
+
 [node name="StatusRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8

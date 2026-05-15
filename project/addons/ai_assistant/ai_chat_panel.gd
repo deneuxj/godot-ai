@@ -24,6 +24,7 @@ var _current_node: AIChat = null
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
 @onready var _unload_button: Button = find_child("UnloadButton")
 @onready var _compress_button: Button = find_child("CompressButton")
+@onready var _aggressive_check: CheckButton = find_child("AggressiveCompression")
 
 
 var _pending_attachments: Array[String] = []
@@ -45,6 +46,8 @@ func _on_ready() -> void:
 		_unload_button.pressed.connect(_on_unload_pressed)
 	if _compress_button:
 		_compress_button.pressed.connect(_on_compress_pressed)
+	if _aggressive_check:
+		_aggressive_check.toggled.connect(_on_aggressive_toggled)
 	if _attachment_dialog:
 		_attachment_dialog.file_selected.connect(_on_file_selected)
 
@@ -91,6 +94,7 @@ func _update_for_node(node: Node) -> void:
 
 		# Refresh UI state.
 		_update_display()
+		_aggressive_check.button_pressed = _current_node.aggressive_compression
 		var busy = _current_node.is_busy()
 		_status_label.text = "Status: Typing..." if busy else "Status: Ready"
 		_send_button.disabled = busy
@@ -156,6 +160,11 @@ func _on_compress_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.compress_context(true)
 		_update_display()
+
+
+func _on_aggressive_toggled(toggled: bool) -> void:
+	if is_instance_valid(_current_node):
+		_current_node.aggressive_compression = toggled
 
 
 func _on_file_selected(path: String) -> void:

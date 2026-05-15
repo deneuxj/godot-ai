@@ -83,6 +83,11 @@ var enable_node_hierarchy: bool = true
 @export
 var use_router: bool = false
 
+## If enabled, tool calls and their results are stripped from the history after completion
+## to save context space.
+@export
+var aggressive_compression: bool = false
+
 ## List of IDs for skills that should be available in this chat session.
 ## If empty, all discovered skills are listed.
 @export
@@ -488,13 +493,47 @@ func get_context_length() -> Dictionary:
 func compress_context(force: bool = false) -> bool:
 	var limit := AISettings.get_int(AISettings.GEN, "context_limit")
 	# print("Compressing context. Limit: %d, Current: %d" % [limit, get_context_length().tokens])
-	if limit <= 0 and not force: return true # No limit set
+	
+	var pruned := false
+	
+	# REQ-CHAT-0015: Aggressive Compression
+	if aggressive_compression:
+		var i := 0
+		while i < chat_history.size():
+			var msg = chat_history[i]
+			var removed := false
+			
+			if msg.role == "tool":
+				chat_history.remove_at(i)
+				removed = true
+				pruned = true
+			elif msg.role == "assistant" and msg.has("tool_calls"):
+				if msg.get("content", "").is_empty():
+					chat_history.remove_at(i)
+					removed = true
+					pruned = true
+				else:
+					# Keep the content but remove the tool calls
+					var new_msg = msg.duplicate()
+					new_msg.erase("tool_calls")
+					chat_history[i] = new_msg
+					pruned = true
+			
+			if not removed:
+				i += 1
+		
+	if limit <= 0 and not force: 
+		if pruned:
+			context_compressed.emit()
+			_update_context_length()
+		return true # No limit set
 	
 	var current := get_context_length()
 	if not force and current.tokens <= limit:
+		if pruned:
+			context_compressed.emit()
+			_update_context_length()
 		return true
-	
-	var pruned := false
 	
 	# REQ-CHAT-0013: Intelligent pruning
 	# 1. Prune old tool interactions and successful correction cycles.

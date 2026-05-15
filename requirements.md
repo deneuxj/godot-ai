@@ -56,6 +56,8 @@ REQ-CHAT-0014: If the context still exceeds the limit after compression (due to 
   - Emit a specific `chat_error` indicating that the essential context is too large.
   - Never automatically truncate the system prompt or the initial task specification.
 
+REQ-CHAT-0015: The `AIChat` node shall support aggressive context compression that strips all tool calls and their results from the history, preserving only the final assistant responses and user prompts. This can be enabled via a property.
+
 ### AI Integration
 
 REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends.
