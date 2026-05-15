@@ -125,6 +125,8 @@ func _on_send_pressed() -> void:
 		_last_attachments = _pending_attachments.duplicate()
 		
 		_input_text_edit.text = ""
+		_send_button.disabled = true
+		_cancel_button.disabled = false
 		_current_node.send_message(prompt, _pending_attachments)
 		_pending_attachments.clear()
 		_update_attachments_ui()

@@ -114,6 +114,7 @@ var activated_skill_ids: Array[String] = []
 var partial_response: String = ""
 
 var _active_handler: AIRequestHandler = null
+var _is_cancelled: bool = false
 
 ## Optional mock client for testing.
 var mock_client: AIClient = null
@@ -185,6 +186,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 	chat_history.append({"role": "user", "content": user_content})
 	partial_response = ""
+	_is_cancelled = false
 	
 	_update_context_length()
 	
@@ -237,11 +239,19 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
 			router_handler.max_tokens = 64 # Small response for routing
 			router_handler.mock_client = mock_client
+			_active_handler = router_handler
 			
 			# Ensure router model is loaded
 			await router_handler.load_model(router_model)
+			if _is_cancelled or router_handler.was_cancelled():
+				_cleanup_after_cancel()
+				return
 			
 			var workload_raw := await router_handler.execute(routing_messages)
+			if _is_cancelled or router_handler.was_cancelled():
+				_cleanup_after_cancel()
+				return
+				
 			var workload = workload_raw.strip_edges().to_lower()
 			
 			var reasoning_val := ""
@@ -278,8 +288,12 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				# unless it's actually doing a REST call that takes time.
 				# For now, let's keep the user intent status.
 				await router_handler.load_model(final_model)
+				if _is_cancelled or router_handler.was_cancelled():
+					_cleanup_after_cancel()
+					return
 			
 			final_reasoning = reasoning_val
+			_active_handler = null
 		else:
 			push_warning("AIChat: use_router is enabled but ai/connection/router_model is not set.")
 			final_model = AISettings.get_string(AISettings.CONN, "model")
@@ -287,7 +301,12 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	# 3. Vision Capability Check & Payload Stripping
 	var tools_handler := AIRequestHandler.new(self, api_endpoint, api_key)
 	tools_handler.mock_client = mock_client
+	_active_handler = tools_handler
 	var vision_ok = await tools_handler.supports_vision(final_model)
+	if _is_cancelled or tools_handler.was_cancelled():
+		_cleanup_after_cancel()
+		return
+	_active_handler = null
 	
 	var final_messages: Array[Dictionary] = []
 	var base_system_prompt := PromptBuilder.get_chat_prompt(active_system_prompt)
@@ -346,18 +365,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var response = await handler.execute(final_messages, tools)
 	
 	# 7. Cleanup and finish.
-	if handler.was_cancelled():
-		# REQ-CHAT-0015: Save partial response on cancel
-		if not partial_response.is_empty():
-			chat_history.append({"role": "assistant", "content": partial_response})
-			partial_response = ""
-		
-		# Also save any completed tool interactions
-		for msg in handler.new_messages:
-			chat_history.append(msg)
-		
-		_update_context_length()
-		chat_cancelled.emit()
+	if _is_cancelled or handler.was_cancelled():
+		_cleanup_after_cancel(handler)
 	else:
 		# Append all new messages (tool calls, tool results, and final assistant text)
 		for msg in handler.new_messages:
@@ -400,10 +409,31 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		_active_handler = null
 
 
+func _cleanup_after_cancel(handler: AIRequestHandler = null) -> void:
+	# REQ-CHAT-0015: Save partial response on cancel
+	if not partial_response.is_empty():
+		chat_history.append({"role": "assistant", "content": partial_response})
+		partial_response = ""
+	
+	if handler:
+		# Also save any completed tool interactions
+		for msg in handler.new_messages:
+			chat_history.append(msg)
+	
+	_update_context_length()
+	_active_handler = null
+	chat_cancelled.emit()
+
+
 ## Interrupt the ongoing AI request.
 func cancel() -> void:
+	_is_cancelled = true
 	if _active_handler:
 		_active_handler.cancel()
+	else:
+		# If no handler is active, we might still be in an await point or just started.
+		# We emit it here to ensure the UI is notified immediately.
+		chat_cancelled.emit()
 
 
 ## Unload the current model (LM Studio Native).
