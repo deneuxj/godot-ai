@@ -115,10 +115,11 @@ func _test_tool(tool_name: String, args: Dictionary, user_msg: String) -> void:
 		_:
 			# For read-only tools, we just check that the assistant acknowledged it in history
 			var last_msg = chat.chat_history.back()
-			if last_msg.role == "assistant" and tool_name in last_msg.content or "executed" in last_msg.content:
+			var last_content = last_msg.get("content", "")
+			if last_msg.role == "assistant" and tool_name in last_content or "executed" in last_content:
 				print("SUCCESS: Tool executed and acknowledged.")
 			else:
-				print("FAILURE: Tool might not have executed correctly. Last msg: ", last_msg.content)
+				print("FAILURE: Tool might not have executed correctly. Last msg: ", last_content)
 
 
 func _on_chat_finished(response: String) -> void:

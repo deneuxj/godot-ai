@@ -35,7 +35,7 @@ func _ready() -> void:
 	
 	print("\n--- Chat History ---")
 	for msg in chat.chat_history:
-		print("[%s]: %s" % [msg.role, msg.content])
+		print("[%s]: %s" % [msg.role, msg.get("content", "")])
 	
 	print("\n--- AIChat Test Complete ---")
 	get_tree().quit()

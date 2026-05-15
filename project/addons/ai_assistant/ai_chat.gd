@@ -208,10 +208,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 					continue
 				
 				var new_msg = msg.duplicate()
-				if typeof(new_msg.content) == TYPE_ARRAY:
+				var content = new_msg.get("content")
+				if typeof(content) == TYPE_ARRAY:
 					# Strip images from multimodal content for routing
 					var text_only = ""
-					for part in new_msg.content:
+					for part in content:
 						if part.get("type") == "text":
 							text_only += part.get("text", "")
 					new_msg.content = text_only
@@ -222,7 +223,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			var slice_start = max(0, filtered_history.size() - 6)
 			for i in range(slice_start, filtered_history.size()):
 				var msg = filtered_history[i]
-				presentation += "%s said: %s\n" % [msg.role, msg.content]
+				presentation += "%s said: %s\n" % [msg.role, msg.get("content", "")]
 			
 			presentation += "\nWhat role is best suited for answering the last request from the user? Answer with a single word: analyst or technician"
 			
@@ -296,10 +297,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	for msg in chat_history:
 		var new_msg = msg.duplicate()
-		if not vision_ok and typeof(new_msg.content) == TYPE_ARRAY:
+		var content = new_msg.get("content")
+		if not vision_ok and typeof(content) == TYPE_ARRAY:
 			# Strip images from multimodal content
 			var text_only = ""
-			for part in new_msg.content:
+			for part in content:
 				if part.get("type") == "text":
 					text_only += part.get("text", "")
 			new_msg.content = text_only
@@ -504,7 +506,7 @@ func compress_context(force: bool = false) -> bool:
 		var is_prunable := false
 		if msg.role == "tool" or msg.has("tool_calls"):
 			is_prunable = true
-		elif msg.role == "user" and str(msg.content).contains("failed validation"):
+		elif msg.role == "user" and str(msg.get("content", "")).contains("failed validation"):
 			# This is part of an error correction loop. 
 			# If we have reached this point and are still going, we might be able to prune old ones.
 			is_prunable = true

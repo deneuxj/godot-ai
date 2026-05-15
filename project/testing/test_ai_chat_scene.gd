@@ -81,7 +81,7 @@ func _update_display() -> void:
 		_history_display.add_text("[%s]: " % role)
 		_history_display.pop()
 		
-		_history_display.add_text(msg.content + "\n\n")
+		_history_display.add_text(msg.get("content", "") + "\n\n")
 	
 	# Show partial response if currently typing.
 	if not _chat_node.partial_response.is_empty():

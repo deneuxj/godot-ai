@@ -274,12 +274,13 @@ func _update_display() -> void:
 		if msg.role == "tool":
 			_history_display.append_text(msg.get("content", "") + "\n\n")
 		elif msg.get("content") is String:
-			_history_display.append_text(msg.content + "\n\n")
+			_history_display.append_text(msg.get("content") + "\n\n")
 		elif msg.get("content") is Array:
 			# Multi-modal content
 			var text_content := ""
 			var images := 0
-			for part in msg.content:
+			var content_array = msg.get("content")
+			for part in content_array:
 				if part.get("type") == "text":
 					text_content += part.get("text", "")
 				elif part.get("type") == "image_url":

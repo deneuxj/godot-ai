@@ -59,7 +59,7 @@ func _ready() -> void:
 		if chat.chat_history[2].role != "tool":
 			print("FAILURE: Message 2 should be tool")
 			success = false
-		if chat.chat_history[3].role != "assistant" or chat.chat_history[3].content == "":
+		if chat.chat_history[3].role != "assistant" or chat.chat_history[3].get("content", "") == "":
 			print("FAILURE: Message 3 should be assistant text")
 			success = false
 			
