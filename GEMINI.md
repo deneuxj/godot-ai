@@ -27,5 +27,13 @@
 - **Mocking:** Use `MockAIClient` for AI-related tests to avoid live API usage.
 - **Validation:** Always use the `validate_project_resource` logic when creating or modifying Godot resources to catch parse/load errors early.
 
+## 🛠️ Tool Development Workflow
+When adding a new AI-callable tool, follow these steps:
+1. **Create Tool Class:** Inherit from `AITool` in `addons/ai_assistant/tools/`. Define `get_parameters()` and `execute()`.
+2. **Name Consistency:** The name passed to `super()` in `_init()` MUST match the name used in prompts and documentation exactly. Avoid leading underscores unless intended for internal use.
+3. **Register Tool:** Add the tool to the `match` statement in `AIRequestHandler._execute_tool()` so the engine knows how to instantiate it.
+4. **Update PromptBuilder:** Add a toggle parameter to `PromptBuilder.get_tool_definitions()` and update the system prompts (`CHAT_SYSTEM_PROMPT`, etc.) to explain to the AI how to use the new tool.
+5. **Update Assistant Nodes:** Add an `@export` boolean toggle to `AIChat.gd` and `AIAgentAssisted3D.gd` to enable/disable the tool.
+
 ## 🛠️ Workflows
 - **Project Settings:** AI configuration is stored under the `ai/` namespace in Project Settings.
