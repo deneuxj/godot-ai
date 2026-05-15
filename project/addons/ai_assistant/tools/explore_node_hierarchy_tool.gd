@@ -7,7 +7,7 @@ extends AITool
 
 
 func _init() -> void:
-	super("_explore_node_hierarchy", "Explore and inspect the Godot scene tree relative to the assistant node.")
+	super("explore_node_hierarchy", "Explore and inspect the Godot scene tree relative to the assistant node.")
 
 
 func get_parameters() -> Dictionary:
