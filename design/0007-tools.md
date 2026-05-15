@@ -87,6 +87,25 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0010: Node Hierarchy Tool (`explore_node_hierarchy`)
+
+### Specification
+- **Method**: `list_children(path: String = ".") -> Dictionary`
+    - Returns a list of child nodes at the specified path (relative to the tool-caller).
+- **Method**: `list_ancestors(path: String = ".") -> Dictionary`
+    - Returns a list of ancestor nodes for the node at the specified path.
+- **Method**: `get_node_info(path: String = ".") -> Dictionary`
+    - Returns detailed information about a node: its class, script, and a list of properties.
+- **Method**: `get_tree_structure(path: String = ".", depth: int = 2) -> Dictionary`
+    - Returns a nested representation of the node tree starting from `path`.
+
+### Implementation Detail
+1. **Resolution**: Resolve the `path` relative to the node that owns the `AIChat` or `AIAgentAssisted3D`.
+2. **Properties**: Use `Object.get_property_list()` to retrieve properties. Filter out internal/boilerplate properties to reduce context noise.
+3. **Safety**: Ensure the tool only accesses nodes within the current scene or allowed branches.
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -95,6 +114,7 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 @export_group("Tools")
 @export var enable_godot_docs: bool = true
 @export var enable_project_resources: bool = true
+@export var enable_node_hierarchy: bool = true
 ```
 
 When building the request, the `PromptBuilder` or the node will collect the definitions of enabled tools and pass them to the `AIClient`.
@@ -124,36 +144,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0007 | `ValidateProjectResourceTool` implementation details |
 | REQ-TOOL-0008 | `BuildDynamicSceneTool` implementation details |
 | REQ-TOOL-0009 | `CaptureEditorViewTool` implementation details |
-| REQ-TOOL-0004 | `@export` properties in node classes |
-| REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |
-_docs: bool = true
-@export var enable_project_resources: bool = true
-```
-
-When building the request, the `PromptBuilder` or the node will collect the definitions of enabled tools and pass them to the `AIClient`.
-
----
-
-## Tool Execution Flow
-
-1. AI receives user prompt.
-2. AI decides to use a tool and returns a `tool_calls` message.
-3. `AIRequestHandler` intercepts the `tool_calls`.
-4. The corresponding Godot function is executed.
-5. The result is appended to the conversation as a `tool` role message.
-6. A new completion request is sent to the AI with the tool results.
-7. This repeats until the AI provides a final answer (or hits a loop limit).
-
----
-
-## Requirements Coverage
-
-| Requirement | Covered By |
-|---|---|
-| REQ-TOOL-0001 | Design of the Tool System and `AIRequestHandler` loop |
-| REQ-TOOL-0002 | `GodotDocsTool` implementation details |
-| REQ-TOOL-0003 | `ProjectResourcesTool` implementation details |
-| REQ-TOOL-0006 | `ModifyProjectResourceTool` implementation details |
-| REQ-TOOL-0007 | `ValidateProjectResourceTool` implementation details |
+| REQ-TOOL-0010 | `NodeHierarchyTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

@@ -73,6 +73,9 @@ var enable_execute_script: bool = true
 var enable_capture_view: bool = true
 
 @export
+var enable_node_hierarchy: bool = true
+
+@export
 var use_router: bool = false
 
 ## List of IDs for skills that should be available in this chat session.
@@ -397,7 +400,8 @@ func get_current_tool_definitions() -> Array[Dictionary]:
 		enable_modify_resources, 
 		enable_validate_resources, 
 		enable_execute_script, 
-		enable_capture_view
+		enable_capture_view,
+		enable_node_hierarchy
 	)
 
 

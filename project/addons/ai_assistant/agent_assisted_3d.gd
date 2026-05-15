@@ -88,6 +88,9 @@ var enable_validate_resources: bool = false
 @export
 var enable_build_scene: bool = true
 
+@export
+var enable_node_hierarchy: bool = true
+
 ## List of IDs for skills that should be available in this generation session.
 ## If empty, all discovered skills are listed.
 @export
@@ -145,7 +148,15 @@ func generate() -> void:
 
 	# 1. Build initial prompt and tools.
 	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode, active_skills)
-	var tools := PromptBuilder.get_tool_definitions(enable_godot_docs, enable_project_resources, enable_modify_resources, enable_validate_resources, enable_build_scene)
+	var tools := PromptBuilder.get_tool_definitions(
+		enable_godot_docs, 
+		enable_project_resources, 
+		enable_modify_resources, 
+		enable_validate_resources, 
+		enable_build_scene,
+		false,
+		enable_node_hierarchy
+	)
 	var content: String = ""
 	var success: bool = false
 	

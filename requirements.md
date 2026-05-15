@@ -192,6 +192,11 @@ REQ-TOOL-0009: Provide a tool `capture_editor_view` that allows the AI to:
   - The tool shall be only available when running in the Godot Editor.
   - The snapshot shall be encoded (e.g., base64) and returned as an image attachment in a tool result message.
 
+REQ-TOOL-0010: Provide a tool `explore_node_hierarchy` that allows the AI to:
+  - List and inspect the child nodes and ancestors of a specific node in the scene tree.
+  - Retrieve the properties, their types, and current values for a specific node.
+  - The tool shall support navigating the hierarchy relative to the node that initiated the request.
+
 ### AI Skills
 
 REQ-SKILL-0001: The plugin shall support a "Skill System" to provide specialized capabilities to the AI agent.
