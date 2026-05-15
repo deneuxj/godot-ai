@@ -300,6 +300,8 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/execute_script_tool.gd").new()
 		"capture_editor_view":
 			tool = load("res://addons/ai_assistant/tools/capture_editor_view_tool.gd").new()
+		"explore_node_hierarchy":
+			tool = load("res://addons/ai_assistant/tools/explore_node_hierarchy_tool.gd").new()
 		"activate_skill":
 			# Special handling for activate_skill which is built-in but stateful
 			return activate_skill(arguments.get("name", ""))
