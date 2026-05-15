@@ -272,7 +272,10 @@ func _update_display() -> void:
 			_history_display.pop()
 		
 		if msg.role == "tool":
-			_history_display.append_text(msg.get("content", "") + "\n\n")
+			var content: String = msg.get("content", "")
+			if content.length() > 100:
+				content = content.left(100) + "..."
+			_history_display.append_text(content + "\n\n")
 		elif msg.get("content") is String:
 			_history_display.append_text(msg.get("content") + "\n\n")
 		elif msg.get("content") is Array:
