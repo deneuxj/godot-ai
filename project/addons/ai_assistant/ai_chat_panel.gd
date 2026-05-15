@@ -61,6 +61,8 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("progress", _on_node_progress)
 		if _current_node.is_connected("chat_finished", _on_chat_finished):
 			_current_node.disconnect("chat_finished", _on_chat_finished)
+		if _current_node.is_connected("chat_cancelled", _on_chat_cancelled):
+			_current_node.disconnect("chat_cancelled", _on_chat_cancelled)
 		if _current_node.is_connected("chat_error", _on_chat_error):
 			_current_node.disconnect("chat_error", _on_chat_error)
 		if _current_node.is_connected("status_updated", _on_status_updated):
@@ -82,6 +84,7 @@ func _update_for_node(node: Node) -> void:
 		_current_node.connect("chat_started", _on_chat_started)
 		_current_node.connect("progress", _on_node_progress)
 		_current_node.connect("chat_finished", _on_chat_finished)
+		_current_node.connect("chat_cancelled", _on_chat_cancelled)
 		_current_node.connect("chat_error", _on_chat_error)
 		_current_node.connect("status_updated", _on_status_updated)
 		_current_node.connect("context_length_updated", _on_context_length_updated)
@@ -127,8 +130,7 @@ func _on_send_pressed() -> void:
 func _on_cancel_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.cancel()
-		_status_label.text = "Status: Cancelled"
-		_send_button.disabled = false
+		_status_label.text = "Status: Interrupting..."
 		_cancel_button.disabled = true
 
 
@@ -204,6 +206,15 @@ func _on_chat_finished(_response: String) -> void:
 	# Successful response, clear retry state
 	_last_prompt = ""
 	_last_attachments.clear()
+	
+	_update_display()
+	_update_status_theme()
+
+
+func _on_chat_cancelled() -> void:
+	_status_label.text = "Status: Cancelled"
+	_send_button.disabled = false
+	_cancel_button.disabled = true
 	
 	_update_display()
 	_update_status_theme()

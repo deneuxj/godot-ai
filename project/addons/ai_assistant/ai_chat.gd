@@ -15,6 +15,7 @@ const PromptBuilder = preload("res://addons/ai_assistant/generator/prompt_builde
 signal chat_started()
 signal progress(chunks: Array[String])
 signal chat_finished(full_response: String)
+signal chat_cancelled()
 signal chat_error(error_message: String)
 signal status_updated(status: String)
 signal context_length_updated(tokens: int, characters: int)
@@ -322,7 +323,19 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var response = await handler.execute(final_messages, tools)
 	
 	# 7. Cleanup and finish.
-	if not handler.was_cancelled():
+	if handler.was_cancelled():
+		# REQ-CHAT-0015: Save partial response on cancel
+		if not partial_response.is_empty():
+			chat_history.append({"role": "assistant", "content": partial_response})
+			partial_response = ""
+		
+		# Also save any completed tool interactions
+		for msg in handler.new_messages:
+			chat_history.append(msg)
+		
+		_update_context_length()
+		chat_cancelled.emit()
+	else:
 		# Append all new messages (tool calls, tool results, and final assistant text)
 		for msg in handler.new_messages:
 			chat_history.append(msg)
