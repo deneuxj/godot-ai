@@ -137,13 +137,24 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	# Prepare the full list of tools (passed ones + dynamically registered ones)
 	var all_tools = tools.duplicate()
 	for tool_instance in _active_tools.values():
+		var t_name = ""
+		var t_def = {}
+		
+		if tool_instance is Dictionary:
+			t_name = tool_instance.get("name", "")
+			if tool_instance.has("get_definition") and tool_instance["get_definition"] is Callable:
+				t_def = tool_instance["get_definition"].call()
+		else:
+			t_name = tool_instance.name
+			t_def = tool_instance.get_definition()
+			
 		var found = false
 		for t in all_tools:
-			if t.function.name == tool_instance.name:
+			if t.get("function", {}).get("name") == t_name:
 				found = true
 				break
-		if not found:
-			all_tools.append(tool_instance.get_definition())
+		if not found and not t_def.is_empty():
+			all_tools.append(t_def)
 	
 	const MAX_TOOL_LOOPS = 5
 	for i in range(MAX_TOOL_LOOPS):

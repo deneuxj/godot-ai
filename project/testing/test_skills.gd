@@ -101,6 +101,27 @@ func test_method(args: Dictionary) -> String:
 		_fail("Tool execution routing failed: " + str(execution_result)); return
 	print("SUCCESS: Tool execution routing verified.")
 
+	# 4b. Test Registration Loop in execute()
+	print("[4b] Tool Registration Loop in execute()")
+	var mock_client = MockAIClient.new()
+	mock_client.response_queue = ["Hello!"]
+	handler.mock_client = mock_client
+	
+	# This call triggers the loop that builds all_tools
+	var messages: Array[Dictionary] = [{"role": "user", "content": "Hi"}]
+	await handler.execute(messages)
+	
+	var passed_tools = mock_client.last_request_params.get("tools", [])
+	var has_test_method = false
+	for t in passed_tools:
+		if t.get("function", {}).get("name") == "test_method":
+			has_test_method = true
+			break
+	
+	if not has_test_method:
+		_fail("test_method not found in tools passed to AIClient."); return
+	print("SUCCESS: Tool registration loop verified.")
+
 	# 5. Test SkillCreatorNode
 	print("\n[TEST 5] SkillCreatorNode")
 	var creator = SkillCreatorNodeClass.new()
