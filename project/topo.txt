@@ -1,0 +1,66 @@
+[center]=== TOPOLOGY DEFINITION ===[/center]
+
+[center]Based on spatial analysis of 12 room nodes under "Rooms/Planner AI/". [/center]
+
+[hr]ROOM DIMENSIONS (W × H × D in meters)[/hr]
+GARAGE          : 5.79 × 0.05 × 6.85   [color=blue](garage)[/color]
+SEJOUR          : 5.00 × 0.05 × 4.15   [color=blue](living_room)[/color]
+CELIER          : 4.82 × 0.05 × 2.00   [color=blue](cellar)[/color]
+CUISINE         : 4.80 × 0.05 × 5.20   [color=blue](kitchen)[/color]
+SALON_A_MANGER  : 5.00 × 0.05 × 4.20   [color=blue](dining_room)[/color]
+COULOIR         : 11.04 × 0.05 × 1.00  [color=red](HUB: main corridor)[/color]
+CHAMBRE_GAUCHE  : 2.90 × 0.05 × 5.10   [color=purple](bedroom_L)[/color]
+CHAMBRE_DROITE  : 2.90 × 0.05 × 5.10   [color=purple](bedroom_R)[/color]
+SALLE_DE_BAIN   : 4.40 × 0.05 × 2.10   [color=orange](bathroom)[/color]
+WC              : 0.90 × 0.05 × 2.10    [color=orange](toilet)[/color]
+ENTREE          : 2.40 × 0.05 × 2.20   [color=green](entrance)[/color]
+BUREAU          : 2.90 × 0.05 × 2.20   [color=teal](office)[/color]
+
+[hr]=== ADJACENCY GRAPH (Undirected) ===[/hr]
+
+GARAGE ↔ SEJOUR     │ Garage shares a thick wall (0.5m) with living room
+GARAGE ↔ CELIER     │ Garage has door opening to cellar through the thick wall (0.5m)
+
+SEJOUR ──┐
+		 ├───→ CELIER  │ Cellar has door to garage through thick wall. Separated from living area by wall (0.2m)
+		 └───← COULOIR │ Cellar has door to main corridor through thin wall (0.2m)
+
+CUISINE ├─── SALON_A_MANGER │ Kitchen → Dining room adjacency
+	│
+	├─── CHAMBRE_GAUCHE   │ Kitchen zone separated from Bedroom cluster L by wall (0.1m)
+
+SALON_A_MANGER ←── CUISINE  │ (See above)
+
+COULOIR (Central Hub):
+├── CELIER        │ Cellar access point
+├── CUISINE       │ Kitchen zone boundary
+├── CHAMBRE_GAUCHE│ Left bedroom cluster
+└── CHAMBRE_DROITE│ Right bedroom cluster
+
+CHAMBRE_GAUCHE:
+├── COULOIR      │ Main corridor access
+└── CHAMBRE_DROITE│ Twin bedroom connection (shared wall 0.1m thick)
+
+CHAMBRE_DROITE:
+├── COULOIR      │ Main corridor access
+└── CHAMBRE_GAUCHE│ Twin bedroom connection
+
+SALLE_DE_BAIN, WC, ENTREE, BUREAU ──→ COULOIR (Upper cluster via circulation path)
+
+[hr]=== SPATIAL ZONES ===[/hr]
+ZONE A (Z≈4.2m): SEJOUR, CUISINE, GARAGE     — Living zone
+ZONE B (Z≈8.9m): SALON_A_MANGER              — Dining zone
+ZONE C (Z≈1.5m): CELIER, COULOIR             — Cellar & corridor hub
+ZONE D (Z≈4.3m): CHAMBRE_GAUCHE, DR         │ Bedroom cluster
+ZONE E (Z≈-0.5m): SALLE_DE_BAIN, WC, ENTREE │ Upper utilities
+				BUREAU                       └┘
+
+[hr]=== KEY TOPOLOGY FEATURES ===[/hr]
+1. COULOIR is the PRIMARY circulation hub (11.04m width)
+2. GARAGE serves as EXTERIOR entrance point (to CELIER)
+3. CELIER connects from garage & COULOIR
+4. Twin bedrooms (CHAMBRE_GAUCHE ↔ CHAMBRE_DROITE) form shared sleeping cluster
+5. UPPER CLUSTER (SALLE_DE_BAIN/WC/ENTREE/BUREAU) feeds into main corridor
+6. KITCHEN/LIVING DINING FORM OPEN PLAN ZONE (SEJOUR-CUISINE-SALON_A_MANGER chain)
+
+[/center]

@@ -1,0 +1,24 @@
+🧱 WALL LISTING - GROUND LEVEL (Y=0) / HEIGHT=2.5m
+
+---
+1. GARAGE-SEJOUR [Thick Wall 0.5m]
+   Position: (6.00, 0.00, 3.67)
+   Size: 4.15 × 2.50 m
+
+---
+2. SEJOUR-CELIER [Thin Wall 0.2m]
+   Position: (8.94, 0.00, 2.47)
+   Size: 4.80 × 2.50 m
+
+---
+3. CUISINE-CHAMBRE_GAUCHE [Thin Wall 0.1m]
+   Position: (16.25, 0.00, 4.20)
+   Size: 5.10 × 2.50 m
+
+---
+4. CHAMBRE_GAUCHE-CHAMBRE_DROITE [Shared Thin Wall 0.1m]
+   Position: (19.41, 0.00, 4.30)
+   Size: 5.10 × 2.50 m
+
+---
+TOTAL WALLS: 4
