@@ -12,6 +12,7 @@ class_name AIAgentAssisted3D
 
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
+const AISkillNode = preload("res://addons/ai_assistant/skills/ai_skill_node.gd")
 
 
 enum GenerationStatus {
@@ -147,7 +148,8 @@ func generate() -> void:
 	generation_started.emit()
 
 	# 1. Build initial prompt and tools.
-	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode, active_skills)
+	var discovered_skills = _discover_active_skills()
+	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode, discovered_skills)
 	var tools := PromptBuilder.get_tool_definitions(
 		enable_godot_docs, 
 		enable_project_resources, 
@@ -362,6 +364,26 @@ func _set_owner_recursive(node: Node, scene_owner: Node) -> void:
 	node.owner = scene_owner
 	for child in node.get_children():
 		_set_owner_recursive(child, scene_owner)
+
+
+func _discover_active_skills() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	_scan_for_skills(self, result)
+	return result
+
+
+func _scan_for_skills(node: Node, result: Array[Dictionary]) -> void:
+	for child in node.get_children():
+		if child is AISkillNode and child.is_active:
+			# Respect active_skills filter if set
+			if not active_skills.is_empty() and not active_skills.has(child.name):
+				continue
+				
+			result.append({
+				"name": child.name,
+				"description": child.description
+			})
+		_scan_for_skills(child, result)
 
 
 # --- Helpers ---

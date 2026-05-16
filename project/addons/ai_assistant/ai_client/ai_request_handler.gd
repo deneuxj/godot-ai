@@ -7,6 +7,8 @@ class_name AIRequestHandler
 extends RefCounted
 
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
+const AISkillNode = preload("res://addons/ai_assistant/skills/ai_skill_node.gd")
+const AIClient = preload("res://addons/ai_assistant/ai_client/ai_client.gd")
 
 ## Emitted when streaming chunks arrive.
 signal progress(chunks: Array[String])
@@ -17,6 +19,8 @@ var _cancelled: bool = false
 
 ## Map of tool_name -> AITool instance
 var _active_tools: Dictionary = {}
+## Map of tool_name -> Node instance for dynamic calls
+var _dynamic_tool_targets: Dictionary = {}
 ## IDs of skills that have been activated in this session.
 var _activated_skill_ids: Array[String] = []
 
@@ -251,27 +255,45 @@ func register_tool(tool: RefCounted) -> void:
 
 
 ## Activates a skill, injecting its tools and returning its instructions.
-func activate_skill(skill_id: String) -> String:
-	if _activated_skill_ids.has(skill_id):
-		return "Skill '%s' is already active." % skill_id
+func activate_skill(skill_name: String) -> String:
+	if _activated_skill_ids.has(skill_name):
+		return "Skill '%s' is already active." % skill_name
 		
-	var sm = load("res://addons/ai_assistant/skills/skill_manager.gd")
-	var skill = sm.get_skill(skill_id)
-	if not skill:
-		return "Error: Skill '%s' not found." % skill_id
+	var skill_node = _find_skill_node(_parent, skill_name)
+	if not skill_node:
+		return "Error: Skill '%s' not found in the scene tree." % skill_name
 		
-	# Register tools
-	for script_path in skill.tool_scripts:
-		var script = load(script_path)
-		if script:
-			var tool = script.new()
-			# We check if it has the required methods instead of using 'is AITool' 
-			# which might fail if AITool class is not globally registered.
-			if tool.has_method("get_definition") and tool.has_method("execute"):
-				register_tool(tool)
+	# Register tools from the node's schema
+	for tool_schema in skill_node.tools:
+		if tool_schema.has("function") and tool_schema.function.has("name"):
+			var tool_name = tool_schema.function.name
+			_dynamic_tool_targets[tool_name] = skill_node
+			
+			# We also add it to _active_tools as a virtual tool for the all_tools check in execute()
+			# We use a simple object that mimics AITool.get_definition()
+			var virtual_tool = {
+				"name": tool_name,
+				"get_definition": func(): return tool_schema
+			}
+			_active_tools[tool_name] = virtual_tool
 	
-	_activated_skill_ids.append(skill_id)
-	return "<activated_skill name=\"%s\">\n%s\n</activated_skill>" % [skill_id, skill.instructions]
+	_activated_skill_ids.append(skill_name)
+	return "<activated_skill name=\"%s\">\n%s\n</activated_skill>" % [skill_name, skill_node.definition]
+
+
+func _find_skill_node(current: Node, skill_name: String) -> Node:
+	# Check children
+	for child in current.get_children():
+		if child is AISkillNode and child.name == skill_name:
+			return child
+	
+	# Check descendants
+	for child in current.get_children():
+		var found = _find_skill_node(child, skill_name)
+		if found:
+			return found
+			
+	return null
 
 
 func _execute_tool(tool_call: Dictionary) -> String:
@@ -280,11 +302,24 @@ func _execute_tool(tool_call: Dictionary) -> String:
 	if arguments == null:
 		arguments = {}
 		
+	# Check dynamic node targets first
+	if _dynamic_tool_targets.has(function_name):
+		var target = _dynamic_tool_targets[function_name]
+		if target.has_method(function_name):
+			print("AI calling node-based skill tool: ", function_name, " on ", target.name)
+			var result = target.call(function_name, arguments)
+			if result is Signal:
+				return await result
+			return str(result)
+		else:
+			return "Error: Method '%s' not found on skill node '%s'." % [function_name, target.name]
+
 	# Check dynamically registered tools first
 	if _active_tools.has(function_name):
 		var tool = _active_tools[function_name]
-		print("AI calling dynamic tool: ", function_name, " with args: ", arguments)
-		return await tool.execute(arguments)
+		if tool.has_method("execute"):
+			print("AI calling dynamic tool: ", function_name, " with args: ", arguments)
+			return await tool.execute(arguments)
 		
 	# Fallback/Built-in tools
 	var tool: RefCounted = null

@@ -228,13 +228,13 @@ static func get_technician_prompt(override: String = "") -> String:
 
 
 ## Main entry point to build the AI conversation history.
-static func build(prompt: String, textures: Array[Texture2D], mode: int, selected_skills: Array[String] = []) -> Array[Dictionary]:
+static func build(prompt: String, textures: Array[Texture2D], mode: int, discovered_skills: Array[Dictionary] = []) -> Array[Dictionary]:
 	var messages: Array[Dictionary] = []
 	
 	# 1. System Prompt
 	messages.append({
 		"role": "system",
-		"content": _get_system_prompt(mode, selected_skills)
+		"content": _get_system_prompt(mode, discovered_skills)
 	})
 	
 	# 2. User Message
@@ -305,21 +305,17 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 
 
 ## Returns a string listing available skills for the discovery phase.
-static func get_skills_discovery_context(selected_skills: Array[String] = []) -> String:
-	var sm = load("res://addons/ai_assistant/skills/skill_manager.gd")
-	var all_skills = sm.get_all_skills()
-	if all_skills.is_empty():
+## [param discovered_skills] is an array of Dictionaries: {"name": String, "description": String}
+static func get_skills_discovery_context(discovered_skills: Array[Dictionary]) -> String:
+	if discovered_skills.is_empty():
 		return ""
 		
 	var lines: Array[String] = ["\n\nAVAILABLE SKILLS:"]
 	lines.append("You have access to specialized skills. Only their descriptions are shown here.")
 	lines.append("Use `activate_skill(name)` to load a skill's full instructions and tools.")
 	
-	for skill in all_skills:
-		# If user restricted skills on the node, respect that
-		if not selected_skills.is_empty() and not selected_skills.has(skill.id):
-			continue
-		lines.append("- %s: %s" % [skill.id, skill.description])
+	for skill in discovered_skills:
+		lines.append("- %s: %s" % [skill["name"], skill["description"]])
 		
 	return "\n".join(lines)
 
@@ -351,7 +347,7 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 
 
 ## Get the system prompt, checking the project setting override first.
-static func _get_system_prompt(mode: int, selected_skills: Array[String] = []) -> String:
+static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = []) -> String:
 	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
 	var base_prompt := ""
 	
@@ -365,7 +361,7 @@ static func _get_system_prompt(mode: int, selected_skills: Array[String] = []) -
 			base_prompt = NODE_SCRIPT_SYSTEM_PROMPT
 			
 	var env_context := get_environment_context()
-	var skills_context := get_skills_discovery_context(selected_skills)
+	var skills_context := get_skills_discovery_context(discovered_skills)
 	
 	return base_prompt + env_context + skills_context
 

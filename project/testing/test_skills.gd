@@ -2,125 +2,140 @@
 extends SceneTree
 
 func _init():
-	print("--- AI Skill System Tests ---")
+	print("--- AI Skill System Tests (Node-Based) ---")
 	
-	var SkillManagerClass = load("res://addons/ai_assistant/skills/skill_manager.gd")
+	var AIChatClass = load("res://addons/ai_assistant/ai_chat.gd")
+	var AISkillNodeScript = load("res://addons/ai_assistant/skills/ai_skill_node.gd")
+	var SkillCreatorNodeClass = load("res://addons/ai_assistant/skills/skill_creator_node.gd")
 	var AIRequestHandlerClass = load("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
 	var PromptBuilderClass = load("res://addons/ai_assistant/generator/prompt_builder.gd")
 	
+	if not AIChatClass: _fail("Failed to load AIChatClass"); return
+	if not AISkillNodeScript: _fail("Failed to load AISkillNodeScript"); return
+	if not SkillCreatorNodeClass: _fail("Failed to load SkillCreatorNodeClass"); return
+	if not AIRequestHandlerClass: _fail("Failed to load AIRequestHandlerClass"); return
+	if not PromptBuilderClass: _fail("Failed to load PromptBuilderClass"); return
+
+	var root = Node.new()
+	root.name = "TestRoot"
+	
+	var chat = AIChatClass.new()
+	chat.name = "AIChat"
+	root.add_child(chat)
+	
+	# We create a specific script for the test skill to implement a method
+	var skill_script = GDScript.new()
+	skill_script.source_code = """
+@tool
+extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
+
+func test_method(args: Dictionary) -> String:
+	return "Test successful!"
+"""
+	var reload_err = skill_script.reload()
+	if reload_err != OK:
+		_fail("Failed to reload skill_script: %d" % reload_err); return
+	
+	var skill = Node.new()
+	skill.set_script(skill_script)
+	skill.name = "TestSkill"
+	skill.set("description", "A test skill node.")
+	skill.set("definition", "Full instructions for TestSkill.")
+	
+	var test_tools: Array[Dictionary] = [{
+		"type": "function",
+		"function": {
+			"name": "test_method",
+			"description": "A test method.",
+			"parameters": {"type": "object", "properties": {}}
+		}
+	}]
+	skill.set("tools", test_tools)
+	
+	if skill.get("tools").is_empty():
+		# Try fallback if set() didn't work as expected
+		skill.tools = test_tools
+		if skill.tools.is_empty():
+			_fail("Failed to set 'tools' property on TestSkill node."); return
+	
+	chat.add_child(skill)
+	
 	# 1. Test Discovery
 	print("\n[TEST 1] Skill Discovery")
-	SkillManagerClass.refresh_skills()
-	var all_skills = SkillManagerClass.get_all_skills()
-	
-	var has_creator = false
-	var has_test = false
-	for skill in all_skills:
-		if skill.id == "skill-creator": has_creator = true
-		if skill.id == "test-skill": has_test = true
-	
-	if not has_creator:
-		_fail("skill-creator not discovered in builtin path.")
-	if not has_test:
-		_fail("test-skill not discovered in project path.")
+	var discovered = chat._discover_active_skills()
+	if discovered.size() != 1:
+		_fail("Expected 1 discovered skill, got %d" % discovered.size()); return
+	if discovered[0].name != "TestSkill":
+		_fail("Wrong skill name discovered: " + discovered[0].name); return
 	print("SUCCESS: Discovery verified.")
 
-	# 2. Test Discovery Context (Lazy Loading)
-	print("\n[TEST 2] Discovery Context (Lazy Loading)")
-	var context = PromptBuilderClass.get_skills_discovery_context()
+	# 2. Test Discovery Context
+	print("\n[TEST 2] Discovery Context")
+	var context = PromptBuilderClass.get_skills_discovery_context(discovered)
 	if not "AVAILABLE SKILLS:" in context:
-		_fail("Discovery context missing header.")
-	if not "test-skill: Test Skill" in context:
-		_fail("Discovery context missing test-skill description.")
-	if "This is a specialized skill for testing" in context:
-		_fail("Discovery context contains full SKILL.md body (not lazy).")
+		_fail("Discovery context missing header."); return
+	if not "TestSkill: A test skill node." in context:
+		_fail("Discovery context missing TestSkill description."); return
 	print("SUCCESS: Discovery context verified.")
 
-	# 3. Test Activation & Dynamic Tool Registration
-	print("\n[TEST 3] Activation & Dynamic Tool Registration")
-	var dummy = Node.new()
-	var handler = AIRequestHandlerClass.new(dummy)
-	
-	if handler._active_tools.has("test_tool"):
-		_fail("test_tool already registered before activation.")
-		
-	var activation_result = await handler.activate_skill("test-skill")
-	if not "This is a specialized skill for testing" in activation_result:
-		_fail("Activation result missing SKILL.md content.")
-	
-	if not handler._active_tools.has("test_tool"):
-		_fail("test_tool not registered after activation.")
+	# 3. Test Activation
+	print("\n[TEST 3] Activation")
+	var handler = AIRequestHandlerClass.new(chat)
+	var activation_result = await handler.activate_skill("TestSkill")
+	if not "Full instructions for TestSkill." in activation_result:
+		_fail("Activation result missing definition."); return
+	if not handler._dynamic_tool_targets.has("test_method"):
+		_fail("test_method not registered in dynamic tool targets."); return
 	print("SUCCESS: Activation verified.")
 
-	# 4. Test Dynamic Tool Execution
-	print("\n[TEST 4] Dynamic Tool Execution")
+	# 4. Test Tool Execution (Routing)
+	print("\n[TEST 4] Tool Execution Routing")
 	var tool_call = {
 		"function": {
-			"name": "test_tool",
+			"name": "test_method",
 			"arguments": "{}"
 		}
 	}
 	var execution_result = await handler._execute_tool(tool_call)
-	if execution_result != "Test tool executed successfully!":
-		_fail("Dynamic tool execution failed or returned wrong result: " + str(execution_result))
-	print("SUCCESS: Dynamic tool execution verified.")
+	if execution_result != "Test successful!":
+		_fail("Tool execution routing failed: " + str(execution_result)); return
+	print("SUCCESS: Tool execution routing verified.")
 
-	# 5. Test Skill-Creator Meta-Skill
-	print("\n[TEST 5] Skill-Creator Meta-Skill")
-	await handler.activate_skill("skill-creator")
-	if not handler._active_tools.has("create_skill_resource"):
-		_fail("create_skill_resource not registered after activating skill-creator.")
+	# 5. Test SkillCreatorNode
+	print("\n[TEST 5] SkillCreatorNode")
+	var creator = SkillCreatorNodeClass.new()
+	creator.name = "SkillCreator"
+	chat.add_child(creator)
+	
+	var activation_creator = await handler.activate_skill("SkillCreator")
+	if not handler._dynamic_tool_targets.has("create_skill_node"):
+		_fail("create_skill_node not registered after activating SkillCreator."); return
 		
 	var create_call = {
 		"function": {
-			"name": "create_skill_resource",
+			"name": "create_skill_node",
 			"arguments": JSON.stringify({
-				"name": "generated-skill",
-				"instructions": "# Generated Skill\nThis was created by the skill-creator."
+				"name": "GeneratedSkill",
+				"description": "Created by node.",
+				"definition": "Instructions."
 			})
 		}
 	}
 	var create_result = await handler._execute_tool(create_call)
 	if not "Successfully created" in create_result:
-		_fail("create_skill_resource execution failed: " + str(create_result))
+		_fail("create_skill_node execution failed: " + create_result); return
 		
-	# Verify discovery of the generated skill
-	var gen_skill = SkillManagerClass.get_skill("generated-skill")
-	if not gen_skill:
-		_fail("Generated skill not discovered by SkillManager.")
-	if gen_skill.description != "Generated Skill":
-		_fail("Generated skill has wrong description: " + gen_skill.description)
-	print("SUCCESS: Skill-creator verified.")
+	var gen_node = chat.get_node_or_null("GeneratedSkill")
+	if not gen_node:
+		_fail("GeneratedSkill node not found."); return
+	if not gen_node.get("description") == "Created by node.":
+		_fail("GeneratedSkill has wrong description: " + str(gen_node.get("description"))); return
+	print("SUCCESS: SkillCreatorNode verified.")
 
 	print("\nALL TESTS PASSED!")
-	
-	# Cleanup
-	_cleanup()
-	dummy.free()
+	root.free()
 	quit(0)
 
 func _fail(msg: String):
 	print("FAILED: ", msg)
-	_cleanup()
 	quit(1)
-
-func _cleanup():
-	# Remove test skills
-	var da = DirAccess.open("res://ai_skills")
-	if da:
-		_rm_recursive("res://ai_skills/test-skill")
-		_rm_recursive("res://ai_skills/generated-skill")
-
-func _rm_recursive(path: String):
-	var da = DirAccess.open(path)
-	if not da: return
-	
-	da.list_dir_begin()
-	var file_name = da.get_next()
-	while file_name != "":
-		if da.current_is_dir():
-			_rm_recursive(path.path_join(file_name))
-		else:
-			da.remove(file_name)
-		file_name = da.get_next()
-	DirAccess.remove_absolute(path)

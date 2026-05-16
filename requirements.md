@@ -203,25 +203,24 @@ REQ-TOOL-0010: Provide a tool `explore_node_hierarchy` that allows the AI to:
 
 REQ-SKILL-0001: The plugin shall support a "Skill System" to provide specialized capabilities to the AI agent.
 
-REQ-SKILL-0002: A "Skill" shall be a structured resource (folder) containing:
-  - `SKILL.md`: Expert procedural guidance and instructions for the AI.
-  - `tools/`: Optional GDScript files defining specialized tools for the skill.
-  - `examples/`: Optional reference scenes or scripts for the AI to learn from.
+REQ-SKILL-0002: A "Skill" shall be a specialized Node type (`AISkill`) containing:
+  - `description`: A brief summary for the discovery phase.
+  - `definition`: Expert procedural guidance and instructions for the AI (text-based).
+  - `tools`: A collection of JSON schemas defining the arbitrary functions available on the node.
+  - `is_active`: A boolean to enable or disable the skill dynamically.
 
-REQ-SKILL-0003: Skills shall be discoverable in specific project directories (e.g., `res://ai_skills/` and `res://addons/ai_assistant/skills/`).
+REQ-SKILL-0003: Skills shall be discoverable by scanning the children and descendants of the AI node (e.g., `AIChat`) in the scene tree.
 
-REQ-SKILL-0004: The `AIChat` and `AIAgentAssisted3D` nodes shall provide a property to select one or more active skills for a session.
+REQ-SKILL-0004: The `AIChat` and `AIAgentAssisted3D` nodes shall automatically discover and support all active `AISkill` nodes in their hierarchy.
 
 REQ-SKILL-0005: To optimize context usage, when multiple skills are available:
-  - Initially, only the name and a brief description of each skill shall be included in the system prompt.
-  - The full content of a skill's `SKILL.md` shall be injected into the context (wrapped in `<activated_skill>` tags) ONLY when the AI specifically requests to "activate" or "use" that skill, or when a tool provided by that skill is called.
-  - Once activated, its specialized tools shall be registered and made available to the AI.
-  - Examples shall be used to provide few-shot context if necessary after activation.
+  - Initially, only the name of the `AISkill` node and its `description` property shall be included in the system prompt.
+  - The full content of the `definition` property shall be injected into the context (wrapped in `<activated_skill>` tags) ONLY when the AI specifically requests to "activate" that skill via the `activate_skill` tool.
+  - Once activated, the functions defined in the node's `tools` schema shall be registered as available tools, and subsequent calls to these tools shall be routed directly to the node instance.
 
-REQ-SKILL-0006: Provide a built-in "skill-creator" meta-skill that allows the AI to autonomously create new skills.
-  - The skill-creator shall take a description of the desired capability.
-  - It shall generate the complete skill directory structure, the `SKILL.md` expert instructions, and any necessary `AITool` GDScript files.
-  - The generated skill shall be saved to the project's skill directory (e.g., `res://ai_skills/`).
+REQ-SKILL-0006: Provide a built-in "skill-creator" meta-skill that allows the AI to autonomously create new `AISkill` nodes.
+  - The skill-creator shall generate the appropriate node configuration and GDScript logic.
+  - The generated skill can be added to the current scene as a child of the active assistant node.
 
 ## Out of Scope (Future)
 

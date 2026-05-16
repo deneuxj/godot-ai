@@ -11,6 +11,9 @@ class_name AIChat
 
 const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
 const PromptBuilder = preload("res://addons/ai_assistant/generator/prompt_builder.gd")
+const AISkillNode = preload("res://addons/ai_assistant/skills/ai_skill_node.gd")
+const AIClient = preload("res://addons/ai_assistant/ai_client/ai_client.gd")
+const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 
 signal chat_started()
 signal progress(chunks: Array[String])
@@ -312,7 +315,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var base_system_prompt := PromptBuilder.get_chat_prompt(active_system_prompt)
 	
 	# Add skills discovery context to the system prompt
-	var skills_context = PromptBuilder.get_skills_discovery_context(active_skills)
+	var discovered_skills = _discover_active_skills()
+	var skills_context = PromptBuilder.get_skills_discovery_context(discovered_skills)
 		
 	final_messages.append({
 		"role": "system", 
@@ -630,3 +634,23 @@ func _get_message_length(msg: Dictionary) -> int:
 func _update_context_length() -> void:
 	var length := get_context_length()
 	context_length_updated.emit(length.tokens, length.characters)
+
+
+func _discover_active_skills() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	_scan_for_skills(self, result)
+	return result
+
+
+func _scan_for_skills(node: Node, result: Array[Dictionary]) -> void:
+	for child in node.get_children():
+		if child is AISkillNode and child.is_active:
+			# Respect active_skills filter if set
+			if not active_skills.is_empty() and not active_skills.has(child.name):
+				continue
+				
+			result.append({
+				"name": child.name,
+				"description": child.description
+			})
+		_scan_for_skills(child, result)
