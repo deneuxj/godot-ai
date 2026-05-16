@@ -23,6 +23,10 @@ Rules:
 - GDScript in Godot 4 DOES NOT support nested functions. Define all your logic in top-level functions (e.g., `build()`).
 - Do NOT output any explanation unless it's outside the code block.
 
+GDScript 2.0 Best Practices:
+- When using functions like get(), load(), or Dictionary.get(), always provide an explicit static type (e.g., `var x: int = ...`) instead of using inference (`:=`).
+- Prefer explicit typing for all variable declarations and function signatures.
+
 Tool Usage:
 - You HAVE access to tools to explore Godot documentation and project resources.
 - If you are unsure about a node's properties or methods, USE `explore_godot_docs`.
@@ -65,6 +69,10 @@ Rules:
 - Implement `_ready()` or other lifecycle methods as requested.
 - No explanation or extra text. Just the script content.
 
+GDScript 2.0 Best Practices:
+- When using functions like get(), load(), or Dictionary.get(), always provide an explicit static type (e.g., `var x: int = ...`) instead of using inference (`:=`).
+- Prefer explicit typing for all variable declarations and function signatures.
+
 Tool Usage:
 - You HAVE access to tools to explore Godot documentation and project resources.
 - USE `explore_godot_docs` to verify class properties, methods, and signals before writing code.
@@ -88,6 +96,14 @@ Tool Usage:
 - Use `modify_project_resource` to help the user by creating or editing files directly when requested.
 - Use `validate_project_resource` to check if scripts or resources have errors and help fix them.
 - When the user asks for code, ensure it follows Godot 4 conventions.
+
+GDScript 2.0 Best Practices:
+- When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
+- Prefer explicit typing for all variable declarations and function signatures.
+
+Surgical Editing Rules:
+- When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
+- If a modification fails to fix an error reported by [code]validate_project_resource[/code], DO NOT guess. Use [code]explore_project_resources[/code] with [code]start_line[/code] and [code]end_line[/code] to read the actual file content and verify the state of the file before retrying.
 
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
@@ -139,6 +155,14 @@ Rules:
 1. Perform the requested implementation or tool calls as efficiently as possible.
 2. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
 3. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
+
+GDScript 2.0 Best Practices:
+- When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
+- Prefer explicit typing for all variable declarations and function signatures.
+
+Surgical Editing Rules:
+- When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
+- If a modification fails to fix an error reported by [code]validate_project_resource[/code], DO NOT guess. Use [code]explore_project_resources[/code] with [code]start_line[/code] and [code]end_line[/code] to read the actual file content and verify the state of the file before retrying.
 
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.

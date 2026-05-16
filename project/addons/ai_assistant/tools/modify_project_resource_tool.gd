@@ -37,8 +37,12 @@ func get_parameters() -> Dictionary:
 func execute(arguments: Dictionary) -> String:
 	var path = arguments.get("path", "")
 	var target_line = int(arguments.get("target_line", 1))
-	var old_content = arguments.get("old_content", "")
 	var new_content = arguments.get("new_content", "")
+
+	if not arguments.has("old_content"):
+		return "Error: Missing required parameter 'old_content'. You MUST provide the exact text you intend to replace to ensure a safe edit. Use an empty string ONLY if you are creating a new file."
+
+	var old_content = arguments.get("old_content", "")
 
 	if not path.begins_with("res://"):
 		path = "res://" + path
