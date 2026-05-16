@@ -31,6 +31,15 @@ func execute(arguments: Dictionary) -> String:
 	if not FileAccess.file_exists(path):
 		return "Error: Resource '%s' does not exist." % path
 
+	# Hardening: Force the editor to notice disk changes before validation
+	if Engine.is_editor_hint():
+		var ep = EditorInterface.get_resource_filesystem()
+		if ep:
+			ep.scan()
+			# Give the editor a few frames to process the scan and for OS file IO to settle
+			for i in range(5):
+				await context_node.get_tree().process_frame
+
 	var logger = ScriptExecutor._get_logger()
 	if logger:
 		logger.call("start_capture")
