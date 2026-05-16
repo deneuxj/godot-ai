@@ -335,6 +335,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
+	final_messages = PromptBuilder.sanitize_history(final_messages)
+	
 	var tools := get_current_tool_definitions()
 
 	# 4. Create and configure handler.

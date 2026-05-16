@@ -189,6 +189,15 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 				var final_msg = {"role": "assistant", "content": final_response}
 				current_messages.append(final_msg)
 				new_messages.append(final_msg)
+			elif tools_invoked:
+				# CRITICAL: Strict role-alternation templates (like Mistral/Llama 3) 
+				# require that tool results are followed by an assistant message.
+				# If the AI stopped responding, we must insert a fallback to avoid 
+				# "tool -> user" transitions which crash the Jinja template.
+				var fallback_msg = {"role": "assistant", "content": "..."}
+				current_messages.append(fallback_msg)
+				new_messages.append(fallback_msg)
+				final_response = "..."
 			break
 
 	# 5. Cleanup.

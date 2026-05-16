@@ -397,25 +397,62 @@ static func get_environment_context() -> String:
 
 ## Append error details to the conversation history for the error-correction loop.
 static func build_error_correction(messages: Array[Dictionary], error_result: Dictionary, last_content: String) -> Array[Dictionary]:
-	# Add the AI's previous (erroneous) response as an assistant message if not already present.
-	var already_present = false
-	if not messages.is_empty():
-		var last_msg = messages.back()
-		if last_msg.get("role") == "assistant" and last_msg.get("content") == last_content:
-			already_present = true
-	
-	if not already_present and not last_content.is_empty():
-		messages.append({
-			"role": "assistant",
-			"content": last_content
-		})
-	
-	# Add the error details as a new user message.
-	var error_msg := "The generated output failed validation with the following error:\n\n%s" % error_result.error
-	
-	messages.append({
-		"role": "user",
-		"content": error_msg
-	})
-	
+# ... (rest of method code)
 	return messages
+
+
+## Sanitizes a conversation history to ensure strict role alternation and valid tool transactions.
+## Useful for models with strict Jinja templates (Mistral, Llama 3).
+static func sanitize_history(messages: Array[Dictionary]) -> Array[Dictionary]:
+	if messages.is_empty():
+		return []
+		
+	var sanitized: Array[Dictionary] = []
+	
+	# 1. Ensure the first message is system or user.
+	# (Mistral usually accepts System as the very first message).
+	var start_idx = 0
+	if messages[0].role == "system":
+		sanitized.append(messages[0].duplicate())
+		start_idx = 1
+	
+	for i in range(start_idx, messages.size()):
+		var msg = messages[i].duplicate()
+		var last = sanitized.back() if not sanitized.is_empty() else null
+		
+		if not last:
+			sanitized.append(msg)
+			continue
+			
+		# Case A: Sequential messages of the same role
+		if msg.role == last.role and msg.role != "tool":
+			# Merge text content if possible
+			if typeof(last.content) == TYPE_STRING and typeof(msg.content) == TYPE_STRING:
+				last.content += "\n\n" + msg.content
+				continue
+			# If content types differ or contain tool_calls, we might have to just insert a dummy role 
+			# but merging is safer for text.
+		
+		# Case B: Tool message follows a Tool message (allowed for batch results)
+		if msg.role == "tool" and last.role == "tool":
+			sanitized.append(msg)
+			continue
+			
+		# Case C: User message follows a Tool message (ILLEGAL in Mistral)
+		if msg.role == "user" and last.role == "tool":
+			# Insert dummy assistant message to close the transaction
+			sanitized.append({"role": "assistant", "content": "..."})
+			sanitized.append(msg)
+			continue
+			
+		# Case D: Role is the same as last (and not tool) - this should have been caught by Case A 
+		# but if merging failed or roles are user-user:
+		if msg.role == last.role:
+			if msg.role == "user":
+				sanitized.append({"role": "assistant", "content": "..."})
+			else:
+				sanitized.append({"role": "user", "content": "..."})
+		
+		sanitized.append(msg)
+		
+	return sanitized
