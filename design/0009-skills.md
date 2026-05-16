@@ -86,7 +86,22 @@ The `skill-creator` is now a tool that helps the user (or the AI itself) configu
 
 ---
 
-## Technical Details
+## REQ-SKILL-0007: Lifecycle and Synchronization Limitations
+
+The Skill System is designed for performance and context efficiency, which introduces specific behaviors regarding updates:
+
+### 1. Metadata Snapshotting
+When `activate_skill` is called, the skill's `definition` (instructions) and `tools` (JSON schemas) are snapshotted and injected into the AI's current session context.
+- **Static Instructions**: Once instructions are injected into the conversation history, they are immutable for the remainder of that session. Updating the `definition` on the node will NOT update the instructions the AI has already read.
+- **Static Schemas**: The `AIRequestHandler` caches the tool schemas at activation. Adding, removing, or renaming tools on the node after activation will not be reflected in the AI's available functions until the session is reset.
+
+### 2. Live Logic Execution
+Unlike metadata, the **implementation logic** (the GDScript methods) is resolved dynamically via `Object.call()`.
+- If a user modifies the *code* inside an existing tool method, the AI will execute the updated logic immediately on the next call.
+- However, if the method signature (arguments) changes, the AI will likely fail because it is still using the old schema it received at activation.
+
+### 3. Re-activation
+Currently, `activate_skill` returns early if a skill is already marked as active. To force an update of instructions or schemas, the session history must be cleared, or the `activated_skill_ids` list in the handler must be reset.
 
 ### `AISkill` Base Class
 ```gdscript
