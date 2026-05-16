@@ -453,6 +453,16 @@ static func sanitize_history(messages: Array[Dictionary]) -> Array[Dictionary]:
 			else:
 				sanitized.append({"role": "user", "content": "..."})
 		
+		# Case E: Dangling Tool Calls (CRITICAL)
+		# If the LAST message was an assistant with tool_calls, but the NEW message is NOT a tool result,
+		# we MUST strip the tool_calls from the last message. Otherwise, the protocol is violated.
+		if last.role == "assistant" and last.has("tool_calls") and msg.role != "tool":
+			last.erase("tool_calls")
+			# If the assistant message is now empty (no content and no tools), we should ideally 
+			# merge it or remove it, but stripping the tools is the bare minimum to fix the template.
+			if last.get("content", "").is_empty():
+				last.content = "..." # Fallback content
+		
 		sanitized.append(msg)
 		
 	return sanitized
