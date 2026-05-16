@@ -453,9 +453,11 @@ func unload_model(model_id: String = "") -> void:
 		status_updated.emit("Model unloaded")
 
 
-## Reset the conversation history.
+## Reset the conversation history and all session state (including skills).
 func clear_history() -> void:
 	chat_history.clear()
+	activated_skill_ids.clear()
+	session_tools.clear()
 	_update_context_length()
 
 
