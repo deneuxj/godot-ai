@@ -15,7 +15,7 @@ func get_parameters() -> Dictionary:
 			"command": {
 				"type": "string",
 				"enum": ["list_files", "get_file_content", "search"],
-				"description": "The command to execute."
+				"description": "The command to execute. 'get_file_content' has a 32,000 character limit per call."
 			},
 			"path": {
 				"type": "string",
@@ -136,9 +136,9 @@ func _get_file_content(path: String, start_line: int = 1, end_line: int = -1) ->
 	if start_line > 1 or end_line < total_lines:
 		range_info = " (lines %d to %d of %d)" % [start_line, end_line, total_lines]
 	
-	# Truncate if the slice is still too large
-	if content.length() > 8000:
-		content = content.substr(0, 8000) + "\n\n... (content truncated for brevity)"
+	# Enforce size limit to prevent context overflow
+	if content.length() > 32000:
+		return "Error: Requested content size (%d characters) is too large. Please read a smaller section using 'start_line' and 'end_line' parameters. Total lines in file: %d" % [content.length(), total_lines]
 		
 	return "Content of %s%s:\n```\n%s\n```" % [path, range_info, content]
 
