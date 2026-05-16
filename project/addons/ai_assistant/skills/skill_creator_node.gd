@@ -1,6 +1,7 @@
 ## SkillCreatorNode - An AISkill node that allows the AI to create other skills.
 
 @tool
+class_name SkillCreatorNode
 extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
 
 func _init() -> void:
