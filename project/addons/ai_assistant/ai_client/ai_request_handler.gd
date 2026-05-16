@@ -134,27 +134,8 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	tools_invoked = false
 	new_messages.clear()
 	
-	# Prepare the full list of tools (passed ones + dynamically registered ones)
-	var all_tools = tools.duplicate()
-	for tool_instance in _active_tools.values():
-		var t_name = ""
-		var t_def = {}
-		
-		if tool_instance is Dictionary:
-			t_name = tool_instance.get("name", "")
-			if tool_instance.has("get_definition") and tool_instance["get_definition"] is Callable:
-				t_def = tool_instance["get_definition"].call()
-		else:
-			t_name = tool_instance.name
-			t_def = tool_instance.get_definition()
-			
-		var found = false
-		for t in all_tools:
-			if t.get("function", {}).get("name") == t_name:
-				found = true
-				break
-		if not found and not t_def.is_empty():
-			all_tools.append(t_def)
+	# Prepare the initial list of tools
+	var all_tools = _build_all_tools(tools)
 	
 	const MAX_TOOL_LOOPS = 5
 	for i in range(MAX_TOOL_LOOPS):
@@ -178,6 +159,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			new_messages.append(assistant_msg)
 			
 			# Execute each tool call
+			var skills_updated = false
 			for tool_call in tool_calls:
 				if _cancelled: break
 				var tool_result = await _execute_tool(tool_call)
@@ -191,17 +173,13 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 				current_messages.append(tool_msg)
 				new_messages.append(tool_msg)
 				
-				# If activate_skill was called, we might have new tools for the NEXT turn
 				if tool_call.function.name == "activate_skill":
-					for tool_instance in _active_tools.values():
-						var found = false
-						for t in all_tools:
-							if t.function.name == tool_instance.name:
-								found = true
-								break
-						if not found:
-							all_tools.append(tool_instance.get_definition())
+					skills_updated = true
 			
+			# If skills were activated, update the toolset for the next LLM call in the loop
+			if skills_updated:
+				all_tools = _build_all_tools(tools)
+				
 			if _cancelled: break
 			# Continue loop to send tool results back to AI
 			continue
@@ -328,6 +306,10 @@ func _execute_tool(tool_call: Dictionary) -> String:
 	# Check dynamically registered tools first
 	if _active_tools.has(function_name):
 		var tool = _active_tools[function_name]
+		if tool is Dictionary:
+			# Virtual tool from a skill node
+			return "Error: Virtual tool '%s' has no execution logic in _execute_tool." % function_name
+			
 		if tool.has_method("execute"):
 			print("AI calling dynamic tool: ", function_name, " with args: ", arguments)
 			return await tool.execute(arguments)
@@ -351,7 +333,7 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/explore_node_hierarchy_tool.gd").new()
 		"activate_skill":
 			# Special handling for activate_skill which is built-in but stateful
-			return activate_skill(arguments.get("name", ""))
+			return await activate_skill(arguments.get("name", ""))
 	
 	if tool:
 		tool.context_node = _parent
@@ -359,6 +341,30 @@ func _execute_tool(tool_call: Dictionary) -> String:
 		return await tool.execute(arguments)
 	
 	return "Error: Tool " + function_name + " not found."
+
+
+func _build_all_tools(base_tools: Array[Dictionary]) -> Array[Dictionary]:
+	var all_tools = base_tools.duplicate()
+	for tool_instance in _active_tools.values():
+		var t_name = ""
+		var t_def = {}
+		
+		if tool_instance is Dictionary:
+			t_name = tool_instance.get("name", "")
+			if tool_instance.has("get_definition") and tool_instance["get_definition"] is Callable:
+				t_def = tool_instance["get_definition"].call()
+		else:
+			t_name = tool_instance.name
+			t_def = tool_instance.get_definition()
+			
+		var found = false
+		for t in all_tools:
+			if t.get("function", {}).get("name") == t_name:
+				found = true
+				break
+		if not found and not t_def.is_empty():
+			all_tools.append(t_def)
+	return all_tools
 
 
 ## Interrupt the ongoing AI request.
