@@ -13,6 +13,7 @@ To create a new skill, follow this two-step workflow:
    The script MUST follow this template:
    ```gdscript
    @tool
+   class_name YourSkillName
    extends \"res://addons/ai_assistant/skills/ai_skill_node.gd\"
 
    func _init() -> void:
