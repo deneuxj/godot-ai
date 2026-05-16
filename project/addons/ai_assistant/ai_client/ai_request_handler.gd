@@ -264,7 +264,7 @@ func activate_skill(skill_name: String) -> String:
 		return "Error: Skill '%s' not found in the scene tree." % skill_name
 		
 	# Register tools from the node's schema
-	for tool_schema in skill_node.tools:
+	for tool_schema in skill_node.get("tools"):
 		if tool_schema.has("function") and tool_schema.function.has("name"):
 			var tool_name = tool_schema.function.name
 			_dynamic_tool_targets[tool_name] = skill_node

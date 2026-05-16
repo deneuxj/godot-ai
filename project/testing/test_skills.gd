@@ -111,17 +111,51 @@ func test_method(args: Dictionary) -> String:
 	if not handler._dynamic_tool_targets.has("create_skill_node"):
 		_fail("create_skill_node not registered after activating SkillCreator."); return
 		
-	var create_call = {
+	# 5a. Test with invalid script
+	print("[5a] Invalid script validation")
+	var invalid_call = {
+		"function": {
+			"name": "create_skill_node",
+			"arguments": JSON.stringify({
+				"name": "InvalidSkill",
+				"description": "...",
+				"definition": "...",
+				"script_content": "extends Node\nfunc broken():\n\tparse error here"
+			})
+		}
+	}
+	var invalid_result = await handler._execute_tool(invalid_call)
+	if not "Error: Script validation failed" in invalid_result:
+		_fail("SkillCreator failed to catch invalid script: " + invalid_result); return
+	print("SUCCESS: Invalid script caught.")
+
+	# 5b. Test with valid script and tools
+	print("[5b] Valid script and tools")
+	var valid_script = """
+extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
+func custom_action(args: Dictionary) -> String:
+	return "Action performed!"
+"""
+	var valid_call = {
 		"function": {
 			"name": "create_skill_node",
 			"arguments": JSON.stringify({
 				"name": "GeneratedSkill",
 				"description": "Created by node.",
-				"definition": "Instructions."
+				"definition": "Instructions.",
+				"script_content": valid_script,
+				"tools": [{
+					"type": "function",
+					"function": {
+						"name": "custom_action",
+						"description": "Custom action.",
+						"parameters": {"type": "object", "properties": {}}
+					}
+				}]
 			})
 		}
 	}
-	var create_result = await handler._execute_tool(create_call)
+	var create_result = await handler._execute_tool(valid_call)
 	if not "Successfully created" in create_result:
 		_fail("create_skill_node execution failed: " + create_result); return
 		
@@ -130,7 +164,20 @@ func test_method(args: Dictionary) -> String:
 		_fail("GeneratedSkill node not found."); return
 	if not gen_node.get("description") == "Created by node.":
 		_fail("GeneratedSkill has wrong description: " + str(gen_node.get("description"))); return
-	print("SUCCESS: SkillCreatorNode verified.")
+	
+	# Test if we can activate and call the new skill's tool
+	await handler.activate_skill("GeneratedSkill")
+	var action_call = {
+		"function": {
+			"name": "custom_action",
+			"arguments": "{}"
+		}
+	}
+	var action_result = await handler._execute_tool(action_call)
+	if action_result != "Action performed!":
+		_fail("Failed to call tool on generated skill: " + action_result); return
+		
+	print("SUCCESS: SkillCreatorNode verified with validation.")
 
 	print("\nALL TESTS PASSED!")
 	root.free()

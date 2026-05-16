@@ -101,11 +101,20 @@ static func _validate_scripted_scene(content: String) -> Dictionary:
 
 ## Validation for GDScript using standard engine mechanisms.
 static func _validate_gdscript(content: String) -> Dictionary:
-	if not content.contains("extends Node3D"):
-		return {"error": "Script must extend Node3D"}
+	return validate_gdscript_code(content, "Node3D")
+
+
+## General validation for GDScript code.
+## [param expected_base] if not empty, ensures the script extends this class (or path).
+static func validate_gdscript_code(content: String, expected_base: String = "") -> Dictionary:
+	var code = extract_code(content)
+	
+	if not expected_base.is_empty():
+		if not code.contains("extends " + expected_base) and not code.contains("extends \"" + expected_base + "\""):
+			return {"error": "Script must extend %s" % expected_base}
 
 	var gdscript := GDScript.new()
-	gdscript.source_code = content
+	gdscript.source_code = code
 	var err := gdscript.reload()
 	if err != OK:
 		return {"error": "GDScript parse error (code %d)." % err}
