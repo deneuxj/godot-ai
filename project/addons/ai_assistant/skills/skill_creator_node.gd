@@ -5,50 +5,57 @@ class_name SkillCreatorNode
 extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
 
 func _init() -> void:
-	description = "Allows the AI to autonomously create new specialized AISkill nodes."
+	description = "Allows the AI to autonomously create new specialized AISkill nodes from scripts."
 	definition = """You are an expert at creating specialized AI skills.
-Use 'create_skill_node' to add a new AISkill node to the scene tree.
-This new node will be added as a child of the node you are currently attached to.
+To create a new skill, follow this two-step workflow:
 
-When creating a skill:
-1. Provide a clear, unique name.
-2. Provide a concise description for discovery.
-3. Provide detailed expert instructions in the 'definition' field.
-4. (Optional) Provide 'script_content' for the logic. It MUST extend "res://addons/ai_assistant/skills/ai_skill_node.gd".
-5. (Optional) Provide 'tools' array of JSON schemas matching the methods in 'script_content'.
+1. **Write the Script**: Use 'modify_project_resource' to create a new script file in 'res://ai_skills/scripts/'.
+   The script MUST follow this template:
+   ```gdscript
+   @tool
+   extends \"res://addons/ai_assistant/skills/ai_skill_node.gd\"
+
+   func _init() -> void:
+       description = \"Brief summary for discovery.\"
+       definition = \"Detailed expert instructions for your tools.\"
+       tools = [
+           {
+               \"type\": \"function\",
+               \"function\": {
+                   \"name\": \"my_tool_name\",
+                   \"description\": \"...\",
+                   \"parameters\": { \"type\": \"object\", \"properties\": { ... } }
+               }
+           }
+       ]
+
+   func my_tool_name(arguments: Dictionary) -> String:
+       # Your logic here
+       return \"Success message\"
+   ```
+
+2. **Instantiate the Node**: Use 'create_skill_node' with the path to the script you just created.
+   This will add the AISkillNode to the scene tree.
 """
 	tools = [
 		{
 			"type": "function",
 			"function": {
 				"name": "create_skill_node",
-				"description": "Creates a new AISkill node as a child of the assistant node.",
+				"description": "Instantiates a new AISkill node from an existing script file.",
 				"parameters": {
 					"type": "object",
 					"properties": {
 						"name": { 
 							"type": "string", 
-							"description": "The name of the new skill node." 
+							"description": "The name for the new skill node in the scene tree." 
 						},
-						"description": { 
+						"script_path": { 
 							"type": "string", 
-							"description": "Brief description of the skill." 
-						},
-						"definition": { 
-							"type": "string", 
-							"description": "The detailed expert instructions for the skill." 
-						},
-						"script_content": {
-							"type": "string",
-							"description": "GDScript code for the skill node. Must extend 'res://addons/ai_assistant/skills/ai_skill_node.gd'."
-						},
-						"tools": {
-							"type": "array",
-							"items": { "type": "object" },
-							"description": "Array of OpenAI tool schemas for the methods in script_content."
+							"description": "The res:// path to the GDScript file created in step 1." 
 						}
 					},
-					"required": ["name", "description", "definition"]
+					"required": ["name", "script_path"]
 				}
 			}
 		}
@@ -57,62 +64,43 @@ When creating a skill:
 
 func create_skill_node(arguments: Dictionary) -> String:
 	var skill_name = arguments.get("name", "NewSkill")
-	var skill_desc = arguments.get("description", "")
-	var skill_def = arguments.get("definition", "")
-	var script_content = arguments.get("script_content", "")
-	var skill_tools = arguments.get("tools", [])
+	var script_path = arguments.get("script_path", "")
 	
+	if script_path.is_empty():
+		return "Error: No script_path provided."
+		
+	if not script_path.begins_with("res://"):
+		script_path = "res://" + script_path
+
 	var parent = get_parent()
 	if not parent:
 		return "Error: SkillCreatorNode has no parent to attach new skill to."
 		
-	# 1. Validate script if provided
-	var script: GDScript = null
-	if not script_content.is_empty():
-		var ScriptExecutor = load("res://addons/ai_assistant/generator/script_executor.gd")
-		var validation = ScriptExecutor.validate_gdscript_code(script_content, "res://addons/ai_assistant/skills/ai_skill_node.gd")
-		if validation.error != null:
-			return "Error: Script validation failed:\n" + validation.error
-			
-		# Save script to file for persistence
-		var dir = "res://ai_skills/scripts/"
-		if not DirAccess.dir_exists_absolute(dir):
-			DirAccess.make_dir_recursive_absolute(dir)
-			
-		var script_path = dir.path_join(skill_name.to_lower().replace(" ", "_") + ".gd")
-		var file = FileAccess.open(script_path, FileAccess.WRITE)
-		if not file:
-			return "Error: Could not save script to " + script_path
-		file.store_string(ScriptExecutor.extract_code(script_content))
-		file.close()
+	# 1. Validate script path exists
+	if not FileAccess.file_exists(script_path):
+		return "Error: Script file not found at " + script_path
 		
-		script = load(script_path)
-		if not script:
-			return "Error: Failed to load the saved script from " + script_path
+	# 2. Load and validate the script
+	var script = load(script_path)
+	if not script:
+		return "Error: Failed to load script at " + script_path
+		
+	var ScriptExecutor = load("res://addons/ai_assistant/generator/script_executor.gd")
+	var validation = ScriptExecutor.validate_gdscript_code(script.source_code, "res://addons/ai_assistant/skills/ai_skill_node.gd")
+	if validation.error != null:
+		return "Error: Script at %s is invalid:\n%s" % [script_path, validation.error]
 
-	# 2. Create the node
-	var AISkillNodeScript = load("res://addons/ai_assistant/skills/ai_skill_node.gd")
+	# 3. Create the node
 	var new_skill = Node.new()
-	if script:
-		new_skill.set_script(script)
-	else:
-		new_skill.set_script(AISkillNodeScript)
-		
+	new_skill.set_script(script)
 	new_skill.name = skill_name
-	new_skill.set("description", skill_desc)
-	new_skill.set("definition", skill_def)
-	
-	var typed_tools: Array[Dictionary] = []
-	for t in skill_tools:
-		typed_tools.append(t)
-	new_skill.set("tools", typed_tools)
 	
 	parent.add_child(new_skill)
 	if Engine.is_editor_hint() and parent.owner:
 		new_skill.owner = parent.owner
 		
-	return "Successfully created AISkill node '%s' as a child of '%s'%s." % [
+	return "Successfully created AISkill node '%s' as a child of '%s' using script '%s'." % [
 		skill_name, 
 		parent.name, 
-		" with custom script" if script else ""
+		script_path
 	]
