@@ -199,6 +199,13 @@ REQ-TOOL-0010: Provide a tool `explore_node_hierarchy` that allows the AI to:
   - Retrieve the properties, their types, and current values for a specific node.
   - The tool shall support navigating the hierarchy relative to the node that initiated the request.
 
+REQ-TOOL-0011: Provide a tool `manage_todo_list` that allows the AI to:
+  - Create a new TODO list with a title and initial tasks.
+  - Query the status of tasks in a specific TODO list or list all available TODO lists.
+  - Mark specific tasks as completed or uncompleted.
+  - Add new tasks to an existing list.
+  - Delete or close a TODO list.
+
 ### AI Skills
 
 REQ-SKILL-0001: The plugin shall support a "Skill System" to provide specialized capabilities to the AI agent.

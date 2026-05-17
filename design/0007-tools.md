@@ -106,6 +106,23 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0011: TODO List Management Tool (`manage_todo_list`)
+
+### Specification
+- **Method**: `execute(operation: String, params: Dictionary) -> Dictionary`
+- **Operations**:
+    - `create`: `params = {"title": String, "tasks": Array[String]}`
+    - `list`: `params = {"title": String (optional)}`
+    - `update`: `params = {"title": String, "add_tasks": Array[String] (optional), "mark_done": Array[int] (optional), "mark_undone": Array[int] (optional)}`
+    - `delete`: `params = {"title": String}`
+
+### Implementation Detail
+1. **Storage**: TODO lists will be stored in a JSON file in the project's user directory or a specific folder in `res://` (e.g., `res://.ai_assistant/todos.json`). To keep it simple and project-local, `res://.ai_assistant/todos.json` is preferred.
+2. **Data Structure**: A Dictionary where keys are titles and values are arrays of task objects `{"text": String, "done": bool}`.
+3. **Persistence**: The tool will read/write the JSON file on each operation.
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -145,5 +162,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0008 | `BuildDynamicSceneTool` implementation details |
 | REQ-TOOL-0009 | `CaptureEditorViewTool` implementation details |
 | REQ-TOOL-0010 | `NodeHierarchyTool` implementation details |
+| REQ-TOOL-0011 | `ManageTodoListTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

@@ -44,5 +44,5 @@ func get_parameters() -> Dictionary:
 
 ## Subclasses must override this to execute the tool.
 ## [param _arguments] is a dictionary of parsed JSON arguments from the AI.
-func execute(_arguments: Dictionary) -> String:
+func execute(_arguments: Dictionary) -> Variant:
 	return "Error: execute() not implemented for tool " + name

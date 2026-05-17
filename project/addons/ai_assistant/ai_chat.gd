@@ -84,6 +84,9 @@ var enable_capture_view: bool = true
 var enable_node_hierarchy: bool = true
 
 @export
+var enable_todo_list: bool = true
+
+@export
 var use_router: bool = false
 
 ## If enabled, tool calls and their results are stripped from the history after completion
@@ -493,7 +496,8 @@ func get_current_tool_definitions() -> Array[Dictionary]:
 		enable_validate_resources, 
 		enable_execute_script, 
 		enable_capture_view,
-		enable_node_hierarchy
+		enable_node_hierarchy,
+		enable_todo_list
 	)
 
 

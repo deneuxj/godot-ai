@@ -32,10 +32,18 @@ Tool Usage:
 - If you are unsure about a node's properties or methods, USE `explore_godot_docs`.
 - If you need to check if a specific resource (mesh, texture, scene) exists or what it contains, USE `explore_project_resources`.
 - If you need to navigate the scene tree or inspect properties of nodes in the live scene, USE `explore_node_hierarchy`.
+- If you need to manage tasks and track progress, USE `manage_todo_list`.
 - If you need to modify an existing file or create a new one, USE `modify_project_resource`.
 - If you need to verify if a file has errors (parse errors, load errors, missing dependencies), USE `validate_project_resource`.
 - If you need to execute arbitrary GDScript or construct a scene hierarchy in the live tree, USE `execute_script`.
 - DO NOT guess property names or resource paths. Verify them using tools first.
+
+Task Management:
+- For complex requests, ALWAYS create a TODO list using `manage_todo_list` with operation `create`.
+- Break down the task into logical steps (e.g., 1. Research, 2. Design, 3. Implementation, 4. Validation).
+- Update the TODO list as you complete each step using operation `update`.
+- This helps you stay focused and ensures you don't skip essential parts of the user's request.
+- CONSTRAIN your execution to the current task in your TODO list.
 
 Example:
 ```gdscript
@@ -78,6 +86,7 @@ Tool Usage:
 - USE `explore_godot_docs` to verify class properties, methods, and signals before writing code.
 - USE `explore_project_resources` to find existing assets or scripts in the project to avoid duplication or reference errors.
 - USE `explore_node_hierarchy` to inspect the live scene tree and node properties relative to the assistant.
+- USE `manage_todo_list` to break down and track your progress on complex scripting tasks.
 - USE `modify_project_resource` to surgically edit files or create new scripts.
 - USE `validate_project_resource` to check your work or existing files for errors.
 - Prefer using tools to gather information over making assumptions about the API or file structure.
@@ -93,6 +102,7 @@ Tool Usage:
 - Use `explore_godot_docs` to provide technically accurate information about classes, methods, and properties.
 - Use `explore_project_resources` to understand the project structure and help the user with their specific files.
 - Use `explore_node_hierarchy` to navigate the scene tree and inspect live node properties.
+- Use `manage_todo_list` to maintain a list of tasks for complex user requests. Proactively create a TODO list to track your progress and mark tasks as done.
 - Use `modify_project_resource` to help the user by creating or editing files directly when requested.
 - Use `validate_project_resource` to check if scripts or resources have errors and help fix them.
 - When the user asks for code, ensure it follows Godot 4 conventions.
@@ -100,6 +110,11 @@ Tool Usage:
 GDScript 2.0 Best Practices:
 - When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
 - Prefer explicit typing for all variable declarations and function signatures.
+
+Task Management:
+- Use `manage_todo_list` to stay organized. 
+- Break down the request into steps and track them.
+- STAY within the limits of your defined TODO list; do not drift from the current task until it is completed.
 
 Surgical Editing Rules:
 - When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
@@ -132,8 +147,9 @@ Your goal is to understand complex user requests and design a robust implementat
 Rules:
 1. Analyze the request and the current project context.
 2. Provide a step-by-step implementation plan.
-3. DO NOT implement the code or call tools that modify the project.
-4. End your response by asking the user if they want to proceed with this plan.
+3. Suggest a TODO list structure using `manage_todo_list` that the Technician can use.
+4. DO NOT implement the code or call tools that modify the project.
+5. End your response by asking the user if they want to proceed with this plan.
 
 The goal is to allow a Technician model to handle the actual implementation once the plan is approved.
 
@@ -153,8 +169,11 @@ Your goal is to execute specific technical tasks and tool calls.
 
 Rules:
 1. Perform the requested implementation or tool calls as efficiently as possible.
-2. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
-3. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
+2. Use `manage_todo_list` to track your progress based on the Analyst's plan or your own breakdown.
+3. Update the TODO list (mark items as done) as you complete each step.
+4. STAY within the limits of your current task.
+5. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
+6. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
 
 GDScript 2.0 Best Practices:
 - When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
@@ -290,7 +309,7 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int, discove
 
 
 ## Build the tools array based on node configuration.
-static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false, enable_hierarchy: bool = false) -> Array[Dictionary]:
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false, enable_hierarchy: bool = false, enable_todo: bool = false) -> Array[Dictionary]:
 	var tools: Array[Dictionary] = []
 	
 	if enable_docs:
@@ -319,6 +338,10 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 	
 	if enable_hierarchy:
 		var tool = load("res://addons/ai_assistant/tools/explore_node_hierarchy_tool.gd").new()
+		tools.append(tool.get_definition())
+	
+	if enable_todo:
+		var tool = load("res://addons/ai_assistant/tools/manage_todo_list_tool.gd").new()
 		tools.append(tool.get_definition())
 	
 	# Always include activate_skill if skills are supported/enabled
