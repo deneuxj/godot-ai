@@ -53,21 +53,31 @@ func execute(args: Dictionary) -> Variant:
 
 	var operation: String = args.get("operation", "")
 	var stack: Array = context_node.todo_stack.duplicate(true)
+	
+	# Extract nested params for robustness (some LLMs wrap arguments)
+	var params: Dictionary = args.get("params", {})
+	
+	var title: String = args.get("title", "")
+	if title.is_empty():
+		title = params.get("title", "")
+		
+	var tasks_input = args.get("tasks", [])
+	if tasks_input.is_empty():
+		tasks_input = params.get("tasks", [])
 
 	var result: Variant = null
 	match operation:
 		"push":
-			var title: String = args.get("title", "")
 			if title.is_empty():
 				result = {"error": "Title is required for 'push' operation."}
 			else:
 				var tasks: Array[Dictionary] = []
-				for task_text in args.get("tasks", []):
+				for task_text in tasks_input:
 					tasks.append({"text": task_text, "done": false})
 				var new_list: Dictionary = {"title": title, "tasks": tasks}
 				stack.append(new_list)
 				context_node.todo_stack = stack
-				result = {"success": true, "message": "TODO list '%s' pushed onto stack." % title, "current_stack_depth": stack.size()}
+				result = {"success": true, "message": "TODO list '%s' pushed onto stack with %d tasks." % [title, tasks.size()], "current_stack_depth": stack.size()}
 
 		"pop":
 			if stack.is_empty():
@@ -85,13 +95,22 @@ func execute(args: Dictionary) -> Variant:
 				var tasks: Array = current_list.tasks # Use untyped for modification
 				var updated_count := 0
 				
+				var add_tasks = args.get("add_tasks", [])
+				if add_tasks.is_empty(): add_tasks = params.get("add_tasks", [])
+				
+				var mark_done = args.get("mark_done", [])
+				if mark_done.is_empty(): mark_done = params.get("mark_done", [])
+				
+				var mark_undone = args.get("mark_undone", [])
+				if mark_undone.is_empty(): mark_undone = params.get("mark_undone", [])
+				
 				# Add tasks
-				for task_text in args.get("add_tasks", []):
+				for task_text in add_tasks:
 					tasks.append({"text": task_text, "done": false})
 					updated_count += 1
 					
 				# Mark done
-				for index in args.get("mark_done", []):
+				for index in mark_done:
 					if index >= 0 and index < tasks.size():
 						tasks[index]["done"] = true
 						updated_count += 1
@@ -99,7 +118,7 @@ func execute(args: Dictionary) -> Variant:
 						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, current_list.title, tasks.size()]})
 						
 				# Mark undone
-				for index in args.get("mark_undone", []):
+				for index in mark_undone:
 					if index >= 0 and index < tasks.size():
 						tasks[index]["done"] = false
 						updated_count += 1
