@@ -137,7 +137,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	# Prepare the initial list of tools
 	var all_tools = _build_all_tools(tools)
 	
-	const MAX_TOOL_LOOPS = 5
+	const MAX_TOOL_LOOPS = 20
 	for i in range(MAX_TOOL_LOOPS):
 		var result = await client.chat_stream(current_messages, all_tools)
 		

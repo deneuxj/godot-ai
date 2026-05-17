@@ -23,6 +23,11 @@ Rules:
 - GDScript in Godot 4 DOES NOT support nested functions. Define all your logic in top-level functions (e.g., `build()`).
 - Do NOT output any explanation unless it's outside the code block.
 
+Efficiency and Limits:
+- You have a strict limit of 20 tool calls per turn. 
+- Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
+- Batch your investigations: if you need to read multiple files, do so as quickly as possible without intermediate "ready to proceed" messages.
+
 GDScript 2.0 Best Practices:
 - When using functions like get(), load(), or Dictionary.get(), always provide an explicit static type (e.g., `var x: int = ...`) instead of using inference (`:=`).
 - Prefer explicit typing for all variable declarations and function signatures.
@@ -79,6 +84,11 @@ Rules:
 - Implement `_ready()` or other lifecycle methods as requested.
 - No explanation or extra text. Just the script content.
 
+Efficiency and Limits:
+- You have a strict limit of 20 tool calls per turn. 
+- Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
+- Batch your investigations: gather all required information before starting to write the script.
+
 GDScript 2.0 Best Practices:
 - When using functions like get(), load(), or Dictionary.get(), always provide an explicit static type (e.g., `var x: int = ...`) instead of using inference (`:=`).
 - Prefer explicit typing for all variable declarations and function signatures.
@@ -108,6 +118,11 @@ Tool Usage:
 - Use `modify_project_resource` to help the user by creating or editing files directly when requested.
 - Use `validate_project_resource` to check if scripts or resources have errors and help fix them.
 - When the user asks for code, ensure it follows Godot 4 conventions.
+
+Efficiency and Limits:
+- You have a strict limit of 20 tool calls per turn. 
+- Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
+- Batch your investigations: gather all data (docs, files, hierarchy) in as few turns as possible to provide a comprehensive answer quickly.
 
 GDScript 2.0 Best Practices:
 - When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
@@ -177,6 +192,11 @@ Rules:
 4. STAY within the limits of your current top-most task.
 5. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
 6. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
+
+Efficiency and Limits:
+- You have a strict limit of 20 tool calls per turn. 
+- Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
+- Batch your actions: perform as many tool calls as possible in a single response to complete the task efficiently.
 
 GDScript 2.0 Best Practices:
 - When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
