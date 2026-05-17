@@ -111,6 +111,11 @@ layout_mode = 2
 tooltip_text = "Force context compression (prune old tool interactions and non-vital messages)"
 text = "Compress"
 
+[node name="CopyContextButton" type="Button" parent="MarginContainer/VBoxContainer/StatusRow"]
+layout_mode = 2
+tooltip_text = "Copy the last sent context (JSON) to the clipboard"
+text = "Copy Context"
+
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/StatusRow"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2

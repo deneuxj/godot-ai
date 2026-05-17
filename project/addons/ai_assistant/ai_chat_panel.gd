@@ -24,6 +24,7 @@ var _current_node: AIChat = null
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
 @onready var _unload_button: Button = find_child("UnloadButton")
 @onready var _compress_button: Button = find_child("CompressButton")
+@onready var _copy_context_button: Button = find_child("CopyContextButton")
 @onready var _aggressive_check: CheckButton = find_child("AggressiveCompression")
 
 
@@ -46,6 +47,8 @@ func _on_ready() -> void:
 		_unload_button.pressed.connect(_on_unload_pressed)
 	if _compress_button:
 		_compress_button.pressed.connect(_on_compress_pressed)
+	if _copy_context_button:
+		_copy_context_button.pressed.connect(_on_copy_context_pressed)
 	if _aggressive_check:
 		_aggressive_check.toggled.connect(_on_aggressive_toggled)
 	if _attachment_dialog:
@@ -162,6 +165,13 @@ func _on_compress_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.compress_context(true)
 		_update_display()
+
+
+func _on_copy_context_pressed() -> void:
+	if is_instance_valid(_current_node):
+		var json = _current_node.get_last_context_json()
+		DisplayServer.clipboard_set(json)
+		_status_label.text = "Status: Context copied to clipboard"
 
 
 func _on_aggressive_toggled(toggled: bool) -> void:

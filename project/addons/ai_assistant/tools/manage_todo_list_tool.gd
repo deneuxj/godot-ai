@@ -20,46 +20,42 @@ func get_parameters() -> Dictionary:
 				"enum": ["create", "list", "update", "delete"],
 				"description": "The operation to perform."
 			},
-			"params": {
-				"type": "object",
-				"properties": {
-					"title": {
-						"type": "string",
-						"description": "The title of the TODO list."
-					},
-					"tasks": {
-						"type": "array",
-						"items": { "type": "string" },
-						"description": "Initial tasks for the 'create' operation."
-					},
-					"add_tasks": {
-						"type": "array",
-						"items": { "type": "string" },
-						"description": "New tasks to add for the 'update' operation."
-					},
-					"mark_done": {
-						"type": "array",
-						"items": { "type": "integer" },
-						"description": "Indices of tasks to mark as done (0-based) for the 'update' operation."
-					},
-					"mark_undone": {
-						"type": "array",
-						"items": { "type": "integer" },
-						"description": "Indices of tasks to mark as undone (0-based) for the 'update' operation."
-					}
-				},
-				"required": ["title"]
+			"title": {
+				"type": "string",
+				"description": "The title of the TODO list."
+			},
+			"tasks": {
+				"type": "array",
+				"items": { "type": "string" },
+				"description": "Initial tasks for the 'create' operation."
+			},
+			"add_tasks": {
+				"type": "array",
+				"items": { "type": "string" },
+				"description": "New tasks to add for the 'update' operation."
+			},
+			"mark_done": {
+				"type": "array",
+				"items": { "type": "integer" },
+				"description": "Indices of tasks to mark as done (0-based) for the 'update' operation."
+			},
+			"mark_undone": {
+				"type": "array",
+				"items": { "type": "integer" },
+				"description": "Indices of tasks to mark as undone (0-based) for the 'update' operation."
 			}
 		},
-		"required": ["operation", "params"]
+		"required": ["operation"]
 	}
 
 
 func execute(args: Dictionary) -> Variant:
 	var operation: String = args.get("operation", "")
-	var params: Dictionary = args.get("params", {})
-	var title: String = params.get("title", "")
-
+	# Support both flat and (legacy) nested params for robustness
+	var title: String = args.get("title", "")
+	if title.is_empty() and args.has("params"):
+		title = args.params.get("title", "")
+	
 	if title.is_empty() and operation != "list":
 		return JSON.stringify({"error": "Title is required for this operation."})
 
@@ -72,7 +68,11 @@ func execute(args: Dictionary) -> Variant:
 				result = {"error": "A TODO list with this title already exists."}
 			else:
 				var tasks: Array = []
-				for task_text in params.get("tasks", []):
+				var tasks_list = args.get("tasks", [])
+				if tasks_list.is_empty() and args.has("params"):
+					tasks_list = args.params.get("tasks", [])
+					
+				for task_text in tasks_list:
 					tasks.append({"text": task_text, "done": false})
 				todos[title] = tasks
 				_save_todos(todos)
@@ -93,13 +93,22 @@ func execute(args: Dictionary) -> Variant:
 				var tasks: Array = todos[title]
 				var updated_count := 0
 				
+				var add_tasks = args.get("add_tasks", [])
+				var mark_done = args.get("mark_done", [])
+				var mark_undone = args.get("mark_undone", [])
+				
+				if args.has("params"):
+					if add_tasks.is_empty(): add_tasks = args.params.get("add_tasks", [])
+					if mark_done.is_empty(): mark_done = args.params.get("mark_done", [])
+					if mark_undone.is_empty(): mark_undone = args.params.get("mark_undone", [])
+				
 				# Add tasks
-				for task_text in params.get("add_tasks", []):
+				for task_text in add_tasks:
 					tasks.append({"text": task_text, "done": false})
 					updated_count += 1
 					
 				# Mark done
-				for index in params.get("mark_done", []):
+				for index in mark_done:
 					if index >= 0 and index < tasks.size():
 						tasks[index]["done"] = true
 						updated_count += 1
@@ -107,7 +116,7 @@ func execute(args: Dictionary) -> Variant:
 						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, title, tasks.size()]})
 						
 				# Mark undone
-				for index in params.get("mark_undone", []):
+				for index in mark_undone:
 					if index >= 0 and index < tasks.size():
 						tasks[index]["done"] = false
 						updated_count += 1

@@ -111,6 +111,19 @@ var last_error: String = "":
 @export_multiline
 var generated_code: String = ""
 
+## Toggle this to dump the last sent context to res://.gemini/tmp/last_context.json
+@export
+var debug_dump_context: bool = false:
+	set(value):
+		if value:
+			dump_context_to_file()
+		debug_dump_context = false
+
+## Stores the full message array (including system prompt and tools) sent to the AI.
+var last_context: Array[Dictionary] = []
+## Stores the tool definitions sent in the last request.
+var last_tools: Array[Dictionary] = []
+
 
 # --- Internal status tracking (not exported) ---
 
@@ -172,6 +185,11 @@ func generate() -> void:
 	for attempt in range(max_retries):
 		# Call AI.
 		status_message = "Generating... (attempt %d/%d)" % [attempt + 1, max_retries]
+		
+		# DEBUG: Store initial context
+		last_context = messages
+		last_tools = tools
+		
 		content = await _call_ai(messages, tools)
 		
 		# Sync back session state
@@ -180,6 +198,9 @@ func generate() -> void:
 		
 		# Update history with tool calls and intermediate responses
 		messages.append_array(_active_handler.new_messages)
+		
+		# DEBUG: Update last_context with tool interactions
+		last_context = messages.duplicate()
 		
 		# Immediately update the code property so the user can see it.
 		var extracted_code := ScriptExecutor.extract_code(content)
@@ -268,6 +289,33 @@ func activate_skill(skill_name: String) -> String:
 	activated_skill_ids = _active_handler._activated_skill_ids
 	
 	return result
+
+
+## Returns the last sent context (messages + tools) as a formatted JSON string.
+func get_last_context_json() -> String:
+	var data := {
+		"messages": last_context,
+		"tools": last_tools,
+		"model": model,
+		"api_endpoint": api_endpoint
+	}
+	return JSON.stringify(data, "\t")
+
+
+## Dumps the last context to a file for debugging.
+func dump_context_to_file() -> void:
+	var dir := "res://.gemini/tmp"
+	if not DirAccess.dir_exists_absolute(dir):
+		DirAccess.make_dir_recursive_absolute(dir)
+	
+	var path := dir + "/last_context.json"
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file:
+		file.store_string(get_last_context_json())
+		file.close()
+		print("AIAgentAssisted3D: Context dumped to " + path)
+	else:
+		push_error("AIAgentAssisted3D: Failed to open file for context dump: " + path)
 
 
 # --- AI call ---

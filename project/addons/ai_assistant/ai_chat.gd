@@ -152,6 +152,19 @@ var debug_clear_history: bool = false:
 			print("AIChat: History cleared.")
 		debug_clear_history = false
 
+## Toggle this to dump the last sent context to res://.gemini/tmp/last_context.json
+@export
+var debug_dump_context: bool = false:
+	set(value):
+		if value:
+			dump_context_to_file()
+		debug_dump_context = false
+
+## Stores the full message array (including system prompt and tools) sent to the AI.
+var last_context: Array[Dictionary] = []
+## Stores the tool definitions sent in the last request.
+var last_tools: Array[Dictionary] = []
+
 
 ## Send a message to the AI and trigger a streaming response.
 ## The [param prompt] is appended to the [member chat_history] as a user message.
@@ -361,6 +374,10 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	handler._active_tools = session_tools
 	handler._activated_skill_ids = activated_skill_ids
 	
+	# DEBUG: Store initial context
+	last_context = final_messages
+	last_tools = tools
+	
 	request_handler_created.emit(handler)
 	
 	# 5. Connect signals.
@@ -372,6 +389,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 	# 6. Execute request.
 	var response = await handler.execute(final_messages, tools)
+	
+	# Update last_context with all messages including tool results
+	last_context = final_messages.duplicate()
+	for msg in handler.new_messages:
+		last_context.append(msg)
 	
 	# 7. Cleanup and finish.
 	if _is_cancelled or handler.was_cancelled():
@@ -464,6 +486,33 @@ func clear_history() -> void:
 	activated_skill_ids.clear()
 	session_tools.clear()
 	_update_context_length()
+
+
+## Returns the last sent context (messages + tools) as a formatted JSON string.
+func get_last_context_json() -> String:
+	var data := {
+		"messages": last_context,
+		"tools": last_tools,
+		"model": model,
+		"api_endpoint": api_endpoint
+	}
+	return JSON.stringify(data, "\t")
+
+
+## Dumps the last context to a file for debugging.
+func dump_context_to_file() -> void:
+	var dir := "res://.gemini/tmp"
+	if not DirAccess.dir_exists_absolute(dir):
+		DirAccess.make_dir_recursive_absolute(dir)
+	
+	var path := dir + "/last_context.json"
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file:
+		file.store_string(get_last_context_json())
+		file.close()
+		print("AIChat: Context dumped to " + path)
+	else:
+		push_error("AIChat: Failed to open file for context dump: " + path)
 
 
 ## Explicitly activate a skill for this session.

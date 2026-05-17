@@ -16,6 +16,7 @@ var _current_node: AIAgentAssisted3D = null
 @onready var _send_button: Button = find_child("SendButton")
 @onready var _cancel_button: Button = find_child("CancelButton")
 @onready var _clear_button: Button = find_child("ClearButton")
+@onready var _copy_context_button: Button = find_child("CopyContextButton")
 @onready var _status_label: Label = find_child("StatusLabel")
 @onready var _progress_bar: ProgressBar = find_child("ProgressBar")
 @onready var _code_view: CodeEdit = find_child("GeneratedOutput")
@@ -44,6 +45,8 @@ func _on_ready() -> void:
 		_cancel_button.pressed.connect(_on_cancel_pressed)
 	if _clear_button:
 		_clear_button.pressed.connect(_on_clear_pressed)
+	if _copy_context_button:
+		_copy_context_button.pressed.connect(_on_copy_context_pressed)
 
 
 func _on_exit_tree() -> void:
@@ -125,6 +128,13 @@ func _on_clear_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.prompt = ""
 		_prompt_text_edit.text = ""
+
+
+func _on_copy_context_pressed() -> void:
+	if is_instance_valid(_current_node):
+		var json = _current_node.get_last_context_json()
+		DisplayServer.clipboard_set(json)
+		_status_label.text = "Status: Context copied to clipboard"
 
 
 # --- Progress / Output display ---
