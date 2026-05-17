@@ -47,11 +47,18 @@ func execute(arguments: Dictionary) -> String:
 	if not path.begins_with("res://"):
 		path = "res://" + path
 
-	if not FileAccess.file_exists(path):
+	var is_empty_file = false
+	if FileAccess.file_exists(path):
+		var file = FileAccess.open(path, FileAccess.READ)
+		if file:
+			is_empty_file = file.get_length() == 0
+			file.close()
+
+	if not FileAccess.file_exists(path) or is_empty_file:
 		if old_content.is_empty():
 			return _create_new_file(path, new_content)
 		else:
-			return "Error: File '%s' does not exist and old_content was not empty." % path
+			return "Error: File '%s' is empty or does not exist, but old_content was not empty. Use an empty old_content string to create new files." % path
 
 	return _patch_existing_file(path, target_line, old_content, new_content)
 

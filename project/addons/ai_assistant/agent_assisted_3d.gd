@@ -13,6 +13,7 @@ class_name AIAgentAssisted3D
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 const AIRequestHandler = preload("res://addons/ai_assistant/ai_client/ai_request_handler.gd")
 const AISkillNode = preload("res://addons/ai_assistant/skills/ai_skill_node.gd")
+const PromptBuilder = preload("res://addons/ai_assistant/generator/prompt_builder.gd")
 
 
 enum GenerationStatus {
@@ -289,6 +290,7 @@ func is_busy() -> bool:
 func activate_skill(skill_name: String) -> String:
 	if not _active_handler:
 		_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+		_active_handler.prompt_provider = PromptBuilder.create_scene_builder_provider(self)
 		_active_handler._active_tools = session_tools
 		_active_handler._activated_skill_ids = activated_skill_ids
 		
@@ -333,6 +335,7 @@ func dump_context_to_file() -> void:
 
 func _call_ai(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> String:
 	var handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+	handler.prompt_provider = PromptBuilder.create_scene_builder_provider(self)
 	_active_handler = handler
 	
 	# Sync session state

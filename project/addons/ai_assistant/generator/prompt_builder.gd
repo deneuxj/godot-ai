@@ -9,6 +9,86 @@ class_name PromptBuilder
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 
 
+# --- System Prompt Providers (OO Architecture) ---
+
+## Base class for objects that can dynamically build a system prompt.
+class SystemPromptProvider extends RefCounted:
+	## Returns the full system prompt string, optionally injected with turn info.
+	func get_system_prompt(_remaining_turns: int = -1) -> String:
+		return ""
+
+
+## Provider for simple, static system prompts (e.g. classification, routing).
+class SimpleProvider extends SystemPromptProvider:
+	var base_prompt: String = ""
+	
+	func _init(p_prompt: String) -> void:
+		base_prompt = p_prompt
+		
+	func get_system_prompt(remaining_turns: int = -1) -> String:
+		if remaining_turns >= 0:
+			return PromptBuilder.inject_turn_info(base_prompt, remaining_turns)
+		return base_prompt
+
+
+## Provider for dynamic chat prompts that include project context.
+class ChatProvider extends SystemPromptProvider:
+	var chat_node: Node # AIChat
+	
+	func _init(p_node: Node) -> void:
+		chat_node = p_node
+		
+	func get_system_prompt(remaining_turns: int = -1) -> String:
+		if not is_instance_valid(chat_node):
+			return ""
+			
+		var active_prompt = chat_node.get("active_system_prompt")
+		var todo_stack = chat_node.get("todo_stack")
+		var discovered_skills = chat_node.call("_discover_active_skills")
+		
+		var base = PromptBuilder.get_chat_prompt(active_prompt)
+		var env = PromptBuilder.get_environment_context()
+		var skills = PromptBuilder.get_skills_discovery_context(discovered_skills)
+		var todos = PromptBuilder._get_todo_context(todo_stack)
+		
+		var final_prompt = base + env + skills + todos
+		if remaining_turns >= 0:
+			final_prompt = PromptBuilder.inject_turn_info(final_prompt, remaining_turns)
+		return final_prompt
+
+
+## Provider for dynamic scene/script generation prompts.
+class SceneBuilderProvider extends SystemPromptProvider:
+	var builder_node: Node # AIAgentAssisted3D
+	
+	func _init(p_node: Node) -> void:
+		builder_node = p_node
+		
+	func get_system_prompt(remaining_turns: int = -1) -> String:
+		if not is_instance_valid(builder_node):
+			return ""
+			
+		var mode = builder_node.get("generation_mode")
+		var todo_stack = builder_node.get("todo_stack")
+		var discovered_skills = builder_node.call("_discover_active_skills")
+		
+		return PromptBuilder._get_system_prompt(mode, discovered_skills, todo_stack, remaining_turns)
+
+
+# --- Factory Methods ---
+
+static func create_simple_provider(prompt: String) -> SimpleProvider:
+	return SimpleProvider.new(prompt)
+
+static func create_chat_provider(chat_node: Node) -> ChatProvider:
+	return ChatProvider.new(chat_node)
+
+static func create_scene_builder_provider(builder_node: Node) -> SceneBuilderProvider:
+	return SceneBuilderProvider.new(builder_node)
+
+
+# --- Constants & Static Helpers ---
+
 ## System prompt for generating GDScripts that construct a node hierarchy.
 const SCRIPTED_SCENE_SYSTEM_PROMPT := """\
 You are a Godot 4 scene builder assistant.
@@ -225,15 +305,31 @@ Formatting:
 
 ## System prompt for routing requests between Analyst and Technician models.
 const ROUTER_SYSTEM_PROMPT := """\
-You are a workload classifier. Your job is to categorize the user's latest request and decide if high reasoning effort is needed.
+[SYSTEM: CLASSIFICATION MACHINE]
+You are a binary classification algorithm. You are NOT an AI assistant.
+Your ONLY function is to categorize the [LATEST_USER_REQUEST] in the provided transcript.
 
-1. analyst: The request is complex, involves high-level reasoning, architectural planning, or multi-step strategy. Use this for "how should I structure..." or "design a system for..." type questions.
-2. technician: The request is straightforward, involves implementing a specific feature, writing code for a known task, or using tools to perform project operations. Use this for "write a script that..." or "list the files in..." type questions. Also, use this for any request to FIX errors, debug code, or iterate on a previous implementation.
+[RULES]
+1. DO NOT fulfill the user's request.
+2. DO NOT design anything.
+3. DO NOT output JSON.
+4. DO NOT explain your decision.
+5. ONLY output one of the four valid strings.
 
-Thinking Effort:
-If the request involves deep logical thinking, complex mathematics, or abstract problem-solving that would benefit from high reasoning effort, append ":on" to your answer.
+[ROLES]
+- analyst: User wants to "DESIGN", "PLAN", "STRUCTURE", or "RESEARCH" (Architectural/Abstract).
+- technician: User wants to "IMPLEMENT", "WRITE CODE", "FIX", or "RUN" (Technical/Execution).
 
-Respond with ONLY: "analyst", "analyst:on", "technician", or "technician:on". No other text.
+[THINKING]
+Append ":on" (e.g., "analyst:on") if the request involves complex math or logic.
+
+[EXAMPLES]
+- user said: "Design a wall skill" -> analyst:on
+- user said: "Fix my script" -> technician
+- user said: "How should I structure my levels?" -> analyst
+
+[OUTPUT]
+Respond with EXACTLY one string: analyst, analyst:on, technician, or technician:on.
 """
 
 

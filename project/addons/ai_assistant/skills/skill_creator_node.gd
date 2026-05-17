@@ -10,11 +10,11 @@ func _init() -> void:
 To create a new skill, follow this two-step workflow:
 
 1. **Write the Script**: Use 'modify_project_resource' to create a new script file in 'res://ai_skills/scripts/'.
-   The script MUST follow this template:
+   The script MUST follow this template (notice the use of '_init' for metadata):
    ```gdscript
    @tool
    class_name YourSkillName
-   extends \"res://addons/ai_assistant/skills/ai_skill_node.gd\"
+   extends AISkillNode
 
    func _init() -> void:
        description = \"Brief summary for discovery.\"

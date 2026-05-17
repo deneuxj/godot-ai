@@ -2,6 +2,14 @@
 ##
 ## A skill node contains instructions, tool definitions, and implementation logic.
 ## It is discovered by AI nodes (like AIChat) in the scene tree.
+##
+## [b]CRITICAL FOR AI GENERATION:[/b]
+## 1. When creating a subclass of AISkillNode via script, you MUST initialize 
+##    the 'description', 'definition', and 'tools' variables inside the 
+##    [code]_init()[/code] function. Do NOT assign them in the class body.
+## 2. To instantiate a new skill in the scene, you should use the 
+##    [code]SkillCreatorNode[/code] skill (use [code]activate_skill("SkillCreatorNode")[/code] 
+##    to see the full two-step workflow).
 
 @tool
 class_name AISkillNode

@@ -41,6 +41,9 @@ var reasoning: String = ""
 ## Max tokens override. If 0, uses project settings.
 var max_tokens: int = 0
 
+## The object responsible for dynamically building and updating the system prompt.
+var prompt_provider: PromptBuilder.SystemPromptProvider = null
+
 ## If set, this client will be used instead of creating a real one.
 var mock_client: AIClient = null
 
@@ -138,32 +141,20 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	var all_tools = _build_all_tools(tools)
 	
 	const MAX_TOOL_LOOPS = 20
+	var hit_limit := true
 	for i in range(MAX_TOOL_LOOPS):
 		var remaining = MAX_TOOL_LOOPS - i
 		
-		# Update system prompt with fresh TODO stack and remaining turns
-		if not current_messages.is_empty() and current_messages[0].role == "system":
-			var todo_stack = _parent.get("todo_stack") if "todo_stack" in _parent else []
-			
-			# If it's the very first loop, we might need to inject the initial turn count
-			# If it's a subsequent loop, we REBUILD the system prompt to reflect the new TODO state.
-			# Note: We assume AIChat and AIAgentAssisted3D provide access to their base system prompt or mode.
-			var updated_system_prompt := ""
-			if _parent is AIChat:
-				var discovered_skills = _parent._discover_active_skills()
-				var active_prompt = _parent.active_system_prompt
-				updated_system_prompt = PromptBuilder.get_chat_prompt(active_prompt) + PromptBuilder.get_environment_context() + PromptBuilder.get_skills_discovery_context(discovered_skills) + PromptBuilder._get_todo_context(todo_stack)
-			elif _parent.has_method("generate"): # Assume AIAgentAssisted3D or similar
-				var discovered_skills = _parent._discover_active_skills()
-				var mode = _parent.get("generation_mode") if "generation_mode" in _parent else 0
-				updated_system_prompt = PromptBuilder._get_system_prompt(mode, discovered_skills, todo_stack)
-			
+		# Update system prompt with fresh context via the prompt_provider
+		if prompt_provider and not current_messages.is_empty() and current_messages[0].role == "system":
+			var updated_system_prompt = prompt_provider.get_system_prompt(remaining)
 			if not updated_system_prompt.is_empty():
-				current_messages[0].content = PromptBuilder.inject_turn_info(updated_system_prompt, remaining)
+				current_messages[0].content = updated_system_prompt
 
 		var result = await client.chat_stream(current_messages, all_tools)
 		
 		if _cancelled:
+			hit_limit = false
 			break
 			
 		if typeof(result) == TYPE_DICTIONARY and result.has("tool_calls"):
@@ -202,15 +193,18 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			if skills_updated:
 				all_tools = _build_all_tools(tools)
 				
-			if _cancelled: break
+			if _cancelled: 
+				hit_limit = false
+				break
 			# Continue loop to send tool results back to AI
 			continue
 		else:
 			final_response = str(result)
+			hit_limit = false
 			break
 			
 	# If we exited the loop naturally (hit MAX_TOOL_LOOPS), check if we need to provide a final response
-	if final_response.is_empty() and not _cancelled:
+	if hit_limit and not _cancelled:
 		final_response = "[color=orange][i]Limit of %d tool calls reached for this turn. Please type 'Continue' to proceed.[/i][/color]" % MAX_TOOL_LOOPS
 
 	if not final_response.is_empty():

@@ -123,6 +123,11 @@ var editor_interface: EditorInterface = null
 @export
 var chat_history: Array[Dictionary] = []
 
+## Log of routing decisions for debugging: 
+## [{"timestamp": "...", "prompt": "...", "raw_response": "...", "decision": "...", "reasoning_on": bool}]
+@export
+var routing_history: Array[Dictionary] = []
+
 ## Map of tool_name -> AITool instance (persists for session)
 var session_tools: Dictionary = {}
 ## IDs of skills that have been activated in this session.
@@ -258,59 +263,76 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				filtered_history.append(new_msg)
 			
 			# Present the context as a single text block to keep the router in an observer role
-			var presentation := ""
+			var presentation := "[TRANSCRIPT_START]\n"
 			var slice_start = max(0, filtered_history.size() - 6)
 			for i in range(slice_start, filtered_history.size()):
 				var msg = filtered_history[i]
-				presentation += "%s said: %s\n" % [msg.role, msg.get("content", "")]
-			
-			presentation += "\nWhat role is best suited for answering the last request from the user? Answer with a single word: analyst or technician"
-			
+				presentation += "%s: %s\n" % [msg.role.to_upper(), msg.get("content", "")]
+			presentation += "[TRANSCRIPT_END]\n\n"
+			presentation += "Decision:"
+
 			routing_messages.append({"role": "user", "content": presentation})
-			
+
 			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
+			router_handler.prompt_provider = PromptBuilder.create_simple_provider(PromptBuilder.get_router_prompt(router_system_prompt))
 			router_handler.max_tokens = 64 # Small response for routing
+
 			router_handler.mock_client = mock_client
 			_active_handler = router_handler
-			
+
 			# Ensure router model is loaded
 			await router_handler.load_model(router_model)
 			if _is_cancelled or router_handler.was_cancelled():
 				_cleanup_after_cancel()
 				return
-			
+
 			var workload_raw := await router_handler.execute(routing_messages)
 			if _is_cancelled or router_handler.was_cancelled():
 				_cleanup_after_cancel()
 				return
-				
+
 			var workload = workload_raw.strip_edges().to_lower()
-			
+
+			# Default to technician if the router is silent or confused
+			if workload.is_empty():
+				workload = "technician"
+
 			var reasoning_val := ""
 			if workload.contains(":on"):
 				reasoning_val = "on"
 				workload = workload.replace(":on", "")
-			
+
+			# Log the routing decision
+			routing_history.append({
+				"timestamp": Time.get_datetime_string_from_system(),
+				"prompt": presentation.strip_edges(),
+				"raw_response": workload_raw,
+				"decision": workload,
+				"reasoning_on": not reasoning_val.is_empty()
+			})
+
 			if workload.contains("analyst"):
+
 				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
 				active_system_prompt = PromptBuilder.get_analyst_prompt(analyst_system_prompt)
-				
+
 				# REQ-LMSTUDIO-0004: Set analyst reasoning to "off" by default for Qwen.
 				if reasoning_val.is_empty():
 					reasoning_val = "off"
-					
+
 				status_updated.emit("Thinking...")
 			elif workload.contains("technician"):
 				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
 				active_system_prompt = PromptBuilder.get_technician_prompt(technician_system_prompt)
-				
+
 				# Disable reasoning for technician to avoid formatting issues (XML/stop) with Qwen
 				reasoning_val = "off"
-				
+
 				status_updated.emit("Implementing...")
 			else:
-				push_warning("AIChat: Router returned unrecognized workload: " + workload_raw)
+				push_warning("AIChat: Router returned unrecognized or empty workload. Defaulting to base model. Response: '" + workload_raw + "'")
 				final_model = AISettings.get_string(AISettings.CONN, "model")
+
 				if final_model.is_empty():
 					final_model = AISettings.get_string(AISettings.CONN, "technician_model")
 			
@@ -374,6 +396,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		status_updated.emit("Generating...")
 	
 	var handler := AIRequestHandler.new(self, api_endpoint, api_key, final_model)
+	handler.prompt_provider = PromptBuilder.create_chat_provider(self)
 	
 	# Disable reasoning if using tools and model is likely Qwen (lm-studio or local-model)
 	if not tools.is_empty() and (final_model.to_lower().contains("qwen") or api_endpoint.contains("localhost") or api_endpoint.is_empty()):
@@ -497,6 +520,7 @@ func unload_model(model_id: String = "") -> void:
 ## Reset the conversation history and all session state (including skills).
 func clear_history() -> void:
 	chat_history.clear()
+	routing_history.clear()
 	activated_skill_ids.clear()
 	session_tools.clear()
 	todo_stack = []
@@ -508,6 +532,7 @@ func get_last_context_json() -> String:
 	var data := {
 		"messages": last_context,
 		"tools": last_tools,
+		"routing_history": routing_history,
 		"model": model,
 		"api_endpoint": api_endpoint
 	}
@@ -534,6 +559,7 @@ func dump_context_to_file() -> void:
 func activate_skill(skill_name: String) -> String:
 	if not _active_handler:
 		_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
+		_active_handler.prompt_provider = PromptBuilder.create_chat_provider(self)
 		_active_handler.mock_client = mock_client
 		_active_handler._active_tools = session_tools
 		_active_handler._activated_skill_ids = activated_skill_ids
