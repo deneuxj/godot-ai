@@ -470,9 +470,11 @@ static func sanitize_history(messages: Array[Dictionary]) -> Array[Dictionary]:
 			
 		# Case A: Sequential messages of the same role
 		if msg.role == last.role and msg.role != "tool":
+			var last_content = last.get("content")
+			var msg_content = msg.get("content")
 			# Merge text content if possible
-			if typeof(last.content) == TYPE_STRING and typeof(msg.content) == TYPE_STRING:
-				last.content += "\n\n" + msg.content
+			if typeof(last_content) == TYPE_STRING and typeof(msg_content) == TYPE_STRING:
+				last.content = last_content + "\n\n" + msg_content
 				continue
 			# If content types differ or contain tool_calls, we might have to just insert a dummy role 
 			# but merging is safer for text.
