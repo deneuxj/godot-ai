@@ -24,6 +24,9 @@ signal status_updated(status: String)
 signal context_length_updated(tokens: int, characters: int)
 signal context_compressed()
 
+## Emitted when the hierarchical TODO stack is modified.
+signal todo_stack_updated(stack: Array[Dictionary])
+
 ## Emitted when a new AIRequestHandler is created but before execution.
 ## Use this to register dynamic tools or apply overrides.
 signal request_handler_created(handler: AIRequestHandler)
@@ -101,6 +104,13 @@ var active_skills: Array[String] = []
 
 
 # --- State ---
+
+## Hierarchical stack of TODO lists: [{"title": "...", "tasks": [{"text": "...", "done": bool}]}]
+@export
+var todo_stack: Array[Dictionary] = []:
+	set(value):
+		todo_stack = value
+		todo_stack_updated.emit(todo_stack)
 
 ## Reference to the EditorInterface (injected by the panel).
 var editor_interface: EditorInterface = null
@@ -333,10 +343,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	# Add skills discovery context to the system prompt
 	var discovered_skills = _discover_active_skills()
 	var skills_context = PromptBuilder.get_skills_discovery_context(discovered_skills)
+	var todo_context = PromptBuilder._get_todo_context(todo_stack)
 		
 	final_messages.append({
 		"role": "system", 
-		"content": base_system_prompt + PromptBuilder.get_environment_context() + skills_context
+		"content": base_system_prompt + PromptBuilder.get_environment_context() + skills_context + todo_context
 	})
 	
 	for msg in chat_history:
@@ -485,6 +496,7 @@ func clear_history() -> void:
 	chat_history.clear()
 	activated_skill_ids.clear()
 	session_tools.clear()
+	todo_stack = []
 	_update_context_length()
 
 
@@ -561,6 +573,9 @@ func get_context_length() -> Dictionary:
 	
 	# Add environment context
 	total_chars += PromptBuilder.get_environment_context().length()
+	
+	# Add TODO stack context
+	total_chars += PromptBuilder._get_todo_context(todo_stack).length()
 	
 	# Add tool definitions length
 	var tools = get_current_tool_definitions()

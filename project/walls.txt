@@ -1,23 +1,31 @@
-🧱 WALL LISTING - GROUND LEVEL (Y=0) / HEIGHT=2.5m
+🧱 WALL LISTING - GROUND LEVEL (Y=1.338162m) / HEIGHT=2.5m
+
+Coordinate System:
+- Origin (0, 0, 0) is at the **top-left of the Garage**
+- X-axis: horizontal movement (right is positive)
+- Y-axis: vertical movement (up is positive, floor to ceiling height ~2.8m)
+- Z-axis: depth perpendicular to screen (into/out of screen)
+- All dimensions in meters
+- Conversion: 1m = 1 Godot unit
 
 ---
 1. GARAGE-SEJOUR [Thick Wall 0.5m]
-   Position: (6.00, 0.00, 3.67)
+   Position: (-6.713515, 1.338162, -0.03118)
    Size: 4.15 × 2.50 m
 
 ---
 2. SEJOUR-CELIER [Thin Wall 0.2m]
-   Position: (8.94, 0.00, 2.47)
+   Position: (-3.920682, 1.338162, -2.254916)
    Size: 4.80 × 2.50 m
 
 ---
 3. CUISINE-CHAMBRE_GAUCHE [Thin Wall 0.1m]
-   Position: (16.25, 0.00, 4.20)
+   Position: (4.107538, 1.338162, -0.57118)
    Size: 5.10 × 2.50 m
 
 ---
 4. CHAMBRE_GAUCHE-CHAMBRE_DROITE [Shared Thin Wall 0.1m]
-   Position: (19.41, 0.00, 4.30)
+   Position: (7.265432, 1.338162, -0.504864)
    Size: 5.10 × 2.50 m
 
 ---

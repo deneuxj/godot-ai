@@ -140,7 +140,10 @@ REQ-EDITOR-0008: The `AIChat` editor UI shall provide granular status feedback b
   - "Thinking": When the Analyst model (complex reasoning) is active.
   - "Implementing": When the Technician model (tool use/implementation) is active.
 
-REQ-EDITOR-0009: AI generation shall be persistent and shall not be interrupted when the user switches between scenes, closes the scene tab containing the active AIChat node, or performs other tasks in the editor. The process must continue in the background until completion, error, or manual cancellation.
+REQ-EDITOR-0009: AI generation shall be persistent and shall not be interrupted when the user switches between scenes, closes the scene tab containing the active assistant node, or performs other tasks in the editor. The process must continue in the background until completion, error, or manual cancellation.
+
+REQ-EDITOR-0010: The `AIChat` editor UI shall display the current status of the AI's TODO stack, highlighting the active task and overall progress.
+
 
 ### Persistence
 
@@ -199,12 +202,11 @@ REQ-TOOL-0010: Provide a tool `explore_node_hierarchy` that allows the AI to:
   - Retrieve the properties, their types, and current values for a specific node.
   - The tool shall support navigating the hierarchy relative to the node that initiated the request.
 
-REQ-TOOL-0011: Provide a tool `manage_todo_list` that allows the AI to:
-  - Create a new TODO list with a title and initial tasks.
-  - Query the status of tasks in a specific TODO list or list all available TODO lists.
-  - Mark specific tasks as completed or uncompleted.
-  - Add new tasks to an existing list.
-  - Delete or close a TODO list.
+REQ-TOOL-0011: Provide a tool `manage_todo_list` that allows the AI to manage a hierarchical stack of TODO lists.
+  - The tool shall support `push` (create and add to stack), `pop` (remove top), and `cancel_stack` (clear all) operations.
+  - Each TODO list on the stack shall have a title and a list of tasks (text and completion status).
+  - The tool shall allow updating tasks (add, mark done/undone) on the current (top) list.
+  - The stack structure shall be persisted in the AI node's exported data (`todo_stack` property), ensuring it survives editor reloads and scene saves.
 
 ### AI Skills
 

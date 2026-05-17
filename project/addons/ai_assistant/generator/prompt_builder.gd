@@ -39,11 +39,13 @@ Tool Usage:
 - DO NOT guess property names or resource paths. Verify them using tools first.
 
 Task Management:
-- For complex requests, ALWAYS create a TODO list using `manage_todo_list` with operation `create`.
-- Break down the task into logical steps (e.g., 1. Research, 2. Design, 3. Implementation, 4. Validation).
-- Update the TODO list as you complete each step using operation `update`.
-- This helps you stay focused and ensures you don't skip essential parts of the user's request.
-- CONSTRAIN your execution to the current task in your TODO list.
+- For complex requests, ALWAYS maintain a TODO stack using `manage_todo_list`.
+- Use `push` to start a new sub-task with its own TODO list.
+- Use `update` to add tasks or mark them as done in the current (top-most) TODO list.
+- Use `pop` when a sub-task is completed or cancelled to return to the previous list.
+- Use `cancel_stack` if the entire plan needs to be discarded.
+- This helps you maintain context across deep task hierarchies and ensures you don't lose track of the parent goal.
+- CONSTRAIN your execution to the current task in the top-most list of your stack.
 
 Example:
 ```gdscript
@@ -112,9 +114,10 @@ GDScript 2.0 Best Practices:
 - Prefer explicit typing for all variable declarations and function signatures.
 
 Task Management:
-- Use `manage_todo_list` to stay organized. 
-- Break down the request into steps and track them.
-- STAY within the limits of your defined TODO list; do not drift from the current task until it is completed.
+- Use `manage_todo_list` to stay organized with a hierarchical stack.
+- `push` a new list for sub-tasks, `update` to track progress, and `pop` when done.
+- ALWAYS maintain a clear stack of what you are doing.
+- STAY within the limits of your top-most TODO list; do not drift from the current task until it is popped or updated.
 
 Surgical Editing Rules:
 - When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
@@ -169,9 +172,9 @@ Your goal is to execute specific technical tasks and tool calls.
 
 Rules:
 1. Perform the requested implementation or tool calls as efficiently as possible.
-2. Use `manage_todo_list` to track your progress based on the Analyst's plan or your own breakdown.
-3. Update the TODO list (mark items as done) as you complete each step.
-4. STAY within the limits of your current task.
+2. Use `manage_todo_list` to track your progress on a hierarchical stack.
+3. `push` the Analyst's plan steps as TODO lists, `update` tasks as you go, and `pop` when finished with a plan step.
+4. STAY within the limits of your current top-most task.
 5. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
 6. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
 
@@ -271,13 +274,13 @@ static func get_technician_prompt(override: String = "") -> String:
 
 
 ## Main entry point to build the AI conversation history.
-static func build(prompt: String, textures: Array[Texture2D], mode: int, discovered_skills: Array[Dictionary] = []) -> Array[Dictionary]:
+static func build(prompt: String, textures: Array[Texture2D], mode: int, discovered_skills: Array[Dictionary] = [], todo_stack: Array[Dictionary] = []) -> Array[Dictionary]:
 	var messages: Array[Dictionary] = []
 	
 	# 1. System Prompt
 	messages.append({
 		"role": "system",
-		"content": _get_system_prompt(mode, discovered_skills)
+		"content": _get_system_prompt(mode, discovered_skills, todo_stack)
 	})
 	
 	# 2. User Message
@@ -394,7 +397,7 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 
 
 ## Get the system prompt, checking the project setting override first.
-static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = []) -> String:
+static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = [], todo_stack: Array[Dictionary] = []) -> String:
 	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
 	var base_prompt := ""
 	
@@ -409,8 +412,26 @@ static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] =
 			
 	var env_context := get_environment_context()
 	var skills_context := get_skills_discovery_context(discovered_skills)
+	var todo_context := _get_todo_context(todo_stack)
 	
-	return base_prompt + env_context + skills_context
+	return base_prompt + env_context + skills_context + todo_context
+
+
+## Returns a string representing the current TODO stack for inclusion in the prompt.
+static func _get_todo_context(stack: Array[Dictionary]) -> String:
+	if stack.is_empty():
+		return ""
+		
+	var lines: Array[String] = ["\n\nCURRENT TODO STACK:"]
+	for i in range(stack.size()):
+		var list = stack[i]
+		var indent = "  ".repeat(i)
+		lines.append("%s- %s:" % [indent, list.title])
+		for task in list.tasks:
+			var status = "[x]" if task.done else "[ ]"
+			lines.append("%s  %s %s" % [indent, status, task.text])
+	
+	return "\n".join(lines)
 
 
 ## Returns a string describing the current execution environment.

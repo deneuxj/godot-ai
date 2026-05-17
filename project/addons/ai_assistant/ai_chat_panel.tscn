@@ -92,6 +92,14 @@ layout_mode = 2
 tooltip_text = "If enabled, tool calls and results are stripped from history after completion to save tokens."
 text = "Aggressive Compression"
 
+[node name="TodoRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TodoLabel" type="Label" parent="MarginContainer/VBoxContainer/TodoRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.984314, 0.737255, 0.0196078, 1)
+text = "TODO: None"
+
 [node name="StatusRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8

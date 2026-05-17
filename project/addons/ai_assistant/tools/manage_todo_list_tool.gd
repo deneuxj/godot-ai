@@ -1,14 +1,12 @@
 @tool
 extends AITool
 
-## Manage TODO lists for the AI agent.
-## Allows creating, listing, updating, and deleting TODO lists persisted in a JSON file.
-
-const TODO_FILE_PATH := "res://.ai_assistant/todos.json"
+## Manage hierarchical TODO stacks for the AI agent.
+## Allows pushing, popping, and updating TODO lists persisted in the AI node.
 
 func _init() -> void:
 	name = "manage_todo_list"
-	description = "Create and manage TODO lists to track progress on complex tasks. Break down the user's request into smaller, manageable TODO items. Before starting implementation, create a TODO list. Mark items as done as you complete them."
+	description = "Manage a hierarchical stack of TODO lists. Use 'push' to start a sub-task with its own TODOs, 'pop' when that sub-task is done, and 'update' to manage the current list."
 
 
 func get_parameters() -> Dictionary:
@@ -17,17 +15,17 @@ func get_parameters() -> Dictionary:
 		"properties": {
 			"operation": {
 				"type": "string",
-				"enum": ["create", "list", "update", "delete"],
+				"enum": ["push", "pop", "update", "list", "cancel_stack"],
 				"description": "The operation to perform."
 			},
 			"title": {
 				"type": "string",
-				"description": "The title of the TODO list."
+				"description": "The title of the TODO list (required for 'push')."
 			},
 			"tasks": {
 				"type": "array",
 				"items": { "type": "string" },
-				"description": "Initial tasks for the 'create' operation."
+				"description": "Initial tasks for the 'push' operation."
 			},
 			"add_tasks": {
 				"type": "array",
@@ -50,115 +48,76 @@ func get_parameters() -> Dictionary:
 
 
 func execute(args: Dictionary) -> Variant:
-	var operation: String = args.get("operation", "")
-	# Support both flat and (legacy) nested params for robustness
-	var title: String = args.get("title", "")
-	if title.is_empty() and args.has("params"):
-		title = args.params.get("title", "")
-	
-	if title.is_empty() and operation != "list":
-		return JSON.stringify({"error": "Title is required for this operation."})
+	if not context_node or not "todo_stack" in context_node:
+		return JSON.stringify({"error": "Tool context node does not support TODO stack."})
 
-	var todos := _load_todos()
+	var operation: String = args.get("operation", "")
+	var stack: Array = context_node.todo_stack.duplicate(true)
 
 	var result: Variant = null
 	match operation:
-		"create":
-			if todos.has(title):
-				result = {"error": "A TODO list with this title already exists."}
-			else:
-				var tasks: Array = []
-				var tasks_list = args.get("tasks", [])
-				if tasks_list.is_empty() and args.has("params"):
-					tasks_list = args.params.get("tasks", [])
-					
-				for task_text in tasks_list:
-					tasks.append({"text": task_text, "done": false})
-				todos[title] = tasks
-				_save_todos(todos)
-				result = {"success": true, "message": "TODO list '%s' created with %d tasks." % [title, tasks.size()]}
-
-		"list":
+		"push":
+			var title: String = args.get("title", "")
 			if title.is_empty():
-				result = {"todos": todos}
-			elif not todos.has(title):
-				result = {"error": "TODO list '%s' not found." % title}
+				result = {"error": "Title is required for 'push' operation."}
 			else:
-				result = {"title": title, "tasks": todos[title]}
+				var tasks: Array[Dictionary] = []
+				for task_text in args.get("tasks", []):
+					tasks.append({"text": task_text, "done": false})
+				var new_list: Dictionary = {"title": title, "tasks": tasks}
+				stack.append(new_list)
+				context_node.todo_stack = stack
+				result = {"success": true, "message": "TODO list '%s' pushed onto stack." % title, "current_stack_depth": stack.size()}
+
+		"pop":
+			if stack.is_empty():
+				result = {"error": "TODO stack is already empty."}
+			else:
+				var popped = stack.pop_back()
+				context_node.todo_stack = stack
+				result = {"success": true, "message": "TODO list '%s' popped from stack." % popped.title, "current_stack_depth": stack.size()}
 
 		"update":
-			if not todos.has(title):
-				result = {"error": "TODO list '%s' not found." % title}
+			if stack.is_empty():
+				result = {"error": "TODO stack is empty. Use 'push' to create a list first."}
 			else:
-				var tasks: Array = todos[title]
+				var current_list: Dictionary = stack.back()
+				var tasks: Array = current_list.tasks # Use untyped for modification
 				var updated_count := 0
 				
-				var add_tasks = args.get("add_tasks", [])
-				var mark_done = args.get("mark_done", [])
-				var mark_undone = args.get("mark_undone", [])
-				
-				if args.has("params"):
-					if add_tasks.is_empty(): add_tasks = args.params.get("add_tasks", [])
-					if mark_done.is_empty(): mark_done = args.params.get("mark_done", [])
-					if mark_undone.is_empty(): mark_undone = args.params.get("mark_undone", [])
-				
 				# Add tasks
-				for task_text in add_tasks:
+				for task_text in args.get("add_tasks", []):
 					tasks.append({"text": task_text, "done": false})
 					updated_count += 1
 					
 				# Mark done
-				for index in mark_done:
+				for index in args.get("mark_done", []):
 					if index >= 0 and index < tasks.size():
 						tasks[index]["done"] = true
 						updated_count += 1
 					else:
-						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, title, tasks.size()]})
+						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, current_list.title, tasks.size()]})
 						
 				# Mark undone
-				for index in mark_undone:
+				for index in args.get("mark_undone", []):
 					if index >= 0 and index < tasks.size():
 						tasks[index]["done"] = false
 						updated_count += 1
 					else:
-						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, title, tasks.size()]})
+						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, current_list.title, tasks.size()]})
 				
-				todos[title] = tasks
-				_save_todos(todos)
-				result = {"success": true, "message": "TODO list '%s' updated (%d changes)." % [title, updated_count], "tasks": tasks}
+				context_node.todo_stack = stack
+				result = {"success": true, "message": "TODO list '%s' updated (%d changes)." % [current_list.title, updated_count], "tasks": tasks}
 
-		"delete":
-			if not todos.has(title):
-				result = {"error": "TODO list '%s' not found." % title}
-			else:
-				todos.erase(title)
-				_save_todos(todos)
-				result = {"success": true, "message": "TODO list '%s' deleted." % title}
+		"list":
+			result = {"todo_stack": stack}
+
+		"cancel_stack":
+			stack.clear()
+			context_node.todo_stack = stack
+			result = {"success": true, "message": "TODO stack cleared."}
 
 		_:
 			result = {"error": "Unknown operation: %s" % operation}
 
 	return JSON.stringify(result)
-
-
-func _load_todos() -> Dictionary:
-	if not FileAccess.file_exists(TODO_FILE_PATH):
-		return {}
-	
-	var file := FileAccess.open(TODO_FILE_PATH, FileAccess.READ)
-	var content := file.get_as_text()
-	var json = JSON.new()
-	var error = json.parse(content)
-	if error == OK:
-		return json.data
-	return {}
-
-
-func _save_todos(todos: Dictionary) -> void:
-	# Ensure directory exists
-	var dir_path := TODO_FILE_PATH.get_base_dir()
-	if not DirAccess.dir_exists_absolute(dir_path):
-		DirAccess.make_dir_recursive_absolute(dir_path)
-		
-	var file := FileAccess.open(TODO_FILE_PATH, FileAccess.WRITE)
-	file.store_string(JSON.stringify(todos, "\t"))
