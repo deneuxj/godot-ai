@@ -2,6 +2,13 @@
 class_name ExtractWallsRoomsSkill
 extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
 
+# Helper function to normalize Y-axis rotation to nearest 90-degree increment
+static func _normalize_y_rotation(rotation: Vector3) -> float:
+	var y_rot = rotation.y
+	# Round to nearest multiple of 90 degrees
+	var normalized = round(y_rot / 90.0) * 90.0
+	return normalized
+
 func _init() -> void:
 	description = "Extracts walls and rooms information from the scene including positions, sizes, and relationships."
 	definition = """
@@ -108,11 +115,23 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 				var size = wall.mesh.size if wall.mesh != null else Vector3.ZERO
 				var rotation = wall.rotation_degrees
 				
+				# Normalize Y-axis rotation and handle 90-degree increments
+				var normalized_y_rot = _normalize_y_rotation(rotation)
+				var is_rotated_90 = int(abs(normalized_y_rot)) % 180 == 90
+				
+				# Swap X and Z dimensions for walls rotated by 90 or 270 degrees
+				if is_rotated_90:
+					size = Vector3(size.z, size.y, size.x)
+				
 				if format == "text":
 					result += "Wall: " + wall.name + "\n"
 					result += "  Position: " + str(pos) + "\n"
 					result += "  Size: " + str(size) + "\n"
 					result += "  Rotation: " + str(rotation) + "\n"
+					
+					# Warn if rotation is not a multiple of 90 degrees
+					if abs(normalized_y_rot - rotation.y) > 1.0:
+						result += "  [color=orange]Warning: Non-90° Y rotation detected (" + str(rotation.y) + "°)\n[/color]"
 					
 					if include_details and wall.has_meta("connected_to"):
 						result += "  Connected to: " + str(wall.get_meta("connected_to")) + "\n"
@@ -140,16 +159,23 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 				var size = room.mesh.size if room.mesh != null else Vector3.ZERO
 				var rotation = room.rotation_degrees
 				
+				# Normalize Y-axis rotation and handle 90-degree increments
+				var normalized_y_rot = _normalize_y_rotation(rotation)
+				var is_rotated_90 = int(abs(normalized_y_rot)) % 180 == 90
+				
+				# Swap X and Z dimensions for rooms rotated by 90 or 270 degrees
+				if is_rotated_90:
+					size = Vector3(size.z, size.y, size.x)
+				
 				if format == "text":
 					result += "Room: " + room.name + "\n"
 					result += "  Position: " + str(pos) + "\n"
 					result += "  Size: " + str(size) + "\n"
 					result += "  Rotation: " + str(rotation) + "\n"
 					
-					if include_details and room.has_meta("room_type"):
-						result += "  Type: " + str(room.get_meta("room_type")) + "\n"
-					if include_details and room.has_meta("room_id"):
-						result += "  ID: " + str(room.get_meta("room_id")) + "\n"
+					# Warn if rotation is not a multiple of 90 degrees
+					if abs(normalized_y_rot - rotation.y) > 1.0:
+						result += "  [color=orange]Warning: Non-90° Y rotation detected (" + str(rotation.y) + "°)\n[/color]"
 					
 					result += "\n"
 				else:
@@ -299,6 +325,12 @@ func export_walls_rooms_json(arguments: Dictionary) -> String:
 	if walls_node != null:
 		for wall in walls_node.get_children():
 			if wall is MeshInstance3D:
+				var wall_size = wall.mesh.size if wall.mesh != null else Vector3.ZERO
+				var wall_rot = wall.rotation_degrees
+				var norm_y = _normalize_y_rotation(wall_rot)
+				if int(abs(norm_y)) % 180 == 90:
+					wall_size = Vector3(wall_size.z, wall_size.y, wall_size.x)
+				
 				var wall_data = {
 					"name": wall.name,
 					"position": {
@@ -307,14 +339,14 @@ func export_walls_rooms_json(arguments: Dictionary) -> String:
 						"z": wall.position.z
 					},
 					"size": {
-						"x": wall.mesh.size.x if wall.mesh != null else 0.0,
-						"y": wall.mesh.size.y if wall.mesh != null else 0.0,
-						"z": wall.mesh.size.z if wall.mesh != null else 0.0
+						"x": wall_size.x,
+						"y": wall_size.y,
+						"z": wall_size.z
 					},
 					"rotation": {
-						"x": wall.rotation_degrees.x,
-						"y": wall.rotation_degrees.y,
-						"z": wall.rotation_degrees.z
+						"x": wall_rot.x,
+						"y": wall_rot.y,
+						"z": wall_rot.z
 					}
 				}
 				
@@ -331,6 +363,12 @@ func export_walls_rooms_json(arguments: Dictionary) -> String:
 	if rooms_node != null:
 		for room in rooms_node.get_children():
 			if room is MeshInstance3D:
+				var room_size = room.mesh.size if room.mesh != null else Vector3.ZERO
+				var room_rot = room.rotation_degrees
+				var norm_y = _normalize_y_rotation(room_rot)
+				if int(abs(norm_y)) % 180 == 90:
+					room_size = Vector3(room_size.z, room_size.y, room_size.x)
+				
 				var room_data = {
 					"name": room.name,
 					"position": {
@@ -339,14 +377,14 @@ func export_walls_rooms_json(arguments: Dictionary) -> String:
 						"z": room.position.z
 					},
 					"size": {
-						"x": room.mesh.size.x if room.mesh != null else 0.0,
-						"y": room.mesh.size.y if room.mesh != null else 0.0,
-						"z": room.mesh.size.z if room.mesh != null else 0.0
+						"x": room_size.x,
+						"y": room_size.y,
+						"z": room_size.z
 					},
 					"rotation": {
-						"x": room.rotation_degrees.x,
-						"y": room.rotation_degrees.y,
-						"z": room.rotation_degrees.z
+						"x": room_rot.x,
+						"y": room_rot.y,
+						"z": room_rot.z
 					}
 				}
 				
