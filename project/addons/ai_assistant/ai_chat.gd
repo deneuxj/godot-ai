@@ -111,6 +111,7 @@ var todo_stack: Array[Dictionary] = []:
 	set(value):
 		todo_stack = value
 		todo_stack_updated.emit(todo_stack)
+		_mark_dirty()
 
 ## The system prompt currently being used for the active request.
 var active_system_prompt: String = ""
@@ -133,12 +134,20 @@ var session_tools: Dictionary = {}
 ## IDs of skills that have been activated in this session.
 var activated_skill_ids: Array[String] = []
 
+enum ChatStatus {
+	IDLE = 0,
+	BUSY = 1,
+	CANCELLED = 2,
+	ERROR = 3,
+}
+
+var chat_status: ChatStatus = ChatStatus.IDLE
+
 ## The partial response currently being received from the AI.
 ## This is cleared when a new request starts and populated during streaming.
 var partial_response: String = ""
 
 var _active_handler: AIRequestHandler = null
-var _is_cancelled: bool = false
 
 ## Optional mock client for testing.
 var mock_client: AIClient = null
@@ -188,7 +197,7 @@ var last_tools: Array[Dictionary] = []
 ## The [param prompt] is appended to the [member chat_history] as a user message.
 ## Optional [param attachments] can be a list of resource paths (e.g. textures) to include.
 func send_message(prompt: String, attachments: Array[String] = []) -> void:
-	if _active_handler and _active_handler.is_busy():
+	if chat_status == ChatStatus.BUSY:
 		push_warning("AIChat: A request is already in progress. Cancel it first or wait for completion.")
 		return
 
@@ -223,7 +232,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 	chat_history.append({"role": "user", "content": user_content})
 	partial_response = ""
-	_is_cancelled = false
+	chat_status = ChatStatus.BUSY
 	
 	_update_context_length()
 	
@@ -282,13 +291,13 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 			# Ensure router model is loaded
 			await router_handler.load_model(router_model)
-			if _is_cancelled or router_handler.was_cancelled():
-				_cleanup_after_cancel()
+			if chat_status == ChatStatus.CANCELLED:
+				_cleanup_after_cancel(router_handler)
 				return
 
 			var workload_raw := await router_handler.execute(routing_messages)
-			if _is_cancelled or router_handler.was_cancelled():
-				_cleanup_after_cancel()
+			if chat_status == ChatStatus.CANCELLED:
+				_cleanup_after_cancel(router_handler)
 				return
 
 			var workload = workload_raw.strip_edges().to_lower()
@@ -342,8 +351,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				# unless it's actually doing a REST call that takes time.
 				# For now, let's keep the user intent status.
 				await router_handler.load_model(final_model)
-				if _is_cancelled or router_handler.was_cancelled():
-					_cleanup_after_cancel()
+				if chat_status == ChatStatus.CANCELLED:
+					_cleanup_after_cancel(router_handler)
 					return
 			
 			final_reasoning = reasoning_val
@@ -357,8 +366,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	tools_handler.mock_client = mock_client
 	_active_handler = tools_handler
 	var vision_ok = await tools_handler.supports_vision(final_model)
-	if _is_cancelled or tools_handler.was_cancelled():
-		_cleanup_after_cancel()
+	if chat_status == ChatStatus.CANCELLED:
+		_cleanup_after_cancel(tools_handler)
 		return
 	_active_handler = null
 	
@@ -433,45 +442,48 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		last_context.append(msg)
 	
 	# 7. Cleanup and finish.
-	if _is_cancelled or handler.was_cancelled():
+	if chat_status == ChatStatus.CANCELLED:
 		_cleanup_after_cancel(handler)
+		return
+		
+	# Append all new messages (tool calls, tool results, and final assistant text)
+	for msg in handler.new_messages:
+		chat_history.append(msg)
+	
+	if response.is_empty() and not handler.tools_invoked:
+		chat_status = ChatStatus.ERROR
+		chat_error.emit("Received empty response from AI.")
+		# Fix: Remove last user message from history on error to avoid duplicates on retry
+		if not chat_history.is_empty() and chat_history.back().role == "user":
+			chat_history.pop_back()
 	else:
-		# Append all new messages (tool calls, tool results, and final assistant text)
+		# Sync back activated skills/tools
+		session_tools = handler._active_tools
+		activated_skill_ids = handler._activated_skill_ids
+		
+		partial_response = ""
+		chat_status = ChatStatus.IDLE
+		chat_finished.emit(response)
+		
+		# --- Agentic Hand-off for Viewport Capture ---
+		# If capture_editor_view was successfully called, automatically trigger a follow-up
+		var capture_successful = false
 		for msg in handler.new_messages:
-			chat_history.append(msg)
-		
-		if response.is_empty() and not handler.tools_invoked:
-			chat_error.emit("Received empty response from AI.")
-			# Fix: Remove last user message from history on error to avoid duplicates on retry
-			if not chat_history.is_empty() and chat_history.back().role == "user":
-				chat_history.pop_back()
-		else:
-			# Sync back activated skills/tools
-			session_tools = handler._active_tools
-			activated_skill_ids = handler._activated_skill_ids
+			if msg.get("role") == "tool" and msg.get("name") == "capture_editor_view":
+				if not str(msg.get("content")).begins_with("Error"):
+					capture_successful = true
+					break
 			
-			partial_response = ""
-			chat_finished.emit(response)
-			
-			# --- Agentic Hand-off for Viewport Capture ---
-			# If capture_editor_view was successfully called, automatically trigger a follow-up
-			var capture_successful = false
-			for msg in handler.new_messages:
-				if msg.get("role") == "tool" and msg.get("name") == "capture_editor_view":
-					if not str(msg.get("content")).begins_with("Error"):
-						capture_successful = true
-						break
-			
-			if capture_successful:
-				var img_path = "res://.gemini/tmp/snapshot.jpg"
-				if FileAccess.file_exists(img_path):
-					print("AIChat: Capture detected. Triggering agentic hand-off...")
-					# We wait a bit to ensure the UI has processed the previous turn signals
-					await get_tree().process_frame
-					# We send a follow-up message from the system (acting as user)
-					send_message("The snapshot you requested is now attached. Please analyze it.", [img_path])
-		
-		_update_context_length()
+		if capture_successful:
+			var img_path = "res://.gemini/tmp/snapshot.jpg"
+			if FileAccess.file_exists(img_path):
+				print("AIChat: Capture detected. Triggering agentic hand-off...")
+				# We wait a bit to ensure the UI has processed the previous turn signals
+				await get_tree().process_frame
+				# We send a follow-up message from the system (acting as user)
+				send_message("The snapshot you requested is now attached. Please analyze it.", [img_path])
+	
+	_update_context_length()
 	
 	if _active_handler == handler:
 		_active_handler = null
@@ -489,19 +501,23 @@ func _cleanup_after_cancel(handler: AIRequestHandler = null) -> void:
 			chat_history.append(msg)
 	
 	_update_context_length()
-	_active_handler = null
+	if _active_handler == handler:
+		_active_handler = null
+	
+	# chat_status is already CANCELLED, keep it for UI
 	chat_cancelled.emit()
 
 
 ## Interrupt the ongoing AI request.
 func cancel() -> void:
-	_is_cancelled = true
-	if _active_handler:
-		_active_handler.cancel()
-	else:
-		# If no handler is active, we might still be in an await point or just started.
-		# We emit it here to ensure the UI is notified immediately.
-		chat_cancelled.emit()
+	if chat_status == ChatStatus.BUSY:
+		chat_status = ChatStatus.CANCELLED
+		if _active_handler:
+			_active_handler.cancel()
+		else:
+			# If no handler is active, we might still be in an await point or just started.
+			# We emit it here to ensure the UI is notified immediately.
+			chat_cancelled.emit()
 
 
 ## Unload the current model (LM Studio Native).
@@ -529,8 +545,19 @@ func clear_history() -> void:
 
 ## Returns the last sent context (messages + tools) as a formatted JSON string.
 func get_last_context_json() -> String:
+	var messages := last_context.duplicate()
+	
+	if chat_status == ChatStatus.BUSY and _active_handler:
+		# Append completed tool loops during the active request
+		for msg in _active_handler.new_messages:
+			messages.append(msg)
+		
+		# Append the ongoing text chunk if any
+		if not partial_response.is_empty():
+			messages.append({"role": "assistant", "content": partial_response})
+			
 	var data := {
-		"messages": last_context,
+		"messages": messages,
 		"tools": last_tools,
 		"routing_history": routing_history,
 		"model": model,
@@ -575,7 +602,7 @@ func activate_skill(skill_name: String) -> String:
 
 ## Returns true if a request is currently active.
 func is_busy() -> bool:
-	return _active_handler != null and _active_handler.is_busy()
+	return chat_status == ChatStatus.BUSY
 
 
 func get_current_tool_definitions() -> Array[Dictionary]:
@@ -735,6 +762,13 @@ func _get_message_length(msg: Dictionary) -> int:
 func _update_context_length() -> void:
 	var length := get_context_length()
 	context_length_updated.emit(length.tokens, length.characters)
+	_mark_dirty()
+
+
+func _mark_dirty() -> void:
+	if Engine.is_editor_hint() and editor_interface:
+		editor_interface.mark_scene_as_dirty()
+		notify_property_list_changed()
 
 
 func _discover_active_skills() -> Array[Dictionary]:

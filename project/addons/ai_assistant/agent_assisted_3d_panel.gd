@@ -72,6 +72,7 @@ func _update_for_node(node: Node) -> void:
 
 	if node is AIAgentAssisted3D:
 		_current_node = node as AIAgentAssisted3D
+		_current_node.editor_interface = _editor_interface
 
 		# Sync properties.
 		_prompt_text_edit.text = _current_node.prompt

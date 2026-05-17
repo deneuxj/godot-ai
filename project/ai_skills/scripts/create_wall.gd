@@ -1,5 +1,6 @@
 @tool
 extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
+class_name CreateWallSkill
 
 ## CreateWallSkill - A specialized skill for creating walls with openings.
 

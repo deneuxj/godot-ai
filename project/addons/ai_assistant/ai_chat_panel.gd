@@ -146,7 +146,7 @@ func _on_cancel_pressed() -> void:
 	if is_instance_valid(_current_node):
 		_current_node.cancel()
 		_status_label.text = "Status: Interrupting..."
-		_cancel_button.disabled = true
+		_update_status()
 
 
 func _on_clear_pressed() -> void:
@@ -211,10 +211,7 @@ func _update_attachments_ui() -> void:
 # --- Node Signals ---
 
 func _on_chat_started() -> void:
-	_status_label.text = "Status: Typing..."
-	_send_button.disabled = true
-	_cancel_button.disabled = false
-	_update_status_theme()
+	_update_status()
 
 
 func _on_node_progress(_chunks: Array[String]) -> void:
@@ -226,8 +223,6 @@ func _on_node_progress(_chunks: Array[String]) -> void:
 
 func _on_chat_finished(_response: String) -> void:
 	_status_label.text = "Status: Finished"
-	_send_button.disabled = false
-	_cancel_button.disabled = true
 	_progress_bar.value = 100.0
 	
 	# Successful response, clear retry state
@@ -235,22 +230,17 @@ func _on_chat_finished(_response: String) -> void:
 	_last_attachments.clear()
 	
 	_update_display()
-	_update_status_theme()
+	_update_status()
 
 
 func _on_chat_cancelled() -> void:
 	_status_label.text = "Status: Cancelled"
-	_send_button.disabled = false
-	_cancel_button.disabled = true
-	
 	_update_display()
-	_update_status_theme()
+	_update_status()
 
 
 func _on_chat_error(err: String) -> void:
 	_status_label.text = "Status: Error - " + err
-	_send_button.disabled = false
-	_cancel_button.disabled = true
 	
 	# Restore last message on error
 	if not _last_prompt.is_empty() or not _last_attachments.is_empty():
@@ -258,12 +248,12 @@ func _on_chat_error(err: String) -> void:
 		_pending_attachments = _last_attachments.duplicate()
 		_update_attachments_ui()
 	
-	_update_status_theme()
+	_update_status()
 
 
 func _on_status_updated(status: String) -> void:
 	_status_label.text = "Status: " + status
-	_update_status_theme()
+	_update_status()
 
 
 func _on_context_length_updated(tokens: int, chars: int) -> void:
@@ -293,6 +283,35 @@ func _on_todo_stack_updated(stack: Array[Dictionary]) -> void:
 		if not task.done:
 			_todo_label.tooltip_text = "Current Task: " + task.text
 			break
+
+
+# --- Status Binding ---
+
+func _update_status() -> void:
+	if not is_instance_valid(_current_node):
+		return
+
+	var status = _current_node.chat_status
+	var busy = (status == AIChat.ChatStatus.BUSY)
+	
+	_send_button.disabled = busy
+	_cancel_button.disabled = not busy
+	
+	match status:
+		AIChat.ChatStatus.IDLE:
+			if _status_label.text == "Status: Typing..." or _status_label.text.is_empty():
+				_status_label.text = "Status: Ready"
+		AIChat.ChatStatus.BUSY:
+			if _status_label.text.is_empty() or _status_label.text == "Status: Ready":
+				_status_label.text = "Status: Typing..."
+		AIChat.ChatStatus.CANCELLED:
+			_status_label.text = "Status: Cancelled"
+		AIChat.ChatStatus.ERROR:
+			# Keep existing error text if it was set by _on_chat_error
+			if not _status_label.text.contains("Error"):
+				_status_label.text = "Status: Error"
+
+	_update_status_theme()
 
 
 # --- Display ---

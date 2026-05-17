@@ -292,6 +292,7 @@ func activate_skill(skill_name: String) -> String:
 			# We use a simple object that mimics AITool.get_definition()
 			var virtual_tool = {
 				"name": tool_name,
+				"skill_id": skill_name,
 				"get_definition": func(): return tool_schema
 			}
 			_active_tools[tool_name] = virtual_tool
@@ -321,7 +322,29 @@ func _execute_tool(tool_call: Dictionary) -> String:
 	if arguments == null:
 		arguments = {}
 		
-	# Check dynamic node targets first
+	# Check dynamically registered tools first
+	if _active_tools.has(function_name):
+		var tool = _active_tools[function_name]
+		if tool is Dictionary:
+			# Virtual tool from a skill node. 
+			# Check if we need to lazily re-bind the dynamic target (common after turn transitions)
+			if not _dynamic_tool_targets.has(function_name):
+				var skill_id = tool.get("skill_id", "")
+				if not skill_id.is_empty():
+					var skill_node = _find_skill_node(_parent, skill_id)
+					if skill_node:
+						# Re-bind all tools for this skill to ensure consistency
+						for t_schema in skill_node.get("tools"):
+							if t_schema.has("function") and t_schema.function.has("name"):
+								_dynamic_tool_targets[t_schema.function.name] = skill_node
+					else:
+						return "Error: Skill node '%s' for tool '%s' no longer found in scene." % [skill_id, function_name]
+
+		if not tool is Dictionary and tool.has_method("execute"):
+			print("AI calling dynamic tool: ", function_name, " with args: ", arguments)
+			return await tool.execute(arguments)
+			
+	# Check dynamic node targets (either registered or lazily re-bound above)
 	if _dynamic_tool_targets.has(function_name):
 		var target = _dynamic_tool_targets[function_name]
 		if target.has_method(function_name):
@@ -332,17 +355,6 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			return str(result)
 		else:
 			return "Error: Method '%s' not found on skill node '%s'." % [function_name, target.name]
-
-	# Check dynamically registered tools first
-	if _active_tools.has(function_name):
-		var tool = _active_tools[function_name]
-		if tool is Dictionary:
-			# Virtual tool from a skill node
-			return "Error: Virtual tool '%s' has no execution logic in _execute_tool." % function_name
-			
-		if tool.has_method("execute"):
-			print("AI calling dynamic tool: ", function_name, " with args: ", arguments)
-			return await tool.execute(arguments)
 		
 	# Fallback/Built-in tools
 	var tool: RefCounted = null

@@ -42,28 +42,46 @@ signal todo_stack_updated(stack: Array[Dictionary])
 @export_group("Input")
 
 @export_multiline
-var prompt: String = ""
+var prompt: String = "":
+	set(value):
+		prompt = value
+		_mark_dirty()
 
 @export
-var texture_attachments: Array[Texture2D] = []
+var texture_attachments: Array[Texture2D] = []:
+	set(value):
+		texture_attachments = value
+		_mark_dirty()
 
 @export_group("Settings")
 
 @export
-var generation_mode: GenerationMode = GenerationMode.SCRIPTED_SCENE
+var generation_mode: GenerationMode = GenerationMode.SCRIPTED_SCENE:
+	set(value):
+		generation_mode = value
+		_mark_dirty()
 
 @export
-var generated_node_name: String = "GeneratedNode"
+var generated_node_name: String = "GeneratedNode":
+	set(value):
+		generated_node_name = value
+		_mark_dirty()
 
 @export_group("Output Control")
 
 ## Directory where the generated file will be saved.
 @export_global_dir
-var output_directory: String = "res://generated/"
+var output_directory: String = "res://generated/":
+	set(value):
+		output_directory = value
+		_mark_dirty()
 
 ## Filename (without extension) for the generated file. If empty, uses the node's name.
 @export
-var output_filename: String = ""
+var output_filename: String = "":
+	set(value):
+		output_filename = value
+		_mark_dirty()
 
 @export_group("API Overrides (Advanced)")
 
@@ -111,9 +129,13 @@ var last_error: String = "":
 	set(value):
 		last_error = value
 		status_updated.emit(status_message)
+		_mark_dirty()
 
 @export_multiline
-var generated_code: String = ""
+var generated_code: String = "":
+	set(value):
+		generated_code = value
+		_mark_dirty()
 
 ## Toggle this to dump the last sent context to res://.gemini/tmp/last_context.json
 @export
@@ -128,6 +150,9 @@ var last_context: Array[Dictionary] = []
 ## Stores the tool definitions sent in the last request.
 var last_tools: Array[Dictionary] = []
 
+## Reference to the EditorInterface (injected by the panel).
+var editor_interface: EditorInterface = null
+
 
 # --- Internal status tracking (not exported) ---
 
@@ -137,6 +162,7 @@ var todo_stack: Array[Dictionary] = []:
 	set(value):
 		todo_stack = value
 		todo_stack_updated.emit(todo_stack)
+		_mark_dirty()
 
 ## Map of tool_name -> AITool instance (persists for session)
 var session_tools: Dictionary = {}
@@ -283,7 +309,7 @@ func cancel_generation() -> void:
 
 ## Returns true if a generation is currently in progress.
 func is_busy() -> bool:
-	return _active_handler != null and _active_handler.is_busy()
+	return generation_status == GenerationStatus.GENERATING
 
 
 ## Explicitly activate a skill for this session.
@@ -305,13 +331,26 @@ func activate_skill(skill_name: String) -> String:
 
 ## Returns the last sent context (messages + tools) as a formatted JSON string.
 func get_last_context_json() -> String:
+	var messages := last_context.duplicate()
+	
+	if _active_handler and _active_handler.is_busy():
+		# Append completed tool loops during the active request
+		for msg in _active_handler.new_messages:
+			messages.append(msg)
+			
 	var data := {
-		"messages": last_context,
+		"messages": messages,
 		"tools": last_tools,
 		"model": model,
 		"api_endpoint": api_endpoint
 	}
 	return JSON.stringify(data, "\t")
+
+
+func _mark_dirty() -> void:
+	if Engine.is_editor_hint() and editor_interface:
+		editor_interface.mark_scene_as_dirty()
+		notify_property_list_changed()
 
 
 ## Dumps the last context to a file for debugging.
