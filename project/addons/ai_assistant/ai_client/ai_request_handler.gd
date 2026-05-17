@@ -139,6 +139,28 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 	
 	const MAX_TOOL_LOOPS = 20
 	for i in range(MAX_TOOL_LOOPS):
+		var remaining = MAX_TOOL_LOOPS - i
+		
+		# Update system prompt with fresh TODO stack and remaining turns
+		if not current_messages.is_empty() and current_messages[0].role == "system":
+			var todo_stack = _parent.get("todo_stack") if "todo_stack" in _parent else []
+			
+			# If it's the very first loop, we might need to inject the initial turn count
+			# If it's a subsequent loop, we REBUILD the system prompt to reflect the new TODO state.
+			# Note: We assume AIChat and AIAgentAssisted3D provide access to their base system prompt or mode.
+			var updated_system_prompt := ""
+			if _parent is AIChat:
+				var discovered_skills = _parent._discover_active_skills()
+				var active_prompt = _parent.active_system_prompt
+				updated_system_prompt = PromptBuilder.get_chat_prompt(active_prompt) + PromptBuilder.get_environment_context() + PromptBuilder.get_skills_discovery_context(discovered_skills) + PromptBuilder._get_todo_context(todo_stack)
+			elif _parent.has_method("generate"): # Assume AIAgentAssisted3D or similar
+				var discovered_skills = _parent._discover_active_skills()
+				var mode = _parent.get("generation_mode") if "generation_mode" in _parent else 0
+				updated_system_prompt = PromptBuilder._get_system_prompt(mode, discovered_skills, todo_stack)
+			
+			if not updated_system_prompt.is_empty():
+				current_messages[0].content = PromptBuilder.inject_turn_info(updated_system_prompt, remaining)
+
 		var result = await client.chat_stream(current_messages, all_tools)
 		
 		if _cancelled:
@@ -185,20 +207,25 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			continue
 		else:
 			final_response = str(result)
-			if not final_response.is_empty():
-				var final_msg = {"role": "assistant", "content": final_response}
-				current_messages.append(final_msg)
-				new_messages.append(final_msg)
-			elif tools_invoked:
-				# CRITICAL: Strict role-alternation templates (like Mistral/Llama 3) 
-				# require that tool results are followed by an assistant message.
-				# If the AI stopped responding, we must insert a fallback to avoid 
-				# "tool -> user" transitions which crash the Jinja template.
-				var fallback_msg = {"role": "assistant", "content": "..."}
-				current_messages.append(fallback_msg)
-				new_messages.append(fallback_msg)
-				final_response = "..."
 			break
+			
+	# If we exited the loop naturally (hit MAX_TOOL_LOOPS), check if we need to provide a final response
+	if final_response.is_empty() and not _cancelled:
+		final_response = "[color=orange][i]Limit of %d tool calls reached for this turn. Please type 'Continue' to proceed.[/i][/color]" % MAX_TOOL_LOOPS
+
+	if not final_response.is_empty():
+		var final_msg = {"role": "assistant", "content": final_response}
+		current_messages.append(final_msg)
+		new_messages.append(final_msg)
+	elif tools_invoked:
+		# CRITICAL: Strict role-alternation templates (like Mistral/Llama 3) 
+		# require that tool results are followed by an assistant message.
+		# If the AI stopped responding, we must insert a fallback to avoid 
+		# "tool -> user" transitions which crash the Jinja template.
+		var fallback_msg = {"role": "assistant", "content": "..."}
+		current_messages.append(fallback_msg)
+		new_messages.append(fallback_msg)
+		final_response = "..."
 
 	# 5. Cleanup.
 	_cleanup(client)

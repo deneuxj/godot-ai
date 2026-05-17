@@ -112,6 +112,9 @@ var todo_stack: Array[Dictionary] = []:
 		todo_stack = value
 		todo_stack_updated.emit(todo_stack)
 
+## The system prompt currently being used for the active request.
+var active_system_prompt: String = ""
+
 ## Reference to the EditorInterface (injected by the panel).
 var editor_interface: EditorInterface = null
 
@@ -227,7 +230,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 	# 2. Workload Routing (Optional)
 	var final_model := model
-	var active_system_prompt := system_prompt
+	active_system_prompt = system_prompt
 	var final_reasoning := ""
 	
 	if use_router and final_model.is_empty():

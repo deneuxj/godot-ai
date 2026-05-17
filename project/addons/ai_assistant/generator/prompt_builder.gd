@@ -24,9 +24,10 @@ Rules:
 - Do NOT output any explanation unless it's outside the code block.
 
 Efficiency and Limits:
-- You have a strict limit of 20 tool calls per turn. 
+- You have {REMAINING_TURNS} tool calls left in this turn. 
 - Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
 - Batch your investigations: if you need to read multiple files, do so as quickly as possible without intermediate "ready to proceed" messages.
+- If you run out of tool calls and need more, state "NEED_MORE_TURNS" and describe what is left to do.
 
 GDScript 2.0 Best Practices:
 - When using functions like get(), load(), or Dictionary.get(), always provide an explicit static type (e.g., `var x: int = ...`) instead of using inference (`:=`).
@@ -85,9 +86,10 @@ Rules:
 - No explanation or extra text. Just the script content.
 
 Efficiency and Limits:
-- You have a strict limit of 20 tool calls per turn. 
+- You have {REMAINING_TURNS} tool calls left in this turn. 
 - Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
 - Batch your investigations: gather all required information before starting to write the script.
+- If you run out of tool calls and need more, state "NEED_MORE_TURNS" and describe what is left to do.
 
 GDScript 2.0 Best Practices:
 - When using functions like get(), load(), or Dictionary.get(), always provide an explicit static type (e.g., `var x: int = ...`) instead of using inference (`:=`).
@@ -120,9 +122,10 @@ Tool Usage:
 - When the user asks for code, ensure it follows Godot 4 conventions.
 
 Efficiency and Limits:
-- You have a strict limit of 20 tool calls per turn. 
+- You have {REMAINING_TURNS} tool calls left in this turn. 
 - Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
 - Batch your investigations: gather all data (docs, files, hierarchy) in as few turns as possible to provide a comprehensive answer quickly.
+- If you run out of tool calls and need more, state "NEED_MORE_TURNS" and describe what is left to do.
 
 GDScript 2.0 Best Practices:
 - When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
@@ -194,9 +197,10 @@ Rules:
 6. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
 
 Efficiency and Limits:
-- You have a strict limit of 20 tool calls per turn. 
+- You have {REMAINING_TURNS} tool calls left in this turn. 
 - Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
 - Batch your actions: perform as many tool calls as possible in a single response to complete the task efficiently.
+- If you run out of tool calls and need more, state "NEED_MORE_TURNS" and describe what is left to do.
 
 GDScript 2.0 Best Practices:
 - When fixing "typed as Variant" errors (common with functions like get(), load(), or Dictionary.get()), always provide an explicit static type (e.g., [code]var x: int = ...[/code]) instead of using inference ([code]:=[/code]).
@@ -417,7 +421,7 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 
 
 ## Get the system prompt, checking the project setting override first.
-static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = [], todo_stack: Array[Dictionary] = []) -> String:
+static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = [], todo_stack: Array[Dictionary] = [], remaining_turns: int = -1) -> String:
 	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
 	var base_prompt := ""
 	
@@ -434,7 +438,17 @@ static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] =
 	var skills_context := get_skills_discovery_context(discovered_skills)
 	var todo_context := _get_todo_context(todo_stack)
 	
-	return base_prompt + env_context + skills_context + todo_context
+	var final_prompt = base_prompt + env_context + skills_context + todo_context
+	
+	if remaining_turns >= 0:
+		final_prompt = inject_turn_info(final_prompt, remaining_turns)
+		
+	return final_prompt
+
+
+## Replaces the {REMAINING_TURNS} placeholder with the actual value.
+static func inject_turn_info(prompt: String, remaining: int) -> String:
+	return prompt.replace("{REMAINING_TURNS}", str(remaining))
 
 
 ## Returns a string representing the current TODO stack for inclusion in the prompt.
