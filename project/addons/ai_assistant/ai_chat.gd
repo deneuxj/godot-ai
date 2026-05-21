@@ -490,7 +490,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 
 func _cleanup_after_cancel(handler: AIRequestHandler = null) -> void:
-	# REQ-CHAT-0015: Save partial response on cancel
+	# REQ-CHAT-0016: Save partial response on cancel
 	if not partial_response.is_empty():
 		chat_history.append({"role": "assistant", "content": partial_response})
 		partial_response = ""

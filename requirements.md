@@ -58,6 +58,8 @@ REQ-CHAT-0014: If the context still exceeds the limit after compression (due to 
 
 REQ-CHAT-0015: The `AIChat` node shall support aggressive context compression that strips all tool calls and their results from the history, preserving only the final assistant responses and user prompts. This can be enabled via a property.
 
+REQ-CHAT-0016: When a chat request is cancelled, the `AIChat` node shall persist any partial assistant response and any completed tool calls/results in the conversational history to maintain the context of the interrupted turn.
+
 ### AI Integration
 
 REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends.
