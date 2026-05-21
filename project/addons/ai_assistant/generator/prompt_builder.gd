@@ -43,13 +43,13 @@ class ChatProvider extends SystemPromptProvider:
 			return ""
 			
 		var active_prompt = chat_node.get("active_system_prompt")
-		var todo_stack = chat_node.get("todo_stack")
+		var todo_list = chat_node.get("todo_list")
 		var discovered_skills = chat_node.call("_discover_active_skills")
 		
 		var base = PromptBuilder.get_chat_prompt(active_prompt)
 		var env = PromptBuilder.get_environment_context()
 		var skills = PromptBuilder.get_skills_discovery_context(discovered_skills)
-		var todos = PromptBuilder._get_todo_context(todo_stack)
+		var todos = PromptBuilder._get_todo_context(todo_list)
 		
 		var final_prompt = base + env + skills + todos
 		if remaining_turns >= 0:
@@ -69,10 +69,10 @@ class SceneBuilderProvider extends SystemPromptProvider:
 			return ""
 			
 		var mode = builder_node.get("generation_mode")
-		var todo_stack = builder_node.get("todo_stack")
+		var todo_list = builder_node.get("todo_list")
 		var discovered_skills = builder_node.call("_discover_active_skills")
 		
-		return PromptBuilder._get_system_prompt(mode, discovered_skills, todo_stack, remaining_turns)
+		return PromptBuilder._get_system_prompt(mode, discovered_skills, todo_list, remaining_turns)
 
 
 # --- Factory Methods ---
@@ -125,13 +125,12 @@ Tool Usage:
 - DO NOT guess property names or resource paths. Verify them using tools first.
 
 Task Management:
-- For complex requests, ALWAYS maintain a TODO stack using `manage_todo_list`.
-- Use `push` to start a new sub-task with its own TODO list.
-- Use `update` to add tasks or mark them as done in the current (top-most) TODO list.
-- Use `pop` when a sub-task is completed or cancelled to return to the previous list.
-- Use `cancel_stack` if the entire plan needs to be discarded.
-- This helps you maintain context across deep task hierarchies and ensures you don't lose track of the parent goal.
-- CONSTRAIN your execution to the current task in the top-most list of your stack.
+- For complex requests, ALWAYS maintain a TODO list using `manage_todo_list`.
+- Use `add` to append a new task.
+- Use `update` to mark a task as done (e.g., `{"operation": "update", "index": 0, "done": true}`).
+- Use `remove` to delete a task if it's no longer relevant.
+- Use `clear` if the entire plan needs to be discarded.
+- This helps you maintain focus and ensures you don't lose track of the goal.
 
 Example:
 ```gdscript
@@ -212,10 +211,10 @@ GDScript 2.0 Best Practices:
 - Prefer explicit typing for all variable declarations and function signatures.
 
 Task Management:
-- Use `manage_todo_list` to stay organized with a hierarchical stack.
-- `push` a new list for sub-tasks, `update` to track progress, and `pop` when done.
-- ALWAYS maintain a clear stack of what you are doing.
-- STAY within the limits of your top-most TODO list; do not drift from the current task until it is popped or updated.
+- Use `manage_todo_list` to stay organized with a flat list of tasks.
+- `add` new tasks for sub-goals, `update` to track progress, and `remove` or `clear` when finished.
+- ALWAYS maintain a clear list of what you are doing.
+- STAY focused on the tasks in your list.
 
 Surgical Editing Rules:
 - When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
@@ -270,9 +269,9 @@ Your goal is to execute specific technical tasks and tool calls.
 
 Rules:
 1. Perform the requested implementation or tool calls as efficiently as possible.
-2. Use `manage_todo_list` to track your progress on a hierarchical stack.
-3. `push` the Analyst's plan steps as TODO lists, `update` tasks as you go, and `pop` when finished with a plan step.
-4. STAY within the limits of your current top-most task.
+2. Use `manage_todo_list` to track your progress on a flat list.
+3. `add` the Analyst's plan steps as tasks, `update` them as you go.
+4. STAY focused on the current task.
 5. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
 6. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
 
@@ -394,13 +393,13 @@ static func get_technician_prompt(override: String = "") -> String:
 
 
 ## Main entry point to build the AI conversation history.
-static func build(prompt: String, textures: Array[Texture2D], mode: int, discovered_skills: Array[Dictionary] = [], todo_stack: Array[Dictionary] = []) -> Array[Dictionary]:
+static func build(prompt: String, textures: Array[Texture2D], mode: int, discovered_skills: Array[Dictionary] = [], todo_list: Array[Dictionary] = []) -> Array[Dictionary]:
 	var messages: Array[Dictionary] = []
 	
 	# 1. System Prompt
 	messages.append({
 		"role": "system",
-		"content": _get_system_prompt(mode, discovered_skills, todo_stack)
+		"content": _get_system_prompt(mode, discovered_skills, todo_list)
 	})
 	
 	# 2. User Message
@@ -517,7 +516,7 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 
 
 ## Get the system prompt, checking the project setting override first.
-static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = [], todo_stack: Array[Dictionary] = [], remaining_turns: int = -1) -> String:
+static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = [], todo_list: Array[Dictionary] = [], remaining_turns: int = -1) -> String:
 	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
 	var base_prompt := ""
 	
@@ -532,7 +531,7 @@ static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] =
 			
 	var env_context := get_environment_context()
 	var skills_context := get_skills_discovery_context(discovered_skills)
-	var todo_context := _get_todo_context(todo_stack)
+	var todo_context := _get_todo_context(todo_list)
 	
 	var final_prompt = base_prompt + env_context + skills_context + todo_context
 	
@@ -547,19 +546,16 @@ static func inject_turn_info(prompt: String, remaining: int) -> String:
 	return prompt.replace("{REMAINING_TURNS}", str(remaining))
 
 
-## Returns a string representing the current TODO stack for inclusion in the prompt.
-static func _get_todo_context(stack: Array[Dictionary]) -> String:
-	if stack.is_empty():
+## Returns a string representing the current TODO list for inclusion in the prompt.
+static func _get_todo_context(list: Array[Dictionary]) -> String:
+	if list.is_empty():
 		return ""
 		
-	var lines: Array[String] = ["\n\nCURRENT TODO STACK:"]
-	for i in range(stack.size()):
-		var list = stack[i]
-		var indent = "  ".repeat(i)
-		lines.append("%s- %s:" % [indent, list.title])
-		for task in list.tasks:
-			var status = "[x]" if task.done else "[ ]"
-			lines.append("%s  %s %s" % [indent, status, task.text])
+	var lines: Array[String] = ["\n\nCURRENT TODO LIST:"]
+	for i in range(list.size()):
+		var task = list[i]
+		var status = "[x]" if task.done else "[ ]"
+		lines.append("%d. %s %s" % [i, status, task.text])
 	
 	return "\n".join(lines)
 

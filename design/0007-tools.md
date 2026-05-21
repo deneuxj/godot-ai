@@ -106,31 +106,30 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
-## REQ-TOOL-0011: Hierarchical TODO Stack Tool (`manage_todo_list`)
+## REQ-TOOL-0011: Flat TODO List Tool (`manage_todo_list`)
 
 ### Specification
 - **Method**: `execute(operation: String, params: Dictionary) -> Dictionary`
 - **Operations**:
-    - `push`: Creates a new TODO list and pushes it onto the stack. `params = {"title": String, "tasks": Array[String]}`.
-    - `pop`: Removes the top-most TODO list from the stack (used when a sub-task is completed or cancelled).
-    - `update`: Updates the current (top) TODO list. `params = {"add_tasks": Array[String] (optional), "mark_done": Array[int] (optional), "mark_undone": Array[int] (optional)}`.
-    - `list`: Returns the entire stack of TODO lists.
-    - `cancel_stack`: Clears all TODO lists from the stack.
+    - `add`: Adds a new task to the list. `params = {"task": String}`.
+    - `remove`: Removes a task from the list by index. `params = {"index": int}`.
+    - `update`: Updates a task in the list. `params = {"index": int, "text": String (optional), "done": bool (optional)}`.
+    - `list`: Returns the entire list of tasks.
+    - `clear`: Clears all tasks from the list.
 
 ### Implementation Detail
-1. **Node Persistence**: Instead of a global JSON file, the TODO stack is stored as an `@export` property `todo_stack: Array[Dictionary]` on the AI node (`AIChat` or `AIAgentAssisted3D`). This ensures that the TODOs are saved with the scene and restored across editor reloads.
-2. **Stack Structure**: 
-    - The `todo_stack` is an `Array` of Dictionaries.
-    - Each Dictionary represents a TODO list: `{"title": String, "tasks": Array[Dictionary]}`.
+1. **Node Persistence**: The TODO list is stored as an `@export` property `todo_list: Array[Dictionary]` on the AI node (`AIChat` or `AIAgentAssisted3D`). This ensures that the TODOs are saved with the scene and restored across editor reloads.
+2. **List Structure**: 
+    - The `todo_list` is an `Array` of Dictionaries.
     - Each task is: `{"text": String, "done": bool}`.
-3. **Context Access**: The `ManageTodoListTool` access the `todo_stack` via its `context_node` property.
+3. **Context Access**: The `ManageTodoListTool` access the `todo_list` via its `context_node` property.
 4. **Operations**:
-    - `push`: Appends a new list to the `todo_stack`.
-    - `pop`: Removes the last element from `todo_stack`.
-    - `update`: Modifies the last element in `todo_stack`.
-    - `list`: Returns the current `todo_stack`.
-    - `cancel_stack`: Sets `todo_stack` to an empty array.
-5. **UI Feedback**: The `AIChat` and `AIAgentAssisted3D` nodes will emit a `todo_stack_updated(stack: Array[Dictionary])` signal whenever the stack is modified. The chat panel UI will connect to this signal to update its display.
+    - `add`: Appends a new task dictionary to the `todo_list`.
+    - `remove`: Removes the task at the specified index from `todo_list`.
+    - `update`: Modifies the task dictionary at the specified index in `todo_list`.
+    - `list`: Returns the current `todo_list`.
+    - `clear`: Sets `todo_list` to an empty array.
+5. **UI Feedback**: The `AIChat` and `AIAgentAssisted3D` nodes will emit a `todo_list_updated(list: Array[Dictionary])` signal whenever the list is modified. The chat panel UI will connect to this signal to update its display.
 
 ---
 

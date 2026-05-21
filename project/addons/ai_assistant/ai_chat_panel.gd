@@ -76,8 +76,8 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("status_updated", _on_status_updated)
 		if _current_node.is_connected("context_length_updated", _on_context_length_updated):
 			_current_node.disconnect("context_length_updated", _on_context_length_updated)
-		if _current_node.is_connected("todo_stack_updated", _on_todo_stack_updated):
-			_current_node.disconnect("todo_stack_updated", _on_todo_stack_updated)
+		if _current_node.is_connected("todo_list_updated", _on_todo_list_updated):
+			_current_node.disconnect("todo_list_updated", _on_todo_list_updated)
 
 
 func _update_for_node(node: Node) -> void:
@@ -97,7 +97,7 @@ func _update_for_node(node: Node) -> void:
 		_current_node.connect("chat_error", _on_chat_error)
 		_current_node.connect("status_updated", _on_status_updated)
 		_current_node.connect("context_length_updated", _on_context_length_updated)
-		_current_node.connect("todo_stack_updated", _on_todo_stack_updated)
+		_current_node.connect("todo_list_updated", _on_todo_list_updated)
 
 		# Refresh UI state.
 		_update_display()
@@ -111,7 +111,7 @@ func _update_for_node(node: Node) -> void:
 		# Initial context update
 		var len = _current_node.get_context_length()
 		_on_context_length_updated(len.tokens, len.characters)
-		_on_todo_stack_updated(_current_node.todo_stack)
+		_on_todo_list_updated(_current_node.todo_list)
 	else:
 		_history_display.text = ""
 		_status_label.text = "No AIChat selected"
@@ -260,29 +260,28 @@ func _on_context_length_updated(tokens: int, chars: int) -> void:
 	_context_label.text = "Context: %d tokens (%d chars)" % [tokens, chars]
 
 
-func _on_todo_stack_updated(stack: Array[Dictionary]) -> void:
-	if stack.is_empty():
+func _on_todo_list_updated(list: Array[Dictionary]) -> void:
+	if list.is_empty():
 		_todo_label.text = ""
+		_todo_label.tooltip_text = ""
 		return
 	
-	var current = stack.back()
-	var tasks = current.tasks
 	var done_count = 0
-	for task in tasks:
+	for task in list:
 		if task.done:
 			done_count += 1
 	
-	var progress_text = ""
-	if not tasks.is_empty():
-		progress_text = " (%d/%d)" % [done_count, tasks.size()]
-	
-	_todo_label.text = "TODO: %s%s" % [current.title, progress_text]
+	var progress_text = " (%d/%d)" % [done_count, list.size()]
 	
 	# Find first incomplete task
-	for task in tasks:
+	var current_task_text = "All tasks completed!"
+	for task in list:
 		if not task.done:
-			_todo_label.tooltip_text = "Current Task: " + task.text
+			current_task_text = task.text
 			break
+			
+	_todo_label.text = "TODO: %s%s" % [current_task_text, progress_text]
+	_todo_label.tooltip_text = "Current Task: " + current_task_text
 
 
 # --- Status Binding ---

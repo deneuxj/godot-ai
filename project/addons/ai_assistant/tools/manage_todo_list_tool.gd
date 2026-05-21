@@ -1,12 +1,12 @@
 @tool
 extends AITool
 
-## Manage hierarchical TODO stacks for the AI agent.
-## Allows pushing, popping, and updating TODO lists persisted in the AI node.
+## Manage flat TODO list for the AI agent.
+## Allows adding, removing, and updating TODO tasks persisted in the AI node.
 
 func _init() -> void:
 	name = "manage_todo_list"
-	description = "Manage a hierarchical stack of TODO lists. Use 'push' to start a sub-task with its own TODOs, 'pop' when that sub-task is done, and 'update' to manage the current list."
+	description = "Manage a flat list of TODO tasks. Use 'add' to append a task, 'remove' to delete a task by index, 'update' to mark a task as done/undone or change its text, 'list' to see all tasks, and 'clear' to wipe the list."
 
 
 func get_parameters() -> Dictionary:
@@ -15,32 +15,20 @@ func get_parameters() -> Dictionary:
 		"properties": {
 			"operation": {
 				"type": "string",
-				"enum": ["push", "pop", "update", "list", "cancel_stack"],
+				"enum": ["add", "remove", "update", "list", "clear"],
 				"description": "The operation to perform."
 			},
-			"title": {
+			"task": {
 				"type": "string",
-				"description": "The title of the TODO list (required for 'push')."
+				"description": "The text of the task (required for 'add', optional for 'update')."
 			},
-			"tasks": {
-				"type": "array",
-				"items": { "type": "string" },
-				"description": "Initial tasks for the 'push' operation."
+			"index": {
+				"type": "integer",
+				"description": "The 0-based index of the task (required for 'remove' and 'update')."
 			},
-			"add_tasks": {
-				"type": "array",
-				"items": { "type": "string" },
-				"description": "New tasks to add for the 'update' operation."
-			},
-			"mark_done": {
-				"type": "array",
-				"items": { "type": "integer" },
-				"description": "Indices of tasks to mark as done (0-based) for the 'update' operation."
-			},
-			"mark_undone": {
-				"type": "array",
-				"items": { "type": "integer" },
-				"description": "Indices of tasks to mark as undone (0-based) for the 'update' operation."
+			"done": {
+				"type": "boolean",
+				"description": "The completion status of the task (optional for 'update')."
 			}
 		},
 		"required": ["operation"]
@@ -48,93 +36,59 @@ func get_parameters() -> Dictionary:
 
 
 func execute(args: Dictionary) -> Variant:
-	if not context_node or not "todo_stack" in context_node:
-		return JSON.stringify({"error": "Tool context node does not support TODO stack."})
+	if not context_node or not "todo_list" in context_node:
+		return JSON.stringify({"error": "Tool context node does not support TODO list."})
 
 	var operation: String = args.get("operation", "")
-	var stack: Array = context_node.todo_stack.duplicate(true)
+	var list: Array = context_node.todo_list.duplicate(true)
 	
-	# Extract nested params for robustness (some LLMs wrap arguments)
-	var params: Dictionary = args.get("params", {})
-	
-	var title: String = args.get("title", "")
-	if title.is_empty():
-		title = params.get("title", "")
-		
-	var tasks_input = args.get("tasks", [])
-	if tasks_input.is_empty():
-		tasks_input = params.get("tasks", [])
-
 	var result: Variant = null
 	match operation:
-		"push":
-			if title.is_empty():
-				result = {"error": "Title is required for 'push' operation."}
+		"add":
+			var task_text: String = args.get("task", "")
+			if task_text.is_empty():
+				result = {"error": "Task text is required for 'add' operation."}
 			else:
-				var tasks: Array[Dictionary] = []
-				for task_text in tasks_input:
-					tasks.append({"text": task_text, "done": false})
-				var new_list: Dictionary = {"title": title, "tasks": tasks}
-				stack.append(new_list)
-				context_node.todo_stack = stack
-				result = {"success": true, "message": "TODO list '%s' pushed onto stack with %d tasks." % [title, tasks.size()], "current_stack_depth": stack.size()}
+				list.append({"text": task_text, "done": false})
+				context_node.todo_list = list
+				result = {"success": true, "message": "Task added: %s" % task_text, "index": list.size() - 1}
 
-		"pop":
-			if stack.is_empty():
-				result = {"error": "TODO stack is already empty."}
+		"remove":
+			if not "index" in args:
+				result = {"error": "Index is required for 'remove' operation."}
 			else:
-				var popped = stack.pop_back()
-				context_node.todo_stack = stack
-				result = {"success": true, "message": "TODO list '%s' popped from stack." % popped.title, "current_stack_depth": stack.size()}
+				var index: int = args.get("index")
+				if index >= 0 and index < list.size():
+					var removed = list.pop_at(index)
+					context_node.todo_list = list
+					result = {"success": true, "message": "Task removed: %s" % removed.text}
+				else:
+					result = {"error": "Invalid task index: %d. The list has %d tasks." % [index, list.size()]}
 
 		"update":
-			if stack.is_empty():
-				result = {"error": "TODO stack is empty. Use 'push' to create a list first."}
+			if not "index" in args:
+				result = {"error": "Index is required for 'update' operation."}
 			else:
-				var current_list: Dictionary = stack.back()
-				var tasks: Array = current_list.tasks # Use untyped for modification
-				var updated_count := 0
-				
-				var add_tasks = args.get("add_tasks", [])
-				if add_tasks.is_empty(): add_tasks = params.get("add_tasks", [])
-				
-				var mark_done = args.get("mark_done", [])
-				if mark_done.is_empty(): mark_done = params.get("mark_done", [])
-				
-				var mark_undone = args.get("mark_undone", [])
-				if mark_undone.is_empty(): mark_undone = params.get("mark_undone", [])
-				
-				# Add tasks
-				for task_text in add_tasks:
-					tasks.append({"text": task_text, "done": false})
-					updated_count += 1
+				var index: int = args.get("index")
+				if index >= 0 and index < list.size():
+					var task = list[index]
+					if "task" in args:
+						task["text"] = args.get("task")
+					if "done" in args:
+						task["done"] = args.get("done")
 					
-				# Mark done
-				for index in mark_done:
-					if index >= 0 and index < tasks.size():
-						tasks[index]["done"] = true
-						updated_count += 1
-					else:
-						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, current_list.title, tasks.size()]})
-						
-				# Mark undone
-				for index in mark_undone:
-					if index >= 0 and index < tasks.size():
-						tasks[index]["done"] = false
-						updated_count += 1
-					else:
-						return JSON.stringify({"error": "Invalid task index: %d. The list '%s' has %d tasks." % [index, current_list.title, tasks.size()]})
-				
-				context_node.todo_stack = stack
-				result = {"success": true, "message": "TODO list '%s' updated (%d changes)." % [current_list.title, updated_count], "tasks": tasks}
+					context_node.todo_list = list
+					result = {"success": true, "message": "Task at index %d updated." % index, "task": task}
+				else:
+					result = {"error": "Invalid task index: %d. The list has %d tasks." % [index, list.size()]}
 
 		"list":
-			result = {"todo_stack": stack}
+			result = {"todo_list": list}
 
-		"cancel_stack":
-			stack.clear()
-			context_node.todo_stack = stack
-			result = {"success": true, "message": "TODO stack cleared."}
+		"clear":
+			list.clear()
+			context_node.todo_list = list
+			result = {"success": true, "message": "TODO list cleared."}
 
 		_:
 			result = {"error": "Unknown operation: %s" % operation}

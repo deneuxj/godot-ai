@@ -36,7 +36,7 @@ signal code_updated(code: String)
 signal status_updated(message: String)
 
 ## Emitted when the hierarchical TODO stack is modified.
-signal todo_stack_updated(stack: Array[Dictionary])
+signal todo_list_updated(list: Array[Dictionary])
 
 
 @export_group("Input")
@@ -156,12 +156,12 @@ var editor_interface: EditorInterface = null
 
 # --- Internal status tracking (not exported) ---
 
-## Hierarchical stack of TODO lists: [{"title": "...", "tasks": [{"text": "...", "done": bool}]}]
+## Flat list of TODO tasks: [{"text": "...", "done": bool}]
 @export
-var todo_stack: Array[Dictionary] = []:
+var todo_list: Array[Dictionary] = []:
 	set(value):
-		todo_stack = value
-		todo_stack_updated.emit(todo_stack)
+		todo_list = value
+		todo_list_updated.emit(todo_list)
 		_mark_dirty()
 
 ## Map of tool_name -> AITool instance (persists for session)
@@ -202,7 +202,7 @@ func generate() -> void:
 
 	# 1. Build initial prompt and tools.
 	var discovered_skills = _discover_active_skills()
-	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode, discovered_skills, todo_stack)
+	var messages := PromptBuilder.build(prompt, texture_attachments, generation_mode, discovered_skills, todo_list)
 	var tools := PromptBuilder.get_tool_definitions(
 		enable_godot_docs, 
 		enable_project_resources, 
