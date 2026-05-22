@@ -20,6 +20,7 @@ var last_request_params: Dictionary = {}
 
 
 func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
+	_is_cancelled = false
 	last_request_params = {
 		"model": model,
 		"messages": messages,
@@ -40,6 +41,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 
 
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
+	_is_cancelled = false
 	last_request_params = {
 		"model": model,
 		"messages": messages,

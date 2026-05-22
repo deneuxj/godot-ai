@@ -490,15 +490,23 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 
 func _cleanup_after_cancel(handler: AIRequestHandler = null) -> void:
-	# REQ-CHAT-0016: Save partial response on cancel
-	if not partial_response.is_empty():
-		chat_history.append({"role": "assistant", "content": partial_response})
-		partial_response = ""
-	
 	if handler:
-		# Also save any completed tool interactions
+		# 1. Save any completed tool interactions first to maintain order
 		for msg in handler.new_messages:
 			chat_history.append(msg)
+	
+	# 2. Save partial response or ensure role alternation
+	if not partial_response.is_empty():
+		if not chat_history.is_empty() and chat_history.back().role == "assistant":
+			# If the last message is already assistant, it means it's a fallback 
+			# or an empty message from the handler. We replace its content with partial.
+			chat_history.back().content = partial_response
+		else:
+			chat_history.append({"role": "assistant", "content": partial_response})
+		partial_response = ""
+	elif not chat_history.is_empty() and chat_history.back().role == "tool":
+		# REQ-CHAT-0016: Always end with assistant if tools were called
+		chat_history.append({"role": "assistant", "content": "..."})
 	
 	_update_context_length()
 	if _active_handler == handler:
