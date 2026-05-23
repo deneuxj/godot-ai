@@ -236,7 +236,7 @@ func validate_walls_rooms(arguments: Dictionary) -> String:
 						validation_errors.append("Wall '" + wall.name + "' has invalid depth (z)")
 				
 				# Check for valid position
-				if wall.position.x.is_nan() or wall.position.y.is_nan() or wall.position.z.is_nan():
+				if is_nan(wall.position.x) or is_nan(wall.position.y) or is_nan(wall.position.z):
 					validation_errors.append("Wall '" + wall.name + "' has invalid position")
 	
 	# Validate rooms
@@ -258,7 +258,7 @@ func validate_walls_rooms(arguments: Dictionary) -> String:
 						validation_errors.append("Room '" + room.name + "' has invalid depth (z)")
 				
 				# Check for valid position
-				if room.position.x.is_nan() or room.position.y.is_nan() or room.position.z.is_nan():
+				if is_nan(room.position.x) or is_nan(room.position.y) or is_nan(room.position.z):
 					validation_errors.append("Room '" + room.name + "' has invalid position")
 	
 	# Display results
