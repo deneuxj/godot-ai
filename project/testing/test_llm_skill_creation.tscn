@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://dg7k8l9m0n1p2"]
+
+[ext_resource type="Script" path="res://testing/test_llm_skill_creation.gd" id="1_a2b3c"]
+
+[node name="TestLLMSkillCreation" type="Node2D"]
+script = ExtResource("1_a2b3c")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.129412, 0.14902, 0.192157, 1)
+
+[node name="VBox" type="VBoxContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="Label" parent="UI/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "LLM Skill Creation Regression Tests"
+
+[node name="Controls" type="HBoxContainer" parent="UI/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="UI/VBox/Controls"]
+layout_mode = 2
+text = "LM Studio Endpoint:"
+
+[node name="Endpoint" type="LineEdit" parent="UI/VBox/Controls"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "http://localhost:1234"
+placeholder_text = "http://localhost:1234"
+
+[node name="RunBtn" type="Button" parent="UI/VBox/Controls"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+text = "Run All Tests"
+
+[node name="HSeparator" type="HSeparator" parent="UI/VBox"]
+layout_mode = 2
+
+[node name="Log" type="RichTextLabel" parent="UI/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_following = true
