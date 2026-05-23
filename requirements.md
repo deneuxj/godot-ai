@@ -219,7 +219,7 @@ REQ-SKILL-0002: A "Skill" shall be a specialized Node type (`AISkill`) containin
   - `tools`: A collection of JSON schemas defining the arbitrary functions available on the node.
   - `is_active`: A boolean to enable or disable the skill dynamically.
 
-REQ-SKILL-0003: Skills shall be discoverable by scanning the children and descendants of the AI node (e.g., `AIChat`) in the scene tree.
+REQ-SKILL-0003: Skills shall be discoverable by scanning the children and descendants of the AI node (e.g., `AIChat`) in the scene tree. Discovery shall be strictly limited to the AI node's own subtree.
 
 REQ-SKILL-0004: The `AIChat` and `AIAgentAssisted3D` nodes shall automatically discover and support all active `AISkill` nodes in their hierarchy.
 

@@ -43,14 +43,12 @@ Skills are no longer loaded from static directories. Instead, they are discovere
 
 ### 1. Discovery Process
 When `AIChat` prepares a request:
-1.  It iterates through all its descendants.
+1.  It iterates through all its direct children and descendants (strictly limited to its own subtree).
 2.  It identifies any node that is an instance of `AISkill` where `is_active == true`.
 3.  It collects the node's `name` and `description`.
 
 ### 2. Precedence and Scope
-- Skills are scoped to the AI node that discovers them.
-- If multiple `AISkill` nodes have the same name, the first one found (depth-first) takes precedence, or they are treated as distinct if they have different paths.
-- This allows for "contextual skills": a character node could have its own `AISkill` child that only becomes available when the user is chatting with that specific character's `AIChat` component.
+- Skills are strictly scoped to the AI node that discovers them. Discovery does NOT search outside the AI node's subtree (e.g., it will not find skills in siblings or higher-level scene roots).
 
 ---
 
