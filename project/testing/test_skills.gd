@@ -72,11 +72,30 @@ func test_method(args: Dictionary) -> String:
 	# 2. Test Discovery Context
 	print("\n[TEST 2] Discovery Context")
 	var context = PromptBuilderClass.get_skills_discovery_context(discovered)
-	if not "AVAILABLE SKILLS:" in context:
+	if not "[SPECIALIZED SKILLS AVAILABLE]" in context:
 		_fail("Discovery context missing header."); return
 	if not "TestSkill: A test skill node." in context:
 		_fail("Discovery context missing TestSkill description."); return
 	print("SUCCESS: Discovery context verified.")
+
+	# 2b. Test Scoping Rule
+	print("\n[TEST 2b] Subtree Scoping Rule")
+	var external_skill = Node.new()
+	external_skill.set_script(skill_script)
+	external_skill.name = "ExternalSkill"
+	external_skill.set("description", "Should not be found.")
+	external_skill.set("is_active", true)
+	root.add_child(external_skill) # SIBLING of AIChat's root, not a descendant
+	
+	var disc_scoped = chat._discover_active_skills()
+	var found_external = false
+	for s in disc_scoped:
+		if s.name == "ExternalSkill":
+			found_external = true
+			break
+	if found_external:
+		_fail("Scoping failed: Discovered skill outside of AI node's subtree."); return
+	print("SUCCESS: Subtree scoping verified.")
 
 	# 3. Test Activation
 	print("\n[TEST 3] Activation")
@@ -84,6 +103,10 @@ func test_method(args: Dictionary) -> String:
 	var activation_result = await handler.activate_skill("TestSkill")
 	if not "Full instructions for TestSkill." in activation_result:
 		_fail("Activation result missing definition."); return
+	if not "YOU NOW HAVE ACCESS TO THESE NEW TOOLS:" in activation_result:
+		_fail("Activation result missing tool list (double-signaling)."); return
+	if not "- test_method" in activation_result:
+		_fail("Activation result missing specific tool name in list."); return
 	if not handler._dynamic_tool_targets.has("test_method"):
 		_fail("test_method not registered in dynamic tool targets."); return
 	print("SUCCESS: Activation verified.")

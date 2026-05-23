@@ -14,7 +14,7 @@ func load_model(model_id: String) -> Error:
 	_ensure_http_request()
 	
 	var url = endpoint + "/api/v1/models/load"
-	var body = {"identifier": model_id}
+	var body = {"model": model_id}
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":
@@ -44,7 +44,7 @@ func unload_model(model_id: String) -> Error:
 	_ensure_http_request()
 	
 	var url = endpoint + "/api/v1/models/unload"
-	var body = {"identifier": model_id}
+	var body = {"instance_id": model_id}
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":
