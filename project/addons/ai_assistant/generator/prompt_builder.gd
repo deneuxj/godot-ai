@@ -479,12 +479,15 @@ static func get_skills_discovery_context(discovered_skills: Array[Dictionary]) -
 	if discovered_skills.is_empty():
 		return ""
 		
-	var lines: Array[String] = ["\n\nAVAILABLE SKILLS:"]
-	lines.append("You have access to specialized skills. Only their descriptions are shown here.")
-	lines.append("Use `activate_skill(name)` to load a skill's full instructions and tools.")
+	var lines: Array[String] = ["\n\n[SPECIALIZED SKILLS AVAILABLE]"]
+	lines.append("The following specialized capabilities are available but NOT currently loaded.")
+	lines.append("To use them, you MUST first call `activate_skill(\"SkillName\")`.")
+	lines.append("This will grant you the expert instructions and specialized tools for that task.")
 	
 	for skill in discovered_skills:
 		lines.append("- %s: %s" % [skill["name"], skill["description"]])
+		
+	lines.append("\n[IMPORTANT] Do NOT attempt to implement these specialized tasks using generic GDScript if a skill is available. Always prefer activating and using the skill.")
 		
 	return "\n".join(lines)
 

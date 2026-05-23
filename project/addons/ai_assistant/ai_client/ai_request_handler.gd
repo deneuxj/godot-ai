@@ -282,10 +282,12 @@ func activate_skill(skill_name: String) -> String:
 	if not skill_node:
 		return "Error: Skill '%s' not found in the scene tree." % skill_name
 		
+	var new_tool_names = []
 	# Register tools from the node's schema
 	for tool_schema in skill_node.get("tools"):
 		if tool_schema.has("function") and tool_schema.function.has("name"):
 			var tool_name = tool_schema.function.name
+			new_tool_names.append(tool_name)
 			_dynamic_tool_targets[tool_name] = skill_node
 			
 			# We also add it to _active_tools as a virtual tool for the all_tools check in execute()
@@ -298,7 +300,12 @@ func activate_skill(skill_name: String) -> String:
 			_active_tools[tool_name] = virtual_tool
 	
 	_activated_skill_ids.append(skill_name)
-	return "<activated_skill name=\"%s\">\n%s\n</activated_skill>" % [skill_name, skill_node.definition]
+	
+	var tools_list = ""
+	if not new_tool_names.is_empty():
+		tools_list = "\n\nYOU NOW HAVE ACCESS TO THESE NEW TOOLS:\n- " + "\n- ".join(new_tool_names)
+		
+	return "<activated_skill name=\"%s\">\n%s%s\n</activated_skill>" % [skill_name, skill_node.definition, tools_list]
 
 
 func _find_skill_node(current: Node, skill_name: String) -> Node:
