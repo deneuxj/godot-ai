@@ -109,16 +109,34 @@ static func _validate_gdscript(content: String) -> Dictionary:
 static func validate_gdscript_code(content: String, expected_base: String = "") -> Dictionary:
 	var code = extract_code(content)
 	
-	if not expected_base.is_empty():
-		if not code.contains("extends " + expected_base) and not code.contains("extends \"" + expected_base + "\""):
-			return {"error": "Script must extend %s" % expected_base}
-
 	var gdscript := GDScript.new()
 	gdscript.source_code = code
 	var err := gdscript.reload()
 	if err != OK:
 		return {"error": "GDScript parse error (code %d)." % err}
 	
+	if not expected_base.is_empty():
+		var is_valid_inheritance = false
+		var actual_base = ""
+		
+		# 1. Check if expected_base is a global class name (like Node3D)
+		if gdscript.get_instance_base_type() == expected_base:
+			is_valid_inheritance = true
+		
+		# 2. Check if it's a script path
+		if not is_valid_inheritance:
+			var base_script = load(expected_base) if expected_base.begins_with("res://") else null
+			if base_script:
+				var current_base = gdscript.get_base_script()
+				while current_base:
+					if current_base == base_script:
+						is_valid_inheritance = true
+						break
+					current_base = current_base.get_base_script()
+		
+		if not is_valid_inheritance:
+			return {"error": "Script inheritance validation failed. Expected base: %s" % expected_base}
+
 	return {"error": null}
 
 
