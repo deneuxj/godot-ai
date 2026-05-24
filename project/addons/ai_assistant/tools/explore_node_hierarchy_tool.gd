@@ -21,7 +21,7 @@ func get_parameters() -> Dictionary:
 			},
 			"path": {
 				"type": "string",
-				"description": "Relative path to the node from the assistant (default is '.' for the assistant itself)."
+				"description": "Relative path to the node from the assistant (default is '.' for the assistant itself). Uses Godot NodePath syntax: '.' is this node, '..' is the parent, '../SiblingName' reaches a sibling, and 'Child/Grandchild' navigates down. To discover sibling nodes (e.g. Rooms, Walls, Doors), use '..' with list_children."
 			},
 			"property": {
 				"type": "string",
