@@ -775,7 +775,7 @@ func _update_context_length() -> void:
 
 func _mark_dirty() -> void:
 	if Engine.is_editor_hint() and editor_interface:
-		editor_interface.mark_scene_as_dirty()
+		editor_interface.mark_scene_as_unsaved()
 		notify_property_list_changed()
 
 
