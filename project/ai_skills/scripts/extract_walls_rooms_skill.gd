@@ -9,6 +9,20 @@ static func _normalize_y_rotation(rotation: Vector3) -> float:
 	var normalized = round(y_rot / 90.0) * 90.0
 	return normalized
 
+# Helper function to get the base size of a wall node, supporting standard meshes and CSG shapes
+static func _get_wall_size(wall: Node3D) -> Vector3:
+	if wall is MeshInstance3D:
+		return wall.mesh.size if wall.mesh != null else Vector3.ZERO
+	elif wall is CSGBox3D:
+		return wall.size
+	elif wall is CSGCombiner3D or wall.has_method("get_children"):
+		for child in wall.get_children():
+			if child is CSGBox3D:
+				return child.size
+			elif child is MeshInstance3D:
+				return child.mesh.size if child.mesh != null else Vector3.ZERO
+	return Vector3.ZERO
+
 func _init() -> void:
 	description = "Extracts walls and rooms information from the scene including positions, sizes, and relationships."
 	definition = """
@@ -110,9 +124,9 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 			result += "------\n"
 		
 		for wall in walls_node.get_children():
-			if wall is MeshInstance3D:
+			if wall is Node3D:
 				var pos = wall.position
-				var size = wall.mesh.size if wall.mesh != null else Vector3.ZERO
+				var size = _get_wall_size(wall)
 				var rotation = wall.rotation_degrees
 				
 				# Normalize Y-axis rotation and handle 90-degree increments
@@ -221,18 +235,16 @@ func validate_walls_rooms(arguments: Dictionary) -> String:
 	var walls_node = house_building.get_node("Walls")
 	if walls_node != null:
 		for wall in walls_node.get_children():
-			if wall is MeshInstance3D:
-				# Check if mesh exists
-				if wall.mesh == null:
-					validation_errors.append("Wall '" + wall.name + "' has no mesh assigned")
-				
-				# Check for valid size values (only check if mesh exists)
-				if wall.mesh != null:
-					if wall.mesh.size.x <= 0:
+			if wall is Node3D:
+				var size = _get_wall_size(wall)
+				if size == Vector3.ZERO:
+					validation_errors.append("Wall '" + wall.name + "' has no valid size or mesh/CSG box assigned")
+				else:
+					if size.x <= 0:
 						validation_errors.append("Wall '" + wall.name + "' has invalid width (x)")
-					if wall.mesh.size.y <= 0:
+					if size.y <= 0:
 						validation_errors.append("Wall '" + wall.name + "' has invalid height (y)")
-					if wall.mesh.size.z <= 0:
+					if size.z <= 0:
 						validation_errors.append("Wall '" + wall.name + "' has invalid depth (z)")
 				
 				# Check for valid position
@@ -324,8 +336,8 @@ func export_walls_rooms_json(arguments: Dictionary) -> String:
 	var walls_node = house_building.get_node("Walls")
 	if walls_node != null:
 		for wall in walls_node.get_children():
-			if wall is MeshInstance3D:
-				var wall_size = wall.mesh.size if wall.mesh != null else Vector3.ZERO
+			if wall is Node3D:
+				var wall_size = _get_wall_size(wall)
 				var wall_rot = wall.rotation_degrees
 				var norm_y = _normalize_y_rotation(wall_rot)
 				if int(abs(norm_y)) % 180 == 90:
