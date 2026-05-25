@@ -6,6 +6,7 @@
 - Before starting implementation, check if it's covered by a requirement and a design (see design/ directory)
 - Bug fixes and small UI adjustments need not be covered by a requirement
 - New implementation must not contradict an existing requirement; if it does, describe conflict and ask how to resolve
+- **Version Control:** All commit messages must follow the Conventional Commits standard (e.g. `feat:`, `fix:`, `refactor:`).
 
 ## 🏗️ Core Architecture
 - **Type:** Godot 4 Editor Plugin (`addons/ai_assistant`).
