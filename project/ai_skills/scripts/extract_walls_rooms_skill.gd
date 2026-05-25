@@ -91,26 +91,15 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 	
 	var result: String = ""
 	
-	# Get the blueprint reference node - using a more robust approach
-	var house_building: Node = null
-	
-	# Try different possible paths to find BlueprintReference
-	if has_node("../../../BlueprintReference"):
-		house_building = get_node("../../../BlueprintReference")
-	elif has_node("../../BlueprintReference"):
-		house_building = get_node("../../BlueprintReference")
-	elif has_node("../BlueprintReference"):
-		house_building = get_node("../BlueprintReference")
-	else:
-		# Try to find it in the scene tree by name
-		var root: Node = get_tree().root
-		if root != null:
-			var blueprint_ref: Node = root.find_child("BlueprintReference", true, false)
-			if blueprint_ref != null:
-				house_building = blueprint_ref
+	# Get the parent node of Walls and Rooms dynamically
+	var house_building: Node = get_tree().get_edited_scene_root()
+	if house_building != null:
+		var w = house_building.find_child("Walls", true, false)
+		if w != null:
+			house_building = w.get_parent()
 	
 	if house_building == null:
-		return "Error: BlueprintReference node not found"
+		return "Error: Scene root not found"
 	
 	if format == "text":
 		result += "Walls and Rooms Data Extracted:\n"
@@ -137,10 +126,32 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 				if is_rotated_90:
 					size = Vector3(size.z, size.y, size.x)
 				
+				var length = size.x
+				if is_rotated_90:
+					length = size.z
+				
+				var end_pos = pos
+				var dir_str = "Unknown"
+				if abs(normalized_y_rot) < 1.0:
+					end_pos = pos + Vector3(length, 0, 0)
+					dir_str = "+X"
+				elif abs(normalized_y_rot - 180.0) < 1.0 or abs(normalized_y_rot + 180.0) < 1.0:
+					end_pos = pos + Vector3(-length, 0, 0)
+					dir_str = "-X"
+				elif abs(normalized_y_rot + 90.0) < 1.0:
+					end_pos = pos + Vector3(0, 0, length)
+					dir_str = "+Z"
+				elif abs(normalized_y_rot - 90.0) < 1.0:
+					end_pos = pos + Vector3(0, 0, -length)
+					dir_str = "-Z"
+				
 				if format == "text":
 					result += "Wall: " + wall.name + "\n"
-					result += "  Position: " + str(pos) + "\n"
-					result += "  Size: " + str(size) + "\n"
+					result += "  Direction: " + dir_str + "\n"
+					result += "  Start Position: " + str(pos) + "\n"
+					result += "  End Position: " + str(end_pos) + "\n"
+					result += "  Length: " + str(length) + "\n"
+					result += "  Bounding Size: " + str(size) + "\n"
 					result += "  Rotation: " + str(rotation) + "\n"
 					
 					# Warn if rotation is not a multiple of 90 degrees
@@ -183,8 +194,10 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 				
 				if format == "text":
 					result += "Room: " + room.name + "\n"
-					result += "  Position: " + str(pos) + "\n"
+					result += "  Centroid Position: " + str(pos) + "\n"
 					result += "  Size: " + str(size) + "\n"
+					result += "  Bounds X: [" + str(pos.x - size.x/2.0) + " to " + str(pos.x + size.x/2.0) + "]\n"
+					result += "  Bounds Z: [" + str(pos.z - size.z/2.0) + " to " + str(pos.z + size.z/2.0) + "]\n"
 					result += "  Rotation: " + str(rotation) + "\n"
 					
 					# Warn if rotation is not a multiple of 90 degrees
@@ -204,26 +217,15 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 func validate_walls_rooms(arguments: Dictionary) -> String:
 	var result := ""
 	
-	# Get the blueprint reference node - using a more robust approach
-	var house_building = null
-	
-	# Try different possible paths to find BlueprintReference
-	if has_node("../../../BlueprintReference"):
-		house_building = get_node("../../../BlueprintReference")
-	elif has_node("../../BlueprintReference"):
-		house_building = get_node("../../BlueprintReference")
-	elif has_node("../BlueprintReference"):
-		house_building = get_node("../BlueprintReference")
-	else:
-		# Try to find it in the scene tree by name
-		var root = get_tree().root
-		if root != null:
-			var blueprint_ref = root.find_child("BlueprintReference", true, false)
-			if blueprint_ref != null:
-				house_building = blueprint_ref
+	# Get the parent node of Walls and Rooms dynamically
+	var house_building = get_tree().get_edited_scene_root()
+	if house_building != null:
+		var w = house_building.find_child("Walls", true, false)
+		if w != null:
+			house_building = w.get_parent()
 	
 	if house_building == null:
-		return "Error: BlueprintReference node not found"
+		return "Error: Scene root not found"
 	
 	result += "Data Validation Results:\n"
 	result += "========================\n\n"
@@ -301,26 +303,15 @@ func validate_walls_rooms(arguments: Dictionary) -> String:
 func export_walls_rooms_json(arguments: Dictionary) -> String:
 	var file_path = arguments.get("file_path", "res://exported_walls_rooms.json")
 	
-	# Get the blueprint reference node - using a more robust approach
-	var house_building = null
-	
-	# Try different possible paths to find BlueprintReference
-	if has_node("../../../BlueprintReference"):
-		house_building = get_node("../../../BlueprintReference")
-	elif has_node("../../BlueprintReference"):
-		house_building = get_node("../../BlueprintReference")
-	elif has_node("../BlueprintReference"):
-		house_building = get_node("../BlueprintReference")
-	else:
-		# Try to find it in the scene tree by name
-		var root = get_tree().root
-		if root != null:
-			var blueprint_ref = root.find_child("BlueprintReference", true, false)
-			if blueprint_ref != null:
-				house_building = blueprint_ref
+	# Get the parent node of Walls and Rooms dynamically
+	var house_building = get_tree().get_edited_scene_root()
+	if house_building != null:
+		var w = house_building.find_child("Walls", true, false)
+		if w != null:
+			house_building = w.get_parent()
 	
 	if house_building == null:
-		return "Error: BlueprintReference node not found"
+		return "Error: Scene root not found"
 	
 	# Extract all data
 	var data = {
