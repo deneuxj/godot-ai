@@ -134,3 +134,37 @@ func _execute_tool(tool_call: Dictionary) -> String:
         return await target.call(name, args)
     # ... fallback to built-in tools ...
 ```
+
+---
+
+## REQ-SKILL-0007: Wall-Adjuster Skill
+
+The `wall-adjuster` skill provides tools to automatically fix imprecise wall placements in Godot scenes, ensuring architectural geometries align perfectly without gaps or overlaps.
+
+### Architecture
+- **Skill Node**: `WallAdjusterSkill` extending `AISkill`.
+- **Location**: Installed or generated as a child of the AI assistant node.
+
+### Core Logic
+1. **Extraction**: Traverse the scene tree to identify wall geometries. Distinguish between CSG walls (e.g., `CSGBox3D`) and non-CSG mesh walls.
+2. **Detection**:
+   - **Joins**: Identify walls that intersect or almost intersect at ~90-degree angles.
+   - **Contacts**: Identify parallel walls with ends that are very close to each other.
+3. **Adjustment**:
+   - Calculate precise intersection points or contact planes.
+   - For **CSG Walls**: Modify the size/dimensions of the full wall shape (e.g., adjusting the `size` property).
+   - For **Non-CSG Walls**: Modify the underlying mesh data (e.g., vertex positions) to extend or shrink the geometry.
+   - **Constraint**: The `transform` matrix of the wall nodes MUST NOT be altered. All adjustments must happen in local geometry space.
+
+### Tools Provided
+- `adjust_walls(target_node_path: String) -> String`: Scans the target node's hierarchy, finds joins and contacts, applies necessary length adjustments to the geometries, and returns a summary of the modifications.
+
+### Requirements Coverage
+| Requirement ID | Design Detail |
+| --- | --- |
+| REQ-SKILL-0001 | Base Skill Architecture leveraging nodes |
+| REQ-SKILL-0002 | AISkill Node Structure and properties |
+| REQ-SKILL-0003 | Skill Discovery via Scene Tree |
+| REQ-SKILL-0005 | Lazy Loading & Activation |
+| REQ-SKILL-0006 | The Skill-Creator (Node Generator) |
+| REQ-SKILL-0007 | Wall-Adjuster Skill implementation handling CSG and non-CSG without transform changes |

@@ -232,6 +232,12 @@ REQ-SKILL-0006: Provide a built-in "skill-creator" meta-skill that allows the AI
   - The skill-creator shall generate the appropriate node configuration and GDScript logic.
   - The generated skill can be added to the current scene as a child of the active assistant node.
 
+REQ-SKILL-0007: Provide a "wall-adjuster" skill that allows the AI to precisely align and connect wall geometries.
+  - It shall extract walls and find expected contacts (parallel walls with very close ends) and joins (90 degrees).
+  - It shall adjust lengths so that they coincide precisely with no overlaps and no gaps.
+  - Adjustments shall be done by adjusting the full wall in a CSG group, and by adjusting the mesh for a non-CSG wall.
+  - The transform matrix shall not be adjusted.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API
