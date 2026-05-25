@@ -31,6 +31,7 @@ func _init() -> void:
 				"parameters": {
 					"type": "object",
 					"properties": {
+						"name": { "type": "string", "description": "The name of the wall node" },
 						"start_position": { "type": "array", "items": { "type": "number" }, "description": "Start [x, y, z]" },
 						"direction": { "type": "string", "enum": ["+X", "-X", "+Z", "-Z"] },
 						"length": { "type": "number" },
@@ -49,13 +50,14 @@ func _init() -> void:
 							}
 						}
 					},
-					"required": ["start_position", "direction", "length", "thickness"]
+					"required": ["name", "start_position", "direction", "length", "thickness"]
 				}
 			}
 		}
 	]
 
 func create_wall(arguments: Dictionary) -> String:
+	var wall_name: String = arguments.get("name", "Wall_Generated")
 	var start_pos_arr: Array = arguments.get("start_position", [0, 0, 0])
 	var start_pos := Vector3(start_pos_arr[0], start_pos_arr[1], start_pos_arr[2])
 	var direction: String = arguments.get("direction", "+X")
@@ -64,7 +66,7 @@ func create_wall(arguments: Dictionary) -> String:
 	var openings: Array = arguments.get("openings", [])
 	
 	var root := CSGCombiner3D.new()
-	root.name = "Wall_Generated"
+	root.name = wall_name
 	root.use_collision = true
 	
 	# Base Wall
