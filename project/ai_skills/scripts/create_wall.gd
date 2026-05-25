@@ -134,9 +134,10 @@ func create_wall(arguments: Dictionary) -> String:
 		"-Z": root.rotation_degrees.y = 90
 		
 	# Add to scene (under Generated node if it exists)
-	var parent = get_parent().get_node_or_null("Generated")
+	var scene_root = get_tree().get_edited_scene_root()
+	var parent = scene_root.find_child("Generated", true, false)
 	if not parent:
-		parent = get_parent()
+		parent = scene_root
 		
 	parent.add_child(root)
 	root.owner = get_tree().get_edited_scene_root()
