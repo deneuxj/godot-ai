@@ -11,6 +11,7 @@ func _init() -> void:
 		
 		- create_wall: Creates axis-aligned walls (X or Z) at Y=0. Walls are 2.5m high.
 		- add_opening_to_wall: Adds an opening to an existing wall by name.
+		- delete_wall: Deletes an existing wall or node.
 		
 		Openings:
 		- doors: default 2.1m high, custom width. Default starts at Y=0.
@@ -80,11 +81,36 @@ func _init() -> void:
 					"required": ["wall_name", "opening"]
 				}
 			}
+		},
+		{
+			"type": "function",
+			"function": {
+				"name": "delete_wall",
+				"description": "Deletes a wall or node by its name or relative path.",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"node_identifier": { "type": "string", "description": "The name of the wall node (searched under 'Generated') or a relative path from the AI node." }
+					},
+					"required": ["node_identifier"]
+				}
+			}
 		}
 	]
 
 func create_wall(arguments: Dictionary) -> String:
 	var wall_name: String = arguments.get("name", "Wall_Generated")
+	
+	var scene_root = get_tree().get_edited_scene_root()
+	var parent_node = null
+	if scene_root:
+		parent_node = scene_root.find_child("Generated", true, false)
+		if not parent_node:
+			parent_node = scene_root
+			
+		if parent_node and parent_node.has_node(wall_name):
+			return "Error: A node named '%s' already exists. Refusing to create wall." % wall_name
+			
 	var start_pos_arr: Array = arguments.get("start_position", [0, 0, 0])
 	var start_pos := Vector3(start_pos_arr[0], start_pos_arr[1], start_pos_arr[2])
 	var direction: String = arguments.get("direction", "+X")
@@ -133,13 +159,9 @@ func create_wall(arguments: Dictionary) -> String:
 		"+Z": root.rotation_degrees.y = -90
 		"-Z": root.rotation_degrees.y = 90
 		
-	# Add to scene (under Generated node if it exists)
-	var scene_root = get_tree().get_edited_scene_root()
-	var parent = scene_root.find_child("Generated", true, false)
-	if not parent:
-		parent = scene_root
-		
-	parent.add_child(root)
+	# Add to scene
+	if parent_node:
+		parent_node.add_child(root)
 	root.owner = get_tree().get_edited_scene_root()
 	for child in root.get_children():
 		child.owner = root.owner
@@ -193,3 +215,32 @@ func add_opening_to_wall(arguments: Dictionary) -> String:
 	hole.owner = wall.owner
 	
 	return "Successfully added %s to wall %s" % [op_type, wall_name]
+
+func delete_wall(arguments: Dictionary) -> String:
+	var node_identifier: String = arguments.get("node_identifier", "")
+	if node_identifier == "":
+		return "Error: node_identifier is required."
+		
+	var target_node: Node = null
+	
+	if "/" in node_identifier:
+		target_node = get_node_or_null(node_identifier)
+	else:
+		var scene_root = get_tree().get_edited_scene_root()
+		if not scene_root:
+			return "Error: No edited scene root found."
+			
+		var generated = scene_root.find_child("Generated", true, false)
+		if generated:
+			target_node = generated.get_node_or_null(node_identifier)
+		else:
+			return "Error: Could not find 'Generated' node to search for " + node_identifier
+			
+	if not target_node:
+		return "Error: Could not find node: " + node_identifier
+		
+	var parent = target_node.get_parent()
+	parent.remove_child(target_node)
+	target_node.queue_free()
+	
+	return "Successfully deleted node %s" % node_identifier
