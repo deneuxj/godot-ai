@@ -11,8 +11,15 @@ func _init() -> void:
 		Walls are 2.5m high and use CSG for subtraction of openings.
 		
 		Openings:
-		- doors: 2.1m high, 0.8m or 1.6m wide. Starts at Y=0.
-		- windows: 1.2m high, custom width. Starts at Y=0.8m.
+		- doors: default 2.1m high, custom width. Default starts at Y=0.
+		- windows: default 1.2m high, custom width. Default starts at Y=0.8m.
+		- (Optional) height: Custom height for the opening.
+		- (Optional) y_offset: Custom vertical distance from the floor.
+		
+		CRITICAL RULES FOR AI:
+		1. start_position is the END/CORNER of the wall, NOT the center of a room! Do not use room centroids as start_position.
+		2. direction determines which axis the wall runs along. Ensure 'length' matches the dimension of the wall along that axis (do not swap width/depth).
+		3. To perfectly center an opening on the wall, calculate: offset = (wall_length - opening_width) / 2.0
 	"""
 	
 	tools = [
@@ -35,7 +42,9 @@ func _init() -> void:
 								"properties": {
 									"type": { "type": "string", "enum": ["door", "window"] },
 									"offset": { "type": "number", "description": "Position relative to start" },
-									"width": { "type": "number" }
+									"width": { "type": "number" },
+									"height": { "type": "number", "description": "Optional custom height" },
+									"y_offset": { "type": "number", "description": "Optional vertical offset from floor" }
 								}
 							}
 						}
@@ -75,11 +84,15 @@ func create_wall(arguments: Dictionary) -> String:
 		hole.operation = CSGShape3D.OPERATION_SUBTRACTION
 		
 		if op_type == "door":
-			hole.size = Vector3(width, 2.1, thickness + 0.1)
-			hole.position = Vector3(offset + width/2.0, 1.05, 0)
+			var height: float = op.get("height", 2.1)
+			var y_offset: float = op.get("y_offset", 0.0)
+			hole.size = Vector3(width, height, thickness + 0.1)
+			hole.position = Vector3(offset + width/2.0, y_offset + height/2.0, 0)
 		else: # window
-			hole.size = Vector3(width, 1.2, thickness + 0.1)
-			hole.position = Vector3(offset + width/2.0, 0.8 + 0.6, 0)
+			var height: float = op.get("height", 1.2)
+			var y_offset: float = op.get("y_offset", 0.8)
+			hole.size = Vector3(width, height, thickness + 0.1)
+			hole.position = Vector3(offset + width/2.0, y_offset + height/2.0, 0)
 			
 		root.add_child(hole)
 	
