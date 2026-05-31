@@ -45,13 +45,17 @@ class ChatProvider extends SystemPromptProvider:
 		var active_prompt = chat_node.get("active_system_prompt")
 		var todo_list = chat_node.get("todo_list")
 		var discovered_skills = chat_node.call("_discover_active_skills")
+		var memory = ""
+		if "memory" in chat_node:
+			memory = chat_node.get("memory")
 		
 		var base = PromptBuilder.get_chat_prompt(active_prompt)
 		var env = PromptBuilder.get_environment_context()
+		var mem = PromptBuilder.get_memory_context(memory)
 		var skills = PromptBuilder.get_skills_discovery_context(discovered_skills)
 		var todos = PromptBuilder._get_todo_context(todo_list)
 		
-		var final_prompt = base + env + skills + todos
+		var final_prompt = base + env + mem + skills + todos
 		if remaining_turns >= 0:
 			final_prompt = PromptBuilder.inject_turn_info(final_prompt, remaining_turns)
 		return final_prompt
@@ -275,6 +279,13 @@ Rules:
 5. After calling a tool and receiving its result, you MUST provide a final text response to the user summarizing exactly what was done.
 6. If you encounter an insurmountable obstacle or fail at the task, explicitly state "FAILED" and describe the specific error or blocker.
 
+Tool Usage:
+- You HAVE access to tools to explore Godot documentation, project resources, and the live scene tree.
+- USE `explore_node_hierarchy` to navigate the scene tree and find existing nodes (e.g. to locate where the walls are).
+- USE `execute_script` to make modifications to the live scene, but only if you cannot achieve the result with specific tools.
+- USE `explore_godot_docs` if you need to check API documentation.
+- USE `explore_project_resources` to read existing files and assets, but DO NOT use it to parse `.tscn` files directly if you just need to find nodes in the live scene. Use `explore_node_hierarchy` for the live scene.
+
 Efficiency and Limits:
 - You have {REMAINING_TURNS} tool calls left in this turn. 
 - Minimize turns by being direct: use `search` or `list_files` with specific paths instead of navigating folders one level at a time.
@@ -488,6 +499,17 @@ static func get_skills_discovery_context(discovered_skills: Array[Dictionary]) -
 		lines.append("- %s: %s" % [skill["name"], skill["description"]])
 		
 	lines.append("\n[IMPORTANT] Do NOT attempt to implement these specialized tasks using generic GDScript if a skill is available. Always prefer activating and using the skill.")
+		
+	return "\n".join(lines)
+
+
+## Returns a string representing the persistent memory context.
+static func get_memory_context(memory: String) -> String:
+	if memory.is_empty():
+		return ""
+		
+	var lines: Array[String] = ["\n\n[PERSISTENT MEMORY]"]
+	lines.append(memory.strip_edges())
 		
 	return "\n".join(lines)
 

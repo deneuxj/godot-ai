@@ -38,6 +38,10 @@ signal request_handler_created(handler: AIRequestHandler)
 @export_multiline
 var system_prompt: String = ""
 
+## Persistent memory for context across sessions. Describes how the scene is organized, common operations, etc.
+@export_multiline
+var memory: String = ""
+
 ## System prompt override for the Router workload analysis.
 @export_multiline
 var router_system_prompt: String = ""
@@ -381,10 +385,11 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	var discovered_skills = _discover_active_skills()
 	var skills_context = PromptBuilder.get_skills_discovery_context(discovered_skills)
 	var todo_context = PromptBuilder._get_todo_context(todo_list)
+	var memory_context = PromptBuilder.get_memory_context(memory)
 		
 	final_messages.append({
 		"role": "system", 
-		"content": base_system_prompt + PromptBuilder.get_environment_context() + skills_context + todo_context
+		"content": base_system_prompt + PromptBuilder.get_environment_context() + memory_context + skills_context + todo_context
 	})
 	
 	for msg in chat_history:
