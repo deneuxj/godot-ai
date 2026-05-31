@@ -238,6 +238,11 @@ REQ-SKILL-0007: Provide a "wall-adjuster" skill that allows the AI to precisely 
   - Adjustments shall be done by adjusting the full wall in a CSG group, and by adjusting the mesh for a non-CSG wall.
   - The transform matrix shall not be adjusted.
 
+REQ-SKILL-0008: Provide a "floor-adjuster" skill that allows the AI to precisely align floors against walls.
+  - Floors are defined by axis-aligned boxes that are thin on the y axis.
+  - The adjustment must take into account walls: when two rooms are separated by a wall, the floors should meet exactly at the middle of the wall.
+  - Adjustments shall modify the floor's size and position (or local translation) accordingly.
+
 ## Out of Scope (Future)
 
 REQ-FUTURE-0001: Support for Anthropic/Claude API

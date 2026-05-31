@@ -201,6 +201,9 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		push_warning("AIChat: A request is already in progress. Cancel it first or wait for completion.")
 		return
 
+	# Restore active skills from history if they were lost during a scene reload
+	await _restore_skills_from_history()
+
 	# 1. Update history with user prompt and attachments.
 	var user_content: Variant = prompt
 	if not attachments.is_empty():
@@ -797,3 +800,24 @@ func _scan_for_skills(node: Node, result: Array[Dictionary]) -> void:
 				"description": child.description
 			})
 		_scan_for_skills(child, result)
+
+func _restore_skills_from_history() -> void:
+	if chat_history.is_empty():
+		return
+		
+	var skills_to_activate := []
+	for msg in chat_history:
+		if msg.has("tool_calls"):
+			for tc in msg["tool_calls"]:
+				if tc.has("function") and tc.function.get("name") == "activate_skill":
+					var args_str = tc.function.get("arguments", "{}")
+					if args_str is String:
+						var args = JSON.parse_string(args_str)
+						if args and args.has("name"):
+							var skill_name = args["name"]
+							if not activated_skill_ids.has(skill_name) and not skills_to_activate.has(skill_name):
+								skills_to_activate.append(skill_name)
+								
+	for skill_name in skills_to_activate:
+		await activate_skill(skill_name)
+

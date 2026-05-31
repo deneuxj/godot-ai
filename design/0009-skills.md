@@ -159,6 +159,29 @@ The `wall-adjuster` skill provides tools to automatically fix imprecise wall pla
 ### Tools Provided
 - `adjust_walls(target_node_path: String) -> String`: Scans the target node's hierarchy, finds joins and contacts, applies necessary length adjustments to the geometries, and returns a summary of the modifications.
 
+---
+
+## REQ-SKILL-0008: Floor-Adjuster Skill
+
+The `floor-adjuster` skill provides tools to automatically resize and position floor geometries so that they meet precisely under the center of separating walls.
+
+### Architecture
+- **Skill Node**: `FloorAdjusterSkill` extending `AISkill`.
+- **Location**: Installed or generated as a child of the AI assistant node.
+
+### Core Logic
+1. **Extraction**: Traverse the scene tree to identify floor and wall geometries. Floors are identified as axis-aligned boxes (CSG or non-CSG meshes) that are thin on the Y-axis. Walls are identified similarly to the `wall-adjuster`.
+2. **Detection**:
+   - Determine the spatial relationship between floors and walls.
+   - Detect cases where a wall separates two distinct floor segments (rooms).
+3. **Adjustment**:
+   - Calculate the center-line of the separating wall along the appropriate axis.
+   - For **CSG Floors**: Modify the `size` and `position` properties so the floor edge aligns precisely with the wall's center.
+   - For **Non-CSG Floors**: Modify the underlying mesh `size` and adjust the node's local `transform.origin` (translation) to match the new boundaries.
+
+### Tools Provided
+- `adjust_floors(target_node_path: String) -> String`: Scans the target node's hierarchy, finds floors and walls, applies necessary size and position adjustments to the floors so they meet at the middle of walls, and returns a summary of the modifications.
+
 ### Requirements Coverage
 | Requirement ID | Design Detail |
 | --- | --- |
@@ -168,3 +191,4 @@ The `wall-adjuster` skill provides tools to automatically fix imprecise wall pla
 | REQ-SKILL-0005 | Lazy Loading & Activation |
 | REQ-SKILL-0006 | The Skill-Creator (Node Generator) |
 | REQ-SKILL-0007 | Wall-Adjuster Skill implementation handling CSG and non-CSG without transform changes |
+| REQ-SKILL-0008 | Floor-Adjuster Skill implementation handling floor alignment relative to separating walls |
