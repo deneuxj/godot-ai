@@ -283,7 +283,10 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			var slice_start = max(0, filtered_history.size() - 6)
 			for i in range(slice_start, filtered_history.size()):
 				var msg = filtered_history[i]
-				presentation += "%s: %s\n" % [msg.role.to_upper(), msg.get("content", "")]
+				if i == filtered_history.size() - 1:
+					presentation += "%s: [LATEST_USER_REQUEST]%s[/LATEST_USER_REQUEST]\n" % [msg.role.to_upper(), msg.get("content", "")]
+				else:
+					presentation += "%s: %s\n" % [msg.role.to_upper(), msg.get("content", "")]
 			presentation += "[TRANSCRIPT_END]\n\n"
 			presentation += "Decision:"
 
