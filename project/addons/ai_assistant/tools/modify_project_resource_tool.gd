@@ -36,6 +36,10 @@ func get_parameters() -> Dictionary:
 
 func execute(arguments: Dictionary) -> String:
 	var path = arguments.get("path", "")
+
+	var ext = path.get_extension().to_lower()
+	if not ext in ["gd", "md", "txt", "json"]:
+		return "Error: File modification is restricted to text-based formats (.gd, .md, .txt, .json). Attempted to modify: %s" % path
 	var target_line = int(arguments.get("target_line", 1))
 	var new_content = arguments.get("new_content", "")
 
@@ -75,6 +79,8 @@ func _create_new_file(path: String, content: String) -> String:
 		return "Error: Could not open file '%s' for writing." % path
 
 	file.store_string(content)
+	file.close()
+	_sync_editor(path)
 	return "Success: Created new file '%s'." % path
 
 
@@ -136,4 +142,15 @@ func _patch_existing_file(path: String, target_line: int, old_content: String, n
 		return "Error: Could not open file '%s' for writing." % path
 
 	write_file.store_string("\n".join(result_lines))
+	write_file.close()
+	_sync_editor(path)
 	return "Success: Modified file '%s' at line %d." % [path, found_at]
+
+
+func _sync_editor(path: String) -> void:
+	if Engine.is_editor_hint():
+		var efs = EditorInterface.get_resource_filesystem()
+		efs.update_file(path)
+		var script_editor = EditorInterface.get_script_editor()
+		if script_editor:
+			script_editor.reload_scripts()

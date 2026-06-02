@@ -54,7 +54,8 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
     - Search for `old_content` in the file, starting at `target_line` and checking a small window (e.g., +/- 5 lines).
     - If found, replace the block.
     - If not found exactly at `target_line` or within the window, return an error with the actual lines found at `target_line` to help the AI recalibrate.
-3. **Safety**: Only allows modifying text-based files.
+3. **Safety**: Explicitly restrict to text-based files (e.g., `.gd`, `.md`, `.txt`, `.json`) and forbid complex binary or object formats (e.g., `.tscn`, `.tres`).
+4. **Cache Synchronization**: Must call `EditorInterface.get_resource_filesystem().update_file(path)` after writing the file via `FileAccess` to ensure Godot's resource cache is synchronized.
 
 ---
 

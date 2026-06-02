@@ -174,7 +174,9 @@ REQ-TOOL-0004: The `AIAgentAssisted3D` and `AIChat` nodes shall provide properti
 REQ-TOOL-0005: Tool execution shall be transparent to the user, with results optionally logged in the console or status area.
 
 REQ-TOOL-0006: Provide a tool `modify_project_resource` that allows the AI to:
-  - Create new files or patch existing ones.
+  - Create new text files or patch existing text files (e.g., .gd, .md, .txt, .json).
+  - The tool shall explicitly forbid modification of complex binary or serialized object formats (e.g., .tscn, .tres).
+  - After modifying a file on disk, the tool MUST call `EditorInterface.get_resource_filesystem().update_file()` to synchronize the editor's resource cache.
   - The tool shall take a path, a target line, the old content, and the new content.
   - For existing files, the tool shall verify that the `old_content` exists near the `target_line`. 
   - If a mismatch occurs, the tool shall return an error instructing the AI to read the file again.
@@ -242,6 +244,10 @@ REQ-SKILL-0008: Provide a "floor-adjuster" skill that allows the AI to precisely
   - Floors are defined by axis-aligned boxes that are thin on the y axis.
   - The adjustment must take into account walls: when two rooms are separated by a wall, the floors should meet exactly at the middle of the wall.
   - Adjustments shall modify the floor's size and position (or local translation) accordingly.
+
+REQ-SKILL-0009: Provide specialized skills for manipulating complex resource types (e.g., `.tscn` and `.tres` files) as objects.
+  - These skills shall expose operations to interact with the underlying Godot objects directly rather than editing their raw file formats.
+  - (Details to be defined in future implementation phases).
 
 ## Out of Scope (Future)
 

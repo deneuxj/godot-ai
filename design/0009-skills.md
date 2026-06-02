@@ -182,6 +182,15 @@ The `floor-adjuster` skill provides tools to automatically resize and position f
 ### Tools Provided
 - `adjust_floors(target_node_path: String) -> String`: Scans the target node's hierarchy, finds floors and walls, applies necessary size and position adjustments to the floors so they meet at the middle of walls, and returns a summary of the modifications.
 
+---
+
+## REQ-SKILL-0009: Object Resource Manipulation Skills
+
+*(Future Implementation Phase)*
+
+Provide specialized skills for manipulating complex resource types (e.g., `.tscn` and `.tres` files) as objects.
+These skills will expose specific tools to interact with the underlying Godot objects directly, bypassing the risks of editing raw `.tscn` text formats with LLMs. The exact schemas and implementations will be defined later.
+
 ### Requirements Coverage
 | Requirement ID | Design Detail |
 | --- | --- |
@@ -192,3 +201,4 @@ The `floor-adjuster` skill provides tools to automatically resize and position f
 | REQ-SKILL-0006 | The Skill-Creator (Node Generator) |
 | REQ-SKILL-0007 | Wall-Adjuster Skill implementation handling CSG and non-CSG without transform changes |
 | REQ-SKILL-0008 | Floor-Adjuster Skill implementation handling floor alignment relative to separating walls |
+| REQ-SKILL-0009 | Object Resource Manipulation Skills (TBD) |
