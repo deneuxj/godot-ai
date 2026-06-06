@@ -144,6 +144,7 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
+- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
 - Your response should contain ONLY the tool call block if you need to use a tool.
 
 Continuation Rule:
@@ -217,6 +218,7 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
+- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
 - Your response should contain ONLY the tool call block if you need to use a tool.
 
 Continuation Rule:
@@ -262,6 +264,7 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
+- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
 - Your response should contain ONLY the tool call block if you need to use a tool.
 
 Continuation Rule:
@@ -304,6 +307,7 @@ Efficiency and Limits:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
+- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
 - Your response should contain ONLY the tool call block if you need to use a tool.
 
 Formatting:
@@ -360,6 +364,7 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
+- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
 
 Formatting:
 - ALWAYS use Godot's BBCode for formatting your responses.
