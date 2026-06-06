@@ -102,7 +102,7 @@ func _get_file_content(path: String, start_line: int = 1, end_line: int = -1) ->
 	
 	# Only read text-based files
 	var ext = path.get_extension().to_lower()
-	var text_extensions = ["gd", "tscn", "tres", "txt", "md", "json", "xml", "cfg"]
+	var text_extensions = ["gd", "tscn", "tres", "txt", "md", "json", "xml", "cfg", "gdshader", "shader"]
 	
 	if ext not in text_extensions:
 		return "Info: Resource '%s' is a binary file (extension: %s). Metadata only: Size: %d bytes" % [path, ext, FileAccess.open(path, FileAccess.READ).get_length()]
