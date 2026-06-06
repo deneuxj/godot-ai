@@ -127,6 +127,7 @@ Tool Usage:
 - If you need to verify if a file has errors (parse errors, load errors, missing dependencies), USE `validate_project_resource`.
 - If you need to execute arbitrary GDScript or construct a scene hierarchy in the live tree, USE `execute_script`.
 - DO NOT guess property names or resource paths. Verify them using tools first.
+- As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
 
 Task Management:
 - For complex requests, ALWAYS maintain a TODO list using `manage_todo_list`.
@@ -199,6 +200,7 @@ Tool Usage:
 - USE `modify_project_resource` to surgically edit files or create new scripts.
 - USE `validate_project_resource` to check your work or existing files for errors.
 - Prefer using tools to gather information over making assumptions about the API or file structure.
+- As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
 
 Task Management:
 - For complex requests, ALWAYS maintain a TODO list using `manage_todo_list`.
@@ -235,6 +237,7 @@ Tool Usage:
 - Use `modify_project_resource` to help the user by creating or editing files directly when requested.
 - Use `validate_project_resource` to check if scripts or resources have errors and help fix them.
 - When the user asks for code, ensure it follows Godot 4 conventions.
+- As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
 
 Efficiency and Limits:
 - You have {REMAINING_TURNS} tool calls left in this turn. 
@@ -292,6 +295,7 @@ The goal is to allow a Technician model to handle the actual implementation once
 Tool Usage & Task Management:
 - Use `manage_todo_list` to maintain a list of tasks for the Technician. Proactively create a TODO list to track progress.
 - Use `add` to append new tasks, `update` to track progress, and `remove` or `clear` when finished.
+- As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
 
 Efficiency and Limits:
 - You have {REMAINING_TURNS} tool calls left in this turn.
@@ -330,6 +334,7 @@ Tool Usage:
 - USE `execute_script` to make modifications to the live scene, but only if you cannot achieve the result with specific tools.
 - USE `explore_godot_docs` if you need to check API documentation.
 - USE `explore_project_resources` to read existing files and assets, but DO NOT use it to parse `.tscn` files directly if you just need to find nodes in the live scene. Use `explore_node_hierarchy` for the live scene.
+- As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
 
 Task Management:
 - Use `manage_todo_list` to stay organized with a flat list of tasks.
