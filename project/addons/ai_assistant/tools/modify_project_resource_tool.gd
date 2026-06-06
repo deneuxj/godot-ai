@@ -38,8 +38,8 @@ func execute(arguments: Dictionary) -> String:
 	var path = arguments.get("path", "")
 
 	var ext = path.get_extension().to_lower()
-	if not ext in ["gd", "md", "txt", "json"]:
-		return "Error: File modification is restricted to text-based formats (.gd, .md, .txt, .json). Attempted to modify: %s" % path
+	if not ext in ["gd", "tscn", "tres", "txt", "md", "json", "xml", "cfg", "gdshader", "shader"]:
+		return "Error: File modification is restricted to text-based formats. Attempted to modify: %s" % path
 	var target_line = int(arguments.get("target_line", 1))
 	var new_content = arguments.get("new_content", "")
 
