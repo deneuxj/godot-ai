@@ -151,6 +151,7 @@ func _sync_editor(path: String) -> void:
 	if Engine.is_editor_hint():
 		var efs = EditorInterface.get_resource_filesystem()
 		efs.update_file(path)
+		efs.scan()
 		var script_editor = EditorInterface.get_script_editor()
 		if script_editor:
 			script_editor.reload_scripts()
