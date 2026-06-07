@@ -741,6 +741,9 @@ func compress_context(force: bool = false) -> bool:
 	
 	# REQ-CHAT-0015: Aggressive Compression
 	if aggressive_compression:
+		var regex := RegEx.new()
+		regex.compile("(?s)<think>.*?</think>")
+		
 		var i := 0
 		while i < chat_history.size():
 			var msg = chat_history[i]
@@ -750,17 +753,32 @@ func compress_context(force: bool = false) -> bool:
 				chat_history.remove_at(i)
 				removed = true
 				pruned = true
-			elif msg.role == "assistant" and msg.has("tool_calls"):
-				if msg.get("content", "").is_empty():
-					chat_history.remove_at(i)
-					removed = true
-					pruned = true
-				else:
-					# Keep the content but remove the tool calls
-					var new_msg = msg.duplicate()
+			elif msg.role == "assistant":
+				var new_msg = msg.duplicate()
+				var modified := false
+				
+				# Strip <think> blocks if not preserving
+				if not preserve_thinking_in_history:
+					var content = new_msg.get("content", "")
+					if typeof(content) == TYPE_STRING:
+						var stripped = regex.sub(content, "", true).strip_edges()
+						if stripped != content:
+							new_msg["content"] = stripped
+							modified = true
+				
+				# Strip tool calls
+				if new_msg.has("tool_calls"):
 					new_msg.erase("tool_calls")
-					chat_history[i] = new_msg
-					pruned = true
+					modified = true
+					
+				if modified:
+					if new_msg.get("content", "").is_empty() and not new_msg.has("tool_calls"):
+						chat_history.remove_at(i)
+						removed = true
+						pruned = true
+					else:
+						chat_history[i] = new_msg
+						pruned = true
 			
 			if not removed:
 				i += 1
