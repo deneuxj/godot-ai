@@ -3,9 +3,9 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_sc
 
 uniform vec3 base_color : source_color = vec3(0.9, 0.87, 0.8);
 uniform vec3 dark_color : source_color = vec3(0.75, 0.72, 0.65);
-uniform float rough_scale = 60.0;
+uniform float rough_scale = 150.0;
 uniform float trowel_scale = 3.0;
-uniform float bump_strength = 0.02;
+uniform float bump_strength = 0.002;
 uniform float blend_weight : hint_range(0.0, 1.0) = 0.7;
 
 // Easy-to-edit transform properties
@@ -36,7 +36,7 @@ void vertex() {
 
 // Pseudo-random hash for noise
 float hash(vec3 p) {
-	p = fract(p * vec3(0.1031, 0.1030, 0.0973));
+	p = fract(p * vec3(12.9898, 78.233, 45.164));
 	p += dot(p, p.yxz + 33.33);
 	return fract((p.x + p.y) * p.z);
 }

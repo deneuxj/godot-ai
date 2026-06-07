@@ -6,10 +6,10 @@
 render_priority = 0
 shader = ExtResource("1_m1sd2")
 shader_parameter/base_color = Color(0.9, 0.87, 0.8, 1)
-shader_parameter/dark_color = Color(0.9019608, 0.87058824, 0.8, 1)
-shader_parameter/rough_scale = 60.0
+shader_parameter/dark_color = Color(0.75, 0.72, 0.65, 1)
+shader_parameter/rough_scale = 150.0
 shader_parameter/trowel_scale = 3.0
-shader_parameter/bump_strength = 0.005
+shader_parameter/bump_strength = 0.002
 shader_parameter/blend_weight = 0.7
 shader_parameter/pattern_position = Vector3(0, 0, 0)
 shader_parameter/pattern_rotation = Vector3(0, 0, 0)
