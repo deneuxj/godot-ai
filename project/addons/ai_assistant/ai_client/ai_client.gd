@@ -34,6 +34,10 @@ var max_tokens: int = 4096
 @export
 var reasoning: String = ""
 
+## True if the last response was truncated due to token limit.
+var hit_token_limit: bool = false
+
+
 
 ## Set the API endpoint URL.
 ## Returns self for method chaining.

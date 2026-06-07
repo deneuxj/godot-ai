@@ -126,6 +126,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 		
 	var finish_reason = choice.get("finish_reason", "")
 	if finish_reason == "length" or finish_reason == "max_tokens":
+		hit_token_limit = true
 		content += "\n\n[color=orange][i]Note: The AI stopped because it reached its token generation limit. If it was in the middle of writing, please ask it to 'continue'.[/i][/color]"
 		return content
 	
@@ -183,6 +184,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 ## [param tools] is an optional array of tool definition dictionaries.
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
+	hit_token_limit = false
 	
 	var model_to_use = model
 	if model_to_use.is_empty():
@@ -308,6 +310,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			progress.emit(typed_chunks)
 
 	if final_finish_reason == "length" or final_finish_reason == "max_tokens":
+		hit_token_limit = true
 		full_content += "\n\n[color=orange][i]Note: The AI stopped because it reached its token generation limit. If it was in the middle of writing, please ask it to 'continue'.[/i][/color]"
 		tool_calls.clear()
 

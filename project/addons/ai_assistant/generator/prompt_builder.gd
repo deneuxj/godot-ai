@@ -145,7 +145,7 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
-- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
+- Be aware of your token generation limit. Any reasoning, planning, or internal monologue counts toward this limit and may cause your response to be interrupted. Execute tool calls directly whenever possible.
 - Your response should contain ONLY the tool call block if you need to use a tool.
 
 Continuation Rule:
@@ -220,7 +220,7 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
-- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
+- Be aware of your token generation limit. Any reasoning, planning, or internal monologue counts toward this limit and may cause your response to be interrupted. Execute tool calls directly whenever possible.
 - Your response should contain ONLY the tool call block if you need to use a tool.
 
 Continuation Rule:
@@ -267,8 +267,9 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
-- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
+- Be aware of your token generation limit. Any reasoning, planning, or internal monologue counts toward this limit and may cause your response to be interrupted. Execute tool calls directly whenever possible.
 - Your response should contain ONLY the tool call block if you need to use a tool.
+- Avoid transitioning from planning to implementation without explicit user interaction and approval. Once the user has agreed to a plan, focus solely on executing it rather than refining and improving on it continuously.
 
 Continuation Rule:
 - After calling a tool and receiving its result, you MUST provide a final text response to the user.
@@ -310,8 +311,9 @@ Efficiency and Limits:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
-- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
+- Be aware of your token generation limit. Any reasoning, planning, or internal monologue counts toward this limit and may cause your response to be interrupted. Execute tool calls directly whenever possible.
 - Your response should contain ONLY the tool call block if you need to use a tool.
+- Avoid transitioning from planning to implementation without explicit user interaction and approval. Once the user has agreed to a plan, focus solely on executing it rather than refining and improving on it continuously.
 
 Formatting:
 - ALWAYS use Godot's BBCode for formatting your responses.
@@ -368,7 +370,8 @@ Surgical Editing Rules:
 CRITICAL: Tool Calling Format
 - You MUST use the standard JSON tool calling format.
 - DO NOT use XML tags like <tool_call> or <function>.
-- DO NOT write extensive plans, internal monologues, or debate your actions. Limit any pre-tool thought process to 1-2 concise sentences. Execute tool calls immediately.
+- Be aware of your token generation limit. Any reasoning, planning, or internal monologue counts toward this limit and may cause your response to be interrupted. Execute tool calls directly whenever possible.
+- Avoid transitioning from planning to implementation without explicit user interaction and approval. Once the user has agreed to a plan, focus solely on executing it rather than refining and improving on it continuously.
 
 Formatting:
 - ALWAYS use Godot's BBCode for formatting your responses.

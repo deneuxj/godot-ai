@@ -67,6 +67,10 @@ var api_key: String = ""
 @export
 var model: String = ""
 
+## If true, automatically sends a recovery prompt when the token limit is reached.
+@export
+var auto_resume_interrupted: bool = true
+
 
 @export_group("Tools")
 
@@ -519,6 +523,12 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 				await get_tree().process_frame
 				# We send a follow-up message from the system (acting as user)
 				send_message("The snapshot you requested is now attached. Please analyze it.", [img_path])
+				
+		# --- Interruption Recovery ---
+		if auto_resume_interrupted and handler.hit_token_limit:
+			print("AIChat: Interruption detected. Automatically sending recovery prompt...")
+			await get_tree().process_frame
+			send_message("You were interrupted because you reached the limit on token generation. Summarize the issue(s) and ask me for guidance")
 	
 	_update_context_length()
 	

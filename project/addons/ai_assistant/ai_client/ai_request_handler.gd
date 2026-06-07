@@ -27,6 +27,10 @@ var _activated_skill_ids: Array[String] = []
 ## True if any tool was called during the last execute() call.
 var tools_invoked: bool = false
 
+## True if the last response was truncated due to token limit.
+var hit_token_limit: bool = false
+
+
 ## All new messages (assistant and tool) added during the last execute() call.
 var new_messages: Array[Dictionary] = []
 
@@ -221,6 +225,10 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 		new_messages.append(fallback_msg)
 		final_response = "..."
 
+	# Retrieve hit_token_limit state from the client before cleanup
+	if is_instance_valid(client) and "hit_token_limit" in client:
+		hit_token_limit = client.hit_token_limit
+	
 	# 5. Cleanup.
 	_cleanup(client)
 	

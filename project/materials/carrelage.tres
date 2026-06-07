@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://3ic6v0yowlby"]
+
+[ext_resource type="Shader" uid="uid://drnsp05x70j54" path="res://shaders/marble.gdshader" id="1_hfayd"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_hfayd")
+shader_parameter/base_color = Color(0.92, 0.92, 0.92, 1)
+shader_parameter/vein_color = Color(0.91, 0.86359, 0.82809997, 1)
+shader_parameter/vein_scale = 3.0
+shader_parameter/distortion = 3.0
+shader_parameter/contrast = 4.0
+shader_parameter/roughness_base = 0.1
+shader_parameter/pattern_position = Vector3(0, 0, 0)
+shader_parameter/pattern_rotation = Vector3(0, 0, 0)
+shader_parameter/pattern_scale = Vector3(1, 1, 1)
