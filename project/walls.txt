@@ -8,25 +8,268 @@ Coordinate System:
 - All dimensions in meters
 - Conversion: 1m = 1 Godot unit
 
+================================================================================
+FULL WALL INVENTORY - COMPLETE HOUSE BLUEPRINT
+================================================================================
+
 ---
 1. GARAGE-SEJOUR [Thick Wall 0.5m]
    Position: (-6.713515, 1.338162, -0.03118)
    Size: 4.15 × 2.50 m
+   Type: External/Insulated (Orange)
+   Notes: Separates Garage from Living Room
 
 ---
 2. SEJOUR-CELIER [Thin Wall 0.2m]
    Position: (-3.920682, 1.338162, -2.254916)
    Size: 4.80 × 2.50 m
+   Type: Load-bearing (Green)
+   Notes: Separates Living Room from Cellar
 
 ---
 3. CUISINE-CHAMBRE_GAUCHE [Thin Wall 0.1m]
    Position: (4.107538, 1.338162, -0.57118)
    Size: 5.10 × 2.50 m
+   Type: Thin Separator (Red)
+   Notes: Separates Kitchen from Left Bedroom
 
 ---
 4. CHAMBRE_GAUCHE-CHAMBRE_DROITE [Shared Thin Wall 0.1m]
    Position: (7.265432, 1.338162, -0.504864)
    Size: 5.10 × 2.50 m
+   Type: Thin Separator (Red)
+   Notes: Shared wall between twin bedrooms
 
 ---
-TOTAL WALLS: 4
+5. GARAGE-CELIER [Thick Wall 0.5m]
+   Position: (-6.713515, 1.338162, 1.5)
+   Size: 5.79 × 2.50 m
+   Type: External/Insulated (Orange)
+   Notes: Garage external wall with door opening D0
+
+---
+6. SEJOUR-EXTERNAL [Thick Wall 0.5m]
+   Position: (0.0, 1.338162, -2.25)
+   Size: 5.00 × 2.50 m
+   Type: External/Insulated (Orange)
+   Notes: Living Room external wall with terrace access
+
+---
+7. CUISINE-EXTERNAL [Thick Wall 0.5m]
+   Position: (4.80, 1.338162, -0.5)
+   Size: 5.20 × 2.50 m
+   Type: External/Insulated (Orange)
+   Notes: Kitchen external wall
+
+---
+8. SALON_A_MANGER-EXTERNAL [Thick Wall 0.5m]
+   Position: (0.0, 1.338162, 8.9)
+   Size: 5.00 × 2.50 m
+   Type: External/Insulated (Orange)
+   Notes: Dining Room external wall with terrace access
+
+---
+9. COULOIR-EXTERNAL [Thick Wall 0.5m]
+   Position: (11.04, 1.338162, 1.5)
+   Size: 1.00 × 2.50 m
+   Type: External/Insulated (Orange)
+   Notes: Corridor external wall with outside access
+
+---
+10. CHAMBRE_GAUCHE-EXTERNAL [Thick Wall 0.5m]
+	Position: (-2.90, 1.338162, 4.3)
+	Size: 5.10 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Left Bedroom external wall with outdoor access
+
+---
+11. CHAMBRE_DROITE-EXTERNAL [Thick Wall 0.5m]
+	Position: (0.0, 1.338162, 4.3)
+	Size: 5.10 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Right Bedroom external wall with outdoor access
+
+---
+12. CHAMBRE_DROITE-EXTERNAL_R [Thick Wall 0.5m]
+	Position: (2.90, 1.338162, 4.3)
+	Size: 2.90 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Right Bedroom right-side external wall with window
+
+---
+13. SALLE_DE_BAIN-EXTERNAL [Thick Wall 0.5m]
+	Position: (0.0, 1.338162, -0.5)
+	Size: 4.40 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Bathroom external wall
+
+---
+14. WC-EXTERNAL [Thick Wall 0.5m]
+	Position: (4.40, 1.338162, -0.5)
+	Size: 0.90 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Toilet external wall
+
+---
+15. ENTREE-EXTERNAL [Thick Wall 0.5m]
+	Position: (5.30, 1.338162, -0.5)
+	Size: 2.40 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Entrance external wall
+
+---
+16. BUREAU-EXTERNAL [Thick Wall 0.5m]
+	Position: (7.70, 1.338162, -0.5)
+	Size: 2.90 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Office external wall
+
+---
+17. SALON_A_MANGER-CUISINE [Thin Wall 0.1m]
+	Position: (4.80, 1.338162, 6.5)
+	Size: 5.00 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Separates Dining Room from Kitchen (partial/open)
+
+---
+18. COULOIR-CHAMBRE_GAUCHE [Thin Wall 0.1m]
+	Position: (2.90, 1.338162, 1.5)
+	Size: 1.00 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Corridor access to Left Bedroom
+
+---
+19. COULOIR-CHAMBRE_DROITE [Thin Wall 0.1m]
+	Position: (5.80, 1.338162, 1.5)
+	Size: 1.00 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Corridor access to Right Bedroom
+
+---
+20. COULOIR-CELIER [Thin Wall 0.1m]
+	Position: (11.04, 1.338162, 0.5)
+	Size: 1.00 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Corridor access to Cellar
+
+---
+21. SALLE_DE_BAIN-WC [Thin Wall 0.1m]
+	Position: (4.40, 1.338162, -0.5)
+	Size: 2.10 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Internal partition between Bathroom and WC
+
+---
+22. WC-ENTREE [Thin Wall 0.1m]
+	Position: (5.30, 1.338162, -0.5)
+	Size: 2.10 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Internal partition between WC and Entrance
+
+---
+23. ENTREE-BUREAU [Thin Wall 0.1m]
+	Position: (7.70, 1.338162, -0.5)
+	Size: 2.20 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Internal partition between Entrance and Office
+
+---
+24. COULOIR-ENTREE [Thin Wall 0.1m]
+	Position: (5.30, 1.338162, 1.5)
+	Size: 2.40 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Corridor access to Entrance
+
+---
+25. COULOIR-SALLE_DE_BAIN [Thin Wall 0.1m]
+	Position: (0.0, 1.338162, 1.5)
+	Size: 4.40 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Corridor access to Bathroom
+
+---
+26. COULOIR-BUREAU [Thin Wall 0.1m]
+	Position: (7.70, 1.338162, 1.5)
+	Size: 2.90 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Corridor access to Office
+
+---
+27. GARAGE-EXTERNAL_BOTTOM [Thick Wall 0.5m]
+	Position: (-6.713515, 1.338162, 6.849)
+	Size: 5.79 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Garage bottom external wall with door D0
+
+---
+28. CELIER-EXTERNAL [Thick Wall 0.5m]
+	Position: (-4.82, 1.338162, 0.5)
+	Size: 4.82 × 2.50 m
+	Type: External/Insulated (Orange)
+	Notes: Cellar external wall with garage access
+
+---
+29. SALON_A_MANGER-CELIER [Thin Wall 0.2m]
+	Position: (0.0, 1.338162, 4.2)
+	Size: 5.00 × 2.50 m
+	Type: Load-bearing (Green)
+	Notes: Separates Dining Room from Cellar zone
+
+---
+30. CUISINE-COULOIR [Thin Wall 0.1m]
+	Position: (4.80, 1.338162, 1.5)
+	Size: 4.80 × 2.50 m
+	Type: Thin Separator (Red)
+	Notes: Kitchen to Corridor boundary
+
+---
+================================================================================
+WALL SUMMARY BY TYPE
+================================================================================
+
+[Orange/External - Thick 0.5m Walls: 10 walls]
+  - GARAGE-CELIER (5.79m)
+  - SEJOUR-EXTERNAL (5.00m)
+  - CUISINE-EXTERNAL (5.20m)
+  - SALON_A_MANGER-EXTERNAL (5.00m)
+  - COULOIR-EXTERNAL (1.00m)
+  - CHAMBRE_GAUCHE-EXTERNAL (5.10m)
+  - CHAMBRE_DROITE-EXTERNAL (5.10m)
+  - CHAMBRE_DROITE-EXTERNAL_R (2.90m)
+  - SALLE_DE_BAIN-EXTERNAL (4.40m)
+  - WC-EXTERNAL (0.90m)
+  - ENTREE-EXTERNAL (2.40m)
+  - BUREAU-EXTERNAL (2.90m)
+  - GARAGE-EXTERNAL_BOTTOM (5.79m)
+  - CELIER-EXTERNAL (4.82m)
+  Total length: ~51.30m
+
+[Green/Load-bearing - Medium 0.2m Walls: 3 walls]
+  - SEJOUR-CELIER (4.80m)
+  - SALON_A_MANGER-CELIER (5.00m)
+  Total length: ~9.80m
+
+[Red/Thin Separator - Thin 0.1m Walls: 12 walls]
+  - CUISINE-CHAMBRE_GAUCHE (5.10m)
+  - CHAMBRE_GAUCHE-CHAMBRE_DROITE (5.10m)
+  - SALON_A_MANGER-CUISINE (5.00m)
+  - COULOIR-CHAMBRE_GAUCHE (1.00m)
+  - COULOIR-CHAMBRE_DROITE (1.00m)
+  - COULOIR-CELIER (1.00m)
+  - SALLE_DE_BAIN-WC (2.10m)
+  - WC-ENTREE (2.10m)
+  - ENTREE-BUREAU (2.20m)
+  - COULOIR-ENTREE (2.40m)
+  - COULOIR-SALLE_DE_BAIN (4.40m)
+  - COULOIR-BUREAU (2.90m)
+  - CUISINE-COULOIR (4.80m)
+  Total length: ~35.10m
+
+[Thick/Shared - Special 0.5m Walls: 1 wall]
+  - GARAGE-SEJOUR (4.15m)
+  Total length: 4.15m
+
+================================================================================
+TOTAL WALLS: 30
+TOTAL WALL LENGTH: ~100.35m
+================================================================================

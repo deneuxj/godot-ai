@@ -6,6 +6,7 @@ uniform vec3 dark_color : source_color = vec3(0.75, 0.72, 0.65);
 uniform float rough_scale = 60.0;
 uniform float trowel_scale = 3.0;
 uniform float bump_strength = 0.02;
+uniform float blend_weight : hint_range(0.0, 1.0) = 0.7;
 
 // Easy-to-edit transform properties
 uniform vec3 pattern_position = vec3(0.0);
@@ -81,8 +82,8 @@ float get_stucco_height(vec3 view_pos, mat4 inv_view) {
 	// 2. High frequency sand/grit
 	float grit = noise(p * rough_scale);
 	
-	// Combine them
-	return trowel * 0.7 + grit * 0.3;
+	// Combine them using the blend weight
+	return mix(grit, trowel, blend_weight);
 }
 
 void fragment() {

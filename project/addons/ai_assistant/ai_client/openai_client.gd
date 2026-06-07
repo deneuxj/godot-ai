@@ -72,7 +72,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 	if not tools.is_empty():
 		body["tools"] = tools
 
-	var headers: PackedStringArray = ["Content-Type: application/json"]
+	var headers: PackedStringArray = ["Content-Type: application/json", "Connection: close"]
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
@@ -206,7 +206,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	if not tools.is_empty():
 		body["tools"] = tools
 
-	var headers: PackedStringArray = ["Content-Type: application/json"]
+	var headers: PackedStringArray = ["Content-Type: application/json", "Connection: close"]
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
