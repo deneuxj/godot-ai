@@ -4,11 +4,12 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_sc
 uniform vec3 base_color : source_color = vec3(0.9, 0.87, 0.8);
 uniform vec3 dark_color : source_color = vec3(0.75, 0.72, 0.65);
 uniform float rough_scale = 150.0;
-uniform float trowel_scale = 3.0;
+uniform float trowel_scale = 12.0;
 uniform float bump_strength = 0.002;
+uniform float turbulence_strength : hint_range(0.0, 1.0) = 0.5;
+uniform float turbulence_frequency : hint_range(0.1, 20.0) = 1.0;
 uniform float blend_weight : hint_range(0.0, 1.0) = 0.7;
 
-// Easy-to-edit transform properties
 uniform vec3 pattern_position = vec3(0.0);
 uniform vec3 pattern_rotation = vec3(0.0); // In degrees
 uniform vec3 pattern_scale = vec3(1.0);
@@ -61,8 +62,8 @@ float noise(vec3 x) {
 float fbm(vec3 x) {
 	float v = 0.0;
 	float a = 0.5;
-	vec3 shift = vec3(100.0);
-	for (int i = 0; i < 4; ++i) {
+	vec3 shift = vec3(100.23, 100.45, 100.67);
+	for (int i = 0; i < 8; ++i) {
 		v += a * noise(x);
 		x = x * 2.0 + shift;
 		a *= 0.5;
@@ -70,18 +71,27 @@ float fbm(vec3 x) {
 	return v;
 }
 
+vec3 get_distorted_pos(vec3 p) {
+	// Use a low-frequency noise to warp the coordinate space.
+	// This breaks up the grid lines of the underlying 3D noise functions.
+	return p + (noise(p * turbulence_frequency) - 0.5) * turbulence_strength;
+}
+
 // Calculates the procedural height map for stucco
 float get_stucco_height(vec3 p) {
 	// Apply user transforms to local coordinates
 	vec3 local = (rot_matrix * (p * pattern_scale)) + pattern_position;
 	
+	// Apply turbulence warping before sampling
+	vec3 distorted = get_distorted_pos(local);
+	
 	// 1. Low frequency trowel marks (smooth but irregular sweeping patterns)
-	float trowel = fbm(local * trowel_scale);
+	float trowel = fbm(distorted * trowel_scale);
 	// Flatten the peaks to simulate the flat edge of a trowel
-	trowel = smoothstep(0.2, 0.8, trowel);
+	trowel = smoothstep(0.1, 0.9, trowel);
 	
 	// 2. High frequency sand/grit
-	float grit = noise(local * rough_scale);
+	float grit = noise(distorted * rough_scale);
 	
 	// Combine them using the blend weight
 	return mix(grit, trowel, blend_weight);
