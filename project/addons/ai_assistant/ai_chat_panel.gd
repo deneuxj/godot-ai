@@ -127,6 +127,18 @@ func _update_for_node(node: Node) -> void:
 
 # --- Send / Cancel / Clear ---
 
+func _on_visibility_changed() -> void:
+	if visible and is_instance_valid(_current_node):
+		_update_display()
+
+func _format_thinking(text: String) -> String:
+	var formatted = text.replace("<think>", "[color=gray][i]")
+	formatted = formatted.replace("</think>", "[/i][/color]")
+	# If there's an open <think> without a closing tag (e.g. during streaming)
+	if formatted.count("[color=gray][i]") > formatted.count("[/i][/color]"):
+		formatted += "[/i][/color]"
+	return formatted
+
 func _on_send_pressed() -> void:
 	if is_instance_valid(_current_node):
 		var prompt := _input_text_edit.text.strip_edges()
@@ -407,7 +419,7 @@ func _update_display(scroll_to_bottom: bool = true) -> void:
 				content = content.left(100) + "..."
 			msg_text += content
 		elif msg.get("content") is String:
-			msg_text += msg.get("content")
+			msg_text += _format_thinking(msg.get("content"))
 		elif msg.get("content") is Array:
 			var text_content := ""
 			var images := 0
@@ -442,8 +454,9 @@ func _update_display(scroll_to_bottom: bool = true) -> void:
 		role_label.text = "[Assistant]"
 		role_label.add_theme_color_override("font_color", Color("#34a853"))
 		
-		if text_display.text != _current_node.partial_response:
-			text_display.text = _current_node.partial_response
+		var formatted_partial = _format_thinking(_current_node.partial_response)
+		if text_display.text != formatted_partial:
+			text_display.text = formatted_partial
 			
 		i += 1
 		

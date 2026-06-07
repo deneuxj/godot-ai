@@ -75,6 +75,11 @@ var max_tokens: int = 0
 @export
 var auto_resume_interrupted: bool = true
 
+## If true, keeps <think> blocks in the chat history sent to the LLM (useful for Qwen 3.6+).
+@export
+var preserve_thinking_in_history: bool = false
+
+
 
 @export_group("Tools")
 
@@ -441,7 +446,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
-	final_messages = PromptBuilder.sanitize_history(final_messages)
+	final_messages = PromptBuilder.sanitize_history(final_messages, preserve_thinking_in_history)
 	
 	var tools := get_current_tool_definitions()
 

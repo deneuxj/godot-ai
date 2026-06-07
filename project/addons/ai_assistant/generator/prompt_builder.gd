@@ -671,7 +671,7 @@ static func build_error_correction(messages: Array[Dictionary], error_result: Di
 
 ## Sanitizes a conversation history to ensure strict role alternation and valid tool transactions.
 ## Useful for models with strict Jinja templates (Mistral, Llama 3).
-static func sanitize_history(messages: Array[Dictionary]) -> Array[Dictionary]:
+static func sanitize_history(messages: Array[Dictionary], preserve_thinking: bool = false) -> Array[Dictionary]:
 	if messages.is_empty():
 		return []
 		
@@ -731,8 +731,24 @@ static func sanitize_history(messages: Array[Dictionary]) -> Array[Dictionary]:
 			# If the assistant message is now empty (no content and no tools), we should ideally 
 			# merge it or remove it, but stripping the tools is the bare minimum to fix the template.
 			if last.get("content", "").is_empty():
-				last.content = "..." # Fallback content
+				last.content = "..."
 		
+		# Default: Keep the message
 		sanitized.append(msg)
 		
+	# Post-process: strip <think> blocks if requested
+	if not preserve_thinking:
+		var regex = RegEx.new()
+		# Match <think> blocks, non-greedy, spanning multiple lines
+		regex.compile("(?s)<think>.*?</think>")
+		
+		for i in range(sanitized.size()):
+			var msg = sanitized[i]
+			if msg.role == "assistant":
+				var content = msg.get("content", "")
+				if typeof(content) == TYPE_STRING:
+					# Clean up the stripped text (also remove extra newlines left behind)
+					var stripped = regex.sub(content, "", true).strip_edges()
+					msg["content"] = stripped
+
 	return sanitized

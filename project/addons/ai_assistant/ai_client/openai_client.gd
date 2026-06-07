@@ -244,6 +244,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	var chunks: PackedStringArray = []
 	var full_content: String = ""
 	var tool_calls: Array = []
+	var in_reasoning := false
 	var final_finish_reason: String = ""
 	
 	var lines: PackedStringArray = response_body.split("\n")
@@ -274,8 +275,12 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		# Handle reasoning content if present (common in LM Studio/Qwen/DeepSeek)
 		var reasoning_chunk: String = delta.get("reasoning_content", "")
 		if reasoning_chunk != "":
-			# We can treat reasoning as content for now, or emit it separately.
-			# For debugging the "stop" issue, let's include it.
+			if not in_reasoning:
+				in_reasoning = true
+				var start_tag = "<think>\n"
+				progress.emit([start_tag])
+				full_content += start_tag
+				
 			var typed_chunks: Array[String] = [reasoning_chunk]
 			progress.emit(typed_chunks)
 			full_content += reasoning_chunk
@@ -300,6 +305,12 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 
 		var chunk_content: String = delta.get("content", "")
 		if chunk_content != "":
+			if in_reasoning:
+				in_reasoning = false
+				var end_tag = "\n</think>\n"
+				progress.emit([end_tag])
+				full_content += end_tag
+				
 			# Heuristic for Qwen: if it sends XML-like tool calls in content despite instructions, 
 			# we might want to capture them. However, standard tool_calls is preferred.
 			# For now, let's stick to standard and see if the prompt fix works.
@@ -308,6 +319,12 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			# Emit chunks immediately if needed. We must use a typed array to match the signal.
 			var typed_chunks: Array[String] = [chunk_content]
 			progress.emit(typed_chunks)
+
+	if in_reasoning:
+		in_reasoning = false
+		var end_tag = "\n</think>\n"
+		progress.emit([end_tag])
+		full_content += end_tag
 
 	if final_finish_reason == "length" or final_finish_reason == "max_tokens":
 		hit_token_limit = true
