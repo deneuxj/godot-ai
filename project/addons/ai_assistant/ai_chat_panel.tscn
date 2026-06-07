@@ -33,13 +33,15 @@ text = "AI Chat"
 layout_mode = 2
 text = "Conversation History:"
 
-[node name="HistoryDisplay" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+[node name="HistoryScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
-bbcode_enabled = true
-scroll_following = true
-selection_enabled = true
+
+[node name="HistoryDisplay" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HistoryScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="InputLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

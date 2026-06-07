@@ -11,7 +11,7 @@ extends "res://addons/ai_assistant/ai_base_panel.gd"
 var _current_node: AIChat = null
 
 # UI node references
-@onready var _history_display: RichTextLabel = find_child("HistoryDisplay")
+@onready var _history_display: VBoxContainer = find_child("HistoryDisplay")
 @onready var _input_text_edit: TextEdit = find_child("InputTextEdit")
 @onready var _send_button: Button = find_child("SendButton")
 @onready var _cancel_button: Button = find_child("CancelButton")
@@ -78,6 +78,8 @@ func _disconnect_from_node() -> void:
 			_current_node.disconnect("context_length_updated", _on_context_length_updated)
 		if _current_node.is_connected("todo_list_updated", _on_todo_list_updated):
 			_current_node.disconnect("todo_list_updated", _on_todo_list_updated)
+		if _current_node.is_connected("history_changed", _on_history_changed):
+			_current_node.disconnect("history_changed", _on_history_changed)
 
 
 func _update_for_node(node: Node) -> void:
@@ -98,6 +100,7 @@ func _update_for_node(node: Node) -> void:
 		_current_node.connect("status_updated", _on_status_updated)
 		_current_node.connect("context_length_updated", _on_context_length_updated)
 		_current_node.connect("todo_list_updated", _on_todo_list_updated)
+		_current_node.connect("history_changed", _on_history_changed)
 
 		# Refresh UI state.
 		_update_display()
@@ -113,7 +116,8 @@ func _update_for_node(node: Node) -> void:
 		_on_context_length_updated(len.tokens, len.characters)
 		_on_todo_list_updated(_current_node.todo_list)
 	else:
-		_history_display.text = ""
+		for child in _history_display.get_children():
+			child.queue_free()
 		_status_label.text = "No AIChat selected"
 		_context_label.text = ""
 		_todo_label.text = ""
@@ -216,9 +220,6 @@ func _on_chat_started() -> void:
 
 func _on_node_progress(_chunks: Array[String]) -> void:
 	_update_display()
-	# Optional: Force scroll to bottom
-	var scroll := _history_display.get_v_scroll_bar()
-	scroll.value = scroll.max_value
 
 
 func _on_chat_finished(_response: String) -> void:
@@ -284,6 +285,10 @@ func _on_todo_list_updated(list: Array[Dictionary]) -> void:
 	_todo_label.tooltip_text = "Current Task: " + current_task_text
 
 
+func _on_history_changed(scroll_to_bottom: bool = true) -> void:
+	_update_display(scroll_to_bottom)
+
+
 # --- Status Binding ---
 
 func _update_status() -> void:
@@ -315,41 +320,95 @@ func _update_status() -> void:
 
 # --- Display ---
 
-func _update_display() -> void:
+func _get_or_create_msg_container(index: int) -> VBoxContainer:
+	if index < _history_display.get_child_count():
+		var child = _history_display.get_child(index)
+		child.show()
+		return child as VBoxContainer
+	
+	var msg_container = VBoxContainer.new()
+	msg_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	
+	var header_row = HBoxContainer.new()
+	msg_container.add_child(header_row)
+	
+	var role_label = Label.new()
+	role_label.name = "RoleLabel"
+	role_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_row.add_child(role_label)
+	
+	var del_btn = Button.new()
+	del_btn.name = "DelBtn"
+	del_btn.text = "X"
+	del_btn.tooltip_text = "Delete this message"
+	del_btn.pressed.connect(func(): if is_instance_valid(_current_node): _current_node.delete_message(del_btn.get_meta("idx")))
+	header_row.add_child(del_btn)
+	
+	var del_from_btn = Button.new()
+	del_from_btn.name = "DelFromBtn"
+	del_from_btn.text = "X↓"
+	del_from_btn.tooltip_text = "Delete this message and all following messages"
+	del_from_btn.pressed.connect(func(): if is_instance_valid(_current_node): _current_node.delete_messages_from(del_from_btn.get_meta("idx")))
+	header_row.add_child(del_from_btn)
+	
+	var text_display = RichTextLabel.new()
+	text_display.name = "TextDisplay"
+	text_display.bbcode_enabled = true
+	text_display.fit_content = true
+	text_display.selection_enabled = true
+	text_display.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	msg_container.add_child(text_display)
+	
+	var sep = HSeparator.new()
+	msg_container.add_child(sep)
+	
+	_history_display.add_child(msg_container)
+	return msg_container
+
+func _update_display(scroll_to_bottom: bool = true) -> void:
 	if not is_instance_valid(_current_node):
 		return
 
-	_history_display.clear()
-	
+	var i := 0
 	for msg in _current_node.chat_history:
+		var msg_container = _get_or_create_msg_container(i)
+		
+		var header_row = msg_container.get_child(0)
+		var role_label = header_row.get_node("RoleLabel") as Label
+		var del_btn = header_row.get_node("DelBtn") as Button
+		var del_from_btn = header_row.get_node("DelFromBtn") as Button
+		var text_display = msg_container.get_node("TextDisplay") as RichTextLabel
+		
+		del_btn.set_meta("idx", i)
+		del_from_btn.set_meta("idx", i)
+		
+		del_btn.show()
+		del_from_btn.show()
+		
 		var role: String = msg.role.capitalize()
 		var color: String = "#4285f4" if msg.role == "user" else "#34a853"
-		
 		if msg.role == "tool":
-			color = "#fbbc05" # Yellow for tools
+			color = "#fbbc05"
+		role_label.text = "[%s]" % role
+		role_label.add_theme_color_override("font_color", Color(color))
 		
-		_history_display.push_color(Color(color))
-		_history_display.append_text("[%s]: " % role)
-		_history_display.pop()
-		
-		# Handle tool calls in assistant message
+		var msg_text := ""
 		if msg.has("tool_calls"):
-			_history_display.push_italics()
+			msg_text += "[i]"
 			for tool_call in msg.tool_calls:
 				var fn = tool_call.function.name
 				var args = tool_call.function.arguments
-				_history_display.append_text("(Calling tool: %s with args: %s)\n" % [fn, args])
-			_history_display.pop()
+				msg_text += "(Calling tool: %s with args: %s)\n" % [fn, args]
+			msg_text += "[/i]"
 		
 		if msg.role == "tool":
 			var content: String = msg.get("content", "")
 			if content.length() > 100:
 				content = content.left(100) + "..."
-			_history_display.append_text(content + "\n\n")
+			msg_text += content
 		elif msg.get("content") is String:
-			_history_display.append_text(msg.get("content") + "\n\n")
+			msg_text += msg.get("content")
 		elif msg.get("content") is Array:
-			# Multi-modal content
 			var text_content := ""
 			var images := 0
 			var content_array = msg.get("content")
@@ -358,21 +417,51 @@ func _update_display() -> void:
 					text_content += part.get("text", "")
 				elif part.get("type") == "image_url":
 					images += 1
-			
-			_history_display.append_text(text_content)
+			msg_text += text_content
 			if images > 0:
-				_history_display.push_italics()
-				_history_display.append_text(" (%d image attachment%s)" % [images, "s" if images > 1 else ""])
-				_history_display.pop()
-			_history_display.append_text("\n\n")
+				msg_text += "[i] (%d image attachment%s)[/i]" % [images, "s" if images > 1 else ""]
+		
+		if text_display.text != msg_text:
+			text_display.text = msg_text
+		
+		i += 1
 	
 	# Show partial response if currently typing.
 	if not _current_node.partial_response.is_empty():
-		_history_display.push_color(Color("#34a853"))
-		_history_display.append_text("[Assistant]: ")
-		_history_display.pop()
-		_history_display.append_text(_current_node.partial_response)
+		var msg_container = _get_or_create_msg_container(i)
+		
+		var header_row = msg_container.get_child(0)
+		var role_label = header_row.get_node("RoleLabel") as Label
+		var del_btn = header_row.get_node("DelBtn") as Button
+		var del_from_btn = header_row.get_node("DelFromBtn") as Button
+		var text_display = msg_container.get_node("TextDisplay") as RichTextLabel
+		
+		del_btn.hide()
+		del_from_btn.hide()
+		
+		role_label.text = "[Assistant]"
+		role_label.add_theme_color_override("font_color", Color("#34a853"))
+		
+		if text_display.text != _current_node.partial_response:
+			text_display.text = _current_node.partial_response
+			
+		i += 1
+		
+	# Hide unused containers
+	while i < _history_display.get_child_count():
+		_history_display.get_child(i).hide()
+		i += 1
+		
+	if scroll_to_bottom:
+		call_deferred("_scroll_to_bottom")
 
+func _scroll_to_bottom() -> void:
+	var scroll_container := _history_display.get_parent() as ScrollContainer
+	if scroll_container:
+		# Wait a frame to allow the VBoxContainer to recalculate its height
+		await get_tree().process_frame
+		var scroll := scroll_container.get_v_scroll_bar()
+		scroll.value = scroll.max_value
 
 func _update_status_theme() -> void:
 	if not is_instance_valid(_current_node):

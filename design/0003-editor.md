@@ -41,10 +41,14 @@
 ┌─────────────────────────────────────┐
 │  AI Chat                            │
 ├─────────────────────────────────────┤
-│  Conversation History:              │
+│  Conversation History (ScrollContainer):│
 │  ┌───────────────────────────────┐  │
-│  │ [User]: Hello                  │  │
-│  │ [Assistant]: Hi there!         │  │
+│  │ ┌───────────────────────────┐ │  │
+│  │ │ [User]: Hello       [X][X_\]│ │  │
+│  │ └───────────────────────────┘ │  │
+│  │ ┌───────────────────────────┐ │  │
+│  │ │ [Assistant]: Hi!    [X][X_\]│ │  │
+│  │ └───────────────────────────┘ │  │
 │  └───────────────────────────────┘  │
 │                                     │
 │  Attachments:                       │
@@ -68,8 +72,12 @@
 ### Dock Controller (`ai_chat_panel.gd`)
 
 - Detects selection of `AIChat` nodes in the scene tree.
-- Binds to `chat_started`, `progress`, `chat_finished`, `context_length_updated`, and `status_updated` signals.
-- Updates the `HistoryDisplay` in real-time during streaming.
+- Binds to `chat_started`, `progress`, `chat_finished`, `context_length_updated`, `status_updated`, and `history_changed` signals.
+- Rebuilds the `HistoryDisplay` (now a `ScrollContainer` with a `VBoxContainer` of individual message widgets) when `history_changed` or `chat_finished` is emitted. (REQ-EDITOR-0011)
+- Each message widget contains a multiline `TextEdit` or `RichTextLabel` and contextual action buttons:
+    - `[X]` (Delete Message): Calls `AIChat.delete_message(index)`.
+    - `[X_\]` (Delete From Here): Calls `AIChat.delete_messages_from(index)`.
+- Updates the active message widget in real-time during streaming.
 - Updates the context length label when `context_length_updated` is received.
 - Updates the status label (e.g., "Processing", "Thinking", "Implementing") when `status_updated` is received. (REQ-EDITOR-0008)
 - Manages button enabled/disabled states based on request status.
@@ -95,3 +103,4 @@
 | REQ-EDITOR-0006 | State restoration in `ai_chat_panel._on_chat_error` |
 | REQ-EDITOR-0007 | Context length label in `ai_chat_panel` UI |
 | REQ-EDITOR-0008 | Granular status feedback label in `ai_chat_panel` UI |
+| REQ-EDITOR-0011 | `HistoryDisplay` as a list of widgets with delete actions |

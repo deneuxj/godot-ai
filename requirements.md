@@ -60,6 +60,10 @@ REQ-CHAT-0015: The `AIChat` node shall support aggressive context compression th
 
 REQ-CHAT-0016: When a chat request is cancelled, the `AIChat` node shall persist any partial assistant response and any completed tool calls/results in the conversational history to maintain the context of the interrupted turn.
 
+REQ-CHAT-0017: The `AIChat` node shall provide a method `delete_message(index: int)` to remove a specific message from the conversational history.
+
+REQ-CHAT-0018: The `AIChat` node shall provide a method `delete_messages_from(index: int)` to remove a specific message and all subsequent messages from the conversational history. This is particularly useful to clear verbose chains of thought or recover from a bad divergence.
+
 ### AI Integration
 
 REQ-AIINTG-0001: The plugin shall support **both local and remote** LLM backends.
@@ -146,6 +150,7 @@ REQ-EDITOR-0009: AI generation shall be persistent and shall not be interrupted 
 
 REQ-EDITOR-0010: The `AIChat` editor UI shall display the current status of the AI's TODO list, highlighting the tasks and overall progress.
 
+REQ-EDITOR-0011: The `AIChat` editor UI shall display the conversational history using a scrollable panel containing individual multiline text widgets for each message, replacing the single monolithic multiline widget. This allows each message to have its own contextual actions (e.g., delete buttons).
 
 ### Persistence
 
@@ -210,6 +215,7 @@ REQ-TOOL-0011: Provide a tool `manage_todo_list` that allows the AI to manage a 
   - The tool shall support adding, removing, and updating (text, completion status) tasks.
   - The tool shall allow clearing the entire list.
   - The list structure shall be persisted in the AI node's exported data (`todo_list` property), ensuring it survives editor reloads and scene saves.
+
 
 ### AI Skills
 

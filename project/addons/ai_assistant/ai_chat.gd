@@ -23,6 +23,7 @@ signal chat_error(error_message: String)
 signal status_updated(status: String)
 signal context_length_updated(tokens: int, characters: int)
 signal context_compressed()
+signal history_changed(scroll_to_bottom: bool)
 
 ## Emitted when the hierarchical TODO stack is modified.
 signal todo_list_updated(list: Array[Dictionary])
@@ -560,6 +561,21 @@ func clear_history() -> void:
 	session_tools.clear()
 	todo_list = []
 	_update_context_length()
+	history_changed.emit(true)
+
+## Removes the message at the given index from the chat history.
+func delete_message(index: int) -> void:
+	if index >= 0 and index < chat_history.size():
+		chat_history.remove_at(index)
+		_update_context_length()
+		history_changed.emit(false)
+
+## Removes the message at the given index and all subsequent messages.
+func delete_messages_from(index: int) -> void:
+	if index >= 0 and index < chat_history.size():
+		chat_history.resize(index)
+		_update_context_length()
+		history_changed.emit(true)
 
 
 ## Returns the last sent context (messages + tools) as a formatted JSON string.
