@@ -124,6 +124,7 @@ Tool Usage:
 - If you need to navigate the scene tree or inspect properties of nodes in the live scene, USE `explore_node_hierarchy`.
 - If you need to manage tasks and track progress, USE `manage_todo_list`.
 - If you need to modify an existing file or create a new one, USE `modify_project_resource`.
+- If you need to search for exact strings or regex in files to find line numbers, USE `search_project_files`.
 - If you need to verify if a file has errors (parse errors, load errors, missing dependencies), USE `validate_project_resource`.
 - If you need to execute arbitrary GDScript or construct a scene hierarchy in the live tree, USE `execute_script`.
 - DO NOT guess property names or resource paths. Verify them using tools first.
@@ -199,6 +200,7 @@ Tool Usage:
 - USE `explore_node_hierarchy` to inspect the live scene tree and node properties relative to the assistant.
 - USE `manage_todo_list` to break down and track your progress on complex scripting tasks.
 - USE `modify_project_resource` to surgically edit files or create new scripts.
+- USE `search_project_files` to search for specific strings or patterns across files to find their exact line numbers.
 - USE `validate_project_resource` to check your work or existing files for errors.
 - Prefer using tools to gather information over making assumptions about the API or file structure.
 - As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
@@ -237,6 +239,7 @@ Tool Usage:
 - Use `explore_node_hierarchy` to navigate the scene tree and inspect live node properties.
 - Use `manage_todo_list` to maintain a list of tasks for complex user requests. Proactively create a TODO list to track your progress and mark tasks as done.
 - Use `modify_project_resource` to help the user by creating or editing files directly when requested.
+- Use `search_project_files` to search for text or regex across project files and get exact line numbers.
 - Use `validate_project_resource` to check if scripts or resources have errors and help fix them.
 - When the user asks for code, ensure it follows Godot 4 conventions.
 - As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
@@ -338,6 +341,7 @@ Tool Usage:
 - USE `execute_script` to make modifications to the live scene, but only if you cannot achieve the result with specific tools.
 - USE `explore_godot_docs` if you need to check API documentation.
 - USE `explore_project_resources` to read existing files and assets, but DO NOT use it to parse `.tscn` files directly if you just need to find nodes in the live scene. Use `explore_node_hierarchy` for the live scene.
+- USE `search_project_files` to quickly locate specific code patterns or strings across multiple files.
 - As the harness and the tools are still under development, you MUST stop whenever you have difficulties using a tool, describe the problem to the user and ask for guidance.
 
 Task Management:
@@ -504,7 +508,7 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int, discove
 
 
 ## Build the tools array based on node configuration.
-static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false, enable_hierarchy: bool = false, enable_todo: bool = false) -> Array[Dictionary]:
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false, enable_hierarchy: bool = false, enable_todo: bool = false, enable_search: bool = false) -> Array[Dictionary]:
 	var tools: Array[Dictionary] = []
 	
 	if enable_docs:
@@ -537,6 +541,10 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 	
 	if enable_todo:
 		var tool = load("res://addons/ai_assistant/tools/manage_todo_list_tool.gd").new()
+		tools.append(tool.get_definition())
+	
+	if enable_search:
+		var tool = load("res://addons/ai_assistant/tools/search_project_files_tool.gd").new()
 		tools.append(tool.get_definition())
 	
 	# Always include activate_skill if skills are supported/enabled

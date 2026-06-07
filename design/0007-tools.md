@@ -134,6 +134,29 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0012: Search Project Files Tool (`search_project_files`)
+
+### Specification
+- **Method**: `search(query: String, path: String = "res://", is_regex: bool = false, filter: String = "") -> Dictionary`
+- **Parameters**:
+    - `query`: The text or regex pattern to search for.
+    - `path`: The specific file or directory to search within.
+    - `is_regex`: If true, `query` is treated as a regular expression.
+    - `filter`: Optional glob pattern (e.g., `*.gd`) to restrict searched files when `path` is a directory.
+
+### Implementation Detail
+1. **Search Execution**:
+    - Iterate through files under `path` (if directory) matching the `filter`.
+    - If `is_regex` is true, compile the `RegEx` and search line by line.
+    - If `is_regex` is false, use string `find()` on each line.
+2. **Context Safety**:
+    - Limit the total number of returned matches (e.g., max 50) to prevent token overflow.
+    - If the limit is reached, append a warning indicating the results were truncated.
+3. **Response Format**:
+    - Return a list of matches, each containing the `file_path`, `line_number` (1-based), and the `line_content` (to provide immediate context to the AI).
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -174,5 +197,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0009 | `CaptureEditorViewTool` implementation details |
 | REQ-TOOL-0010 | `NodeHierarchyTool` implementation details |
 | REQ-TOOL-0011 | `ManageTodoListTool` implementation details |
+| REQ-TOOL-0012 | `SearchProjectFilesTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

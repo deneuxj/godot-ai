@@ -117,6 +117,9 @@ var enable_node_hierarchy: bool = true
 @export
 var enable_todo_list: bool = true
 
+@export
+var enable_search_project_files: bool = true
+
 ## List of IDs for skills that should be available in this generation session.
 ## If empty, all discovered skills are listed.
 @export
@@ -211,7 +214,8 @@ func generate() -> void:
 		enable_build_scene,
 		false,
 		enable_node_hierarchy,
-		enable_todo_list
+		enable_todo_list,
+		enable_search_project_files
 	)
 	var content: String = ""
 	var success: bool = false

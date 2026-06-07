@@ -216,6 +216,12 @@ REQ-TOOL-0011: Provide a tool `manage_todo_list` that allows the AI to manage a 
   - The tool shall allow clearing the entire list.
   - The list structure shall be persisted in the AI node's exported data (`todo_list` property), ensuring it survives editor reloads and scene saves.
 
+REQ-TOOL-0012: Provide a tool `search_project_files` that allows the AI to:
+  - Search for strings or regular expressions within project files to find exact line numbers.
+  - Optionally limit the search to a specific directory or file path.
+  - Return the matching lines along with their line numbers to help with subsequent file modifications.
+  - Optionally accept file glob filters (e.g., `*.gd`) to narrow down the search.
+  - Limit the number of returned matches to prevent context overflow.
 
 ### AI Skills
 
