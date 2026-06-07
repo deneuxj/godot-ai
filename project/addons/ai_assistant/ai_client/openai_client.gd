@@ -278,7 +278,8 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			if not in_reasoning:
 				in_reasoning = true
 				var start_tag = "<think>\n"
-				progress.emit([start_tag])
+				var typed_start: Array[String] = [start_tag]
+				progress.emit(typed_start)
 				full_content += start_tag
 				
 			var typed_chunks: Array[String] = [reasoning_chunk]
@@ -308,7 +309,8 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			if in_reasoning:
 				in_reasoning = false
 				var end_tag = "\n</think>\n"
-				progress.emit([end_tag])
+				var typed_end: Array[String] = [end_tag]
+				progress.emit(typed_end)
 				full_content += end_tag
 				
 			# Heuristic for Qwen: if it sends XML-like tool calls in content despite instructions, 
@@ -323,7 +325,8 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	if in_reasoning:
 		in_reasoning = false
 		var end_tag = "\n</think>\n"
-		progress.emit([end_tag])
+		var typed_end: Array[String] = [end_tag]
+		progress.emit(typed_end)
 		full_content += end_tag
 
 	if final_finish_reason == "length" or final_finish_reason == "max_tokens":
