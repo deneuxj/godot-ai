@@ -212,7 +212,29 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	# Restore active skills from history if they were lost during a scene reload
 	await _restore_skills_from_history()
 
-	# 1. Update history with user prompt and attachments.
+	# 1. Purge all previous image contents ONLY when adding a new image.
+	if not attachments.is_empty():
+		for i in range(chat_history.size()):
+			var past_msg = chat_history[i]
+			var past_content = past_msg.get("content")
+			
+			if typeof(past_content) == TYPE_ARRAY:
+				var has_image = false
+				for part in past_content:
+					if part.get("type") == "image_url":
+						has_image = true
+						break
+				
+				if has_image:
+					var text_only = ""
+					for part in past_content:
+						if part.get("type") == "text":
+							text_only += part.get("text", "")
+						elif part.get("type") == "image_url":
+							text_only += "\n[Older image removed to save context]"
+					past_msg.content = text_only
+
+	# 2. Update history with new user prompt and attachments.
 	var user_content: Variant = prompt
 	if not attachments.is_empty():
 		var content_array: Array[Dictionary] = []
