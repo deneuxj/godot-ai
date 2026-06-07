@@ -118,8 +118,16 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 		push_error("Empty choices in API response")
 		return ""
 
-	var message = (choices[0] as Dictionary).get("message", {})
+	var choice = choices[0] as Dictionary
+	var message = choice.get("message", {})
 	var content = message.get("content", "")
+	if content == null:
+		content = ""
+		
+	var finish_reason = choice.get("finish_reason", "")
+	if finish_reason == "length" or finish_reason == "max_tokens":
+		content += "\n\n[color=orange][i]Note: The AI stopped because it reached its token generation limit. If it was in the middle of writing, please ask it to 'continue'.[/i][/color]"
+		return content
 	
 	if message.has("tool_calls"):
 		return {
@@ -234,6 +242,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	var chunks: PackedStringArray = []
 	var full_content: String = ""
 	var tool_calls: Array = []
+	var final_finish_reason: String = ""
 	
 	var lines: PackedStringArray = response_body.split("\n")
 	print("[%s] OpenAIClient: Found %d lines in response body." % [Time.get_time_string_from_system(), lines.size()])
@@ -258,6 +267,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		var finish_reason = choice.get("finish_reason")
 		if finish_reason:
 			print("[%s] OpenAIClient: Chunk finish_reason: %s" % [Time.get_time_string_from_system(), finish_reason])
+			final_finish_reason = str(finish_reason)
 		
 		# Handle reasoning content if present (common in LM Studio/Qwen/DeepSeek)
 		var reasoning_chunk: String = delta.get("reasoning_content", "")
@@ -297,6 +307,10 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 			var typed_chunks: Array[String] = [chunk_content]
 			progress.emit(typed_chunks)
 
+	if final_finish_reason == "length" or final_finish_reason == "max_tokens":
+		full_content += "\n\n[color=orange][i]Note: The AI stopped because it reached its token generation limit. If it was in the middle of writing, please ask it to 'continue'.[/i][/color]"
+		tool_calls.clear()
+
 	if not tool_calls.is_empty():
 		return {
 			"content": full_content,
@@ -306,7 +320,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	# Fallback: Parse XML tool calls from full_content if standard tool_calls is empty
 	# Pattern: <tool_call>{ "name": "...", "arguments": { ... } }</tool_call>
 	# Or sometimes: <tool_call>name: ..., arguments: ...</tool_call>
-	if "<tool_call>" in full_content:
+	if "<tool_call>" in full_content and final_finish_reason != "length" and final_finish_reason != "max_tokens":
 		var xml_tool_calls: Array = []
 		var start_idx = full_content.find("<tool_call>")
 		while start_idx != -1:
