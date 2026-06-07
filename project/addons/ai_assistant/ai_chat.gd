@@ -67,6 +67,10 @@ var api_key: String = ""
 @export
 var model: String = ""
 
+## Maximum tokens override (0 means use project settings).
+@export
+var max_tokens: int = 0
+
 ## If true, automatically sends a recovery prompt when the token limit is reached.
 @export
 var auto_resume_interrupted: bool = true
@@ -455,6 +459,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		handler.reasoning = final_reasoning
 		
 	handler.mock_client = mock_client
+	handler.max_tokens = max_tokens
 	_active_handler = handler
 	
 	# Sync session state to handler
