@@ -14,6 +14,7 @@ uniform vec3 pattern_rotation = vec3(0.0); // In degrees
 uniform vec3 pattern_scale = vec3(1.0);
 
 varying mat3 rot_matrix;
+varying vec3 local_pos;
 
 void vertex() {
 	// Convert degrees to radians and compute rotation matrices (YXZ order)
@@ -28,6 +29,9 @@ void vertex() {
 	
 	// Pass the rotation matrix to the fragment shader
 	rot_matrix = rz * rx * ry;
+	
+	// Calculate local position for stable texture mapping
+	local_pos = (rot_matrix * (VERTEX * pattern_scale)) + pattern_position;
 }
 
 // Pseudo-random hash for noise
@@ -67,20 +71,17 @@ float fbm(vec3 x) {
 }
 
 // Calculates the procedural height map for stucco
-float get_stucco_height(vec3 view_pos, mat4 inv_view) {
-	// Transform view space position back to local object space
-	vec3 obj_pos = (inv_view * vec4(view_pos, 1.0)).xyz;
-	
-	// Apply user transforms
-	vec3 p = (rot_matrix * (obj_pos * pattern_scale)) + pattern_position;
+float get_stucco_height(vec3 p) {
+	// Apply user transforms to local coordinates
+	vec3 local = (rot_matrix * (p * pattern_scale)) + pattern_position;
 	
 	// 1. Low frequency trowel marks (smooth but irregular sweeping patterns)
-	float trowel = fbm(p * trowel_scale);
+	float trowel = fbm(local * trowel_scale);
 	// Flatten the peaks to simulate the flat edge of a trowel
 	trowel = smoothstep(0.2, 0.8, trowel);
 	
 	// 2. High frequency sand/grit
-	float grit = noise(p * rough_scale);
+	float grit = noise(local * rough_scale);
 	
 	// Combine them using the blend weight
 	return mix(grit, trowel, blend_weight);
@@ -88,14 +89,14 @@ float get_stucco_height(vec3 view_pos, mat4 inv_view) {
 
 void fragment() {
 	// Evaluate height at current pixel
-	float h = get_stucco_height(VERTEX, INV_VIEW_MATRIX);
+	float h = get_stucco_height(local_pos);
 	
 	// Evaluate height at nearby pixels (finite difference) to calculate normals
 	// We use a small epsilon relative to the frequency to capture details without skipping
 	float eps = 0.002;
-	float h_x = get_stucco_height(VERTEX + vec3(eps, 0.0, 0.0), INV_VIEW_MATRIX);
-	float h_y = get_stucco_height(VERTEX + vec3(0.0, eps, 0.0), INV_VIEW_MATRIX);
-	float h_z = get_stucco_height(VERTEX + vec3(0.0, 0.0, eps), INV_VIEW_MATRIX);
+	float h_x = get_stucco_height(local_pos + vec3(eps, 0.0, 0.0));
+	float h_y = get_stucco_height(local_pos + vec3(0.0, eps, 0.0));
+	float h_z = get_stucco_height(local_pos + vec3(0.0, 0.0, eps));
 	
 	// View-space gradient (slope of the height map)
 	vec3 view_grad = vec3(h_x - h, h_y - h, h_z - h) / eps;
