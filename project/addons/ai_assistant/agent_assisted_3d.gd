@@ -123,6 +123,9 @@ var enable_search_project_files: bool = true
 @export
 var enable_web_search: bool = false
 
+@export
+var enable_read_webpage: bool = false
+
 ## List of IDs for skills that should be available in this generation session.
 ## If empty, all discovered skills are listed.
 @export
@@ -219,7 +222,8 @@ func generate() -> void:
 		enable_node_hierarchy,
 		enable_todo_list,
 		enable_search_project_files,
-		enable_web_search
+		enable_web_search,
+		enable_read_webpage
 	)
 	var content: String = ""
 	var success: bool = false

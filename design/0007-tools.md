@@ -174,6 +174,31 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0014: Read Webpage Tool (`read_webpage`)
+
+### Specification
+- **Method**: `read(url: String, start_line: int = 1, end_line: int = -1) -> Dictionary`
+- **Parameters**:
+    - `url`: The full URL of the webpage to read.
+    - `start_line`: Optional. The 1-based starting line number to read.
+    - `end_line`: Optional. The inclusive ending line number to read.
+
+### Implementation Detail
+1. **Robots.txt Check**:
+    - The tool parses the host from the URL and fetches `https://<host>/robots.txt` or `http://<host>/robots.txt`.
+    - It checks for `User-agent: *` and evaluates `Disallow` directives against the requested path.
+    - If the path is disallowed, the tool returns an error refusing to scrape the site.
+2. **Fetch Execution**:
+    - If allowed, use an `HTTPRequest` node to fetch the target URL.
+3. **Extraction and Pagination**:
+    - Extract text from the HTML body, removing scripts, styles, and tags.
+    - Split the cleaned text into lines. Apply the `start_line` and `end_line` bounds.
+    - If the user doesn't provide bounds and the text is large (e.g., > 150 lines), truncate it and append a message informing the AI of the total lines and instructing it to use `start_line` and `end_line` for the rest.
+4. **Prompt Instructions**:
+    - The tool's description will explicitly tell the AI: "Read parts of a webpage. IMPORTANT: Because this consumes significant context, you MUST immediately produce a summary of the relevant information you found to retain it after context compression."
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -184,6 +209,7 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 @export var enable_project_resources: bool = true
 @export var enable_node_hierarchy: bool = true
 @export var enable_web_search: bool = false
+@export var enable_read_webpage: bool = false
 ```
 
 When building the request, the `PromptBuilder` or the node will collect the definitions of enabled tools and pass them to the `AIClient`.
@@ -217,5 +243,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0011 | `ManageTodoListTool` implementation details |
 | REQ-TOOL-0012 | `SearchProjectFilesTool` implementation details |
 | REQ-TOOL-0013 | `WebSearchTool` implementation details |
+| REQ-TOOL-0014 | `ReadWebpageTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |

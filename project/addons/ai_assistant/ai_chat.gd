@@ -114,6 +114,9 @@ var enable_search_project_files: bool = true
 var enable_web_search: bool = false
 
 @export
+var enable_read_webpage: bool = false
+
+@export
 var use_router: bool = false
 
 ## If enabled, tool calls and their results are stripped from the history after completion
@@ -705,7 +708,8 @@ func get_current_tool_definitions() -> Array[Dictionary]:
 		enable_node_hierarchy,
 		enable_todo_list,
 		enable_search_project_files,
-		enable_web_search
+		enable_web_search,
+		enable_read_webpage
 	)
 
 

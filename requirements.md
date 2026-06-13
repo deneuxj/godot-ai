@@ -227,6 +227,13 @@ REQ-TOOL-0013: Provide a tool `search_web` that allows the AI to:
   - Search the internet for information, documentation, and tutorials to assist with general coding or Godot specific tasks that aren't available locally.
   - The tool shall accept a search query and return a concise summary of the most relevant search results and web page contents.
 
+REQ-TOOL-0014: Provide a tool `read_webpage` that allows the AI to:
+  - Fetch and read the text content of a specific URL.
+  - The tool shall automatically respect the target site's `robots.txt` rules for web scraping and AI agents, denying the request if access is disallowed.
+  - The tool shall extract the main body text, strip HTML, and return it.
+  - The tool shall support reading partial content (e.g. via line ranges) to handle large pages without context overflow.
+  - The tool's instructions shall explicitly direct the AI to produce a summary of the relevant information after reading, as the large text volume is likely to trigger context compression.
+
 ### AI Skills
 
 REQ-SKILL-0001: The plugin shall support a "Skill System" to provide specialized capabilities to the AI agent.
