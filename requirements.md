@@ -223,6 +223,10 @@ REQ-TOOL-0012: Provide a tool `search_project_files` that allows the AI to:
   - Optionally accept file glob filters (e.g., `*.gd`) to narrow down the search.
   - Limit the number of returned matches to prevent context overflow.
 
+REQ-TOOL-0013: Provide a tool `search_web` that allows the AI to:
+  - Search the internet for information, documentation, and tutorials to assist with general coding or Godot specific tasks that aren't available locally.
+  - The tool shall accept a search query and return a concise summary of the most relevant search results and web page contents.
+
 ### AI Skills
 
 REQ-SKILL-0001: The plugin shall support a "Skill System" to provide specialized capabilities to the AI agent.

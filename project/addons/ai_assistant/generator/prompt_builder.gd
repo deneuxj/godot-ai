@@ -511,7 +511,7 @@ static func build(prompt: String, textures: Array[Texture2D], mode: int, discove
 
 
 ## Build the tools array based on node configuration.
-static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false, enable_hierarchy: bool = false, enable_todo: bool = false, enable_search: bool = false) -> Array[Dictionary]:
+static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enable_modify: bool = false, enable_validate: bool = false, enable_execute: bool = false, enable_capture: bool = false, enable_hierarchy: bool = false, enable_todo: bool = false, enable_search: bool = false, enable_web_search: bool = false) -> Array[Dictionary]:
 	var tools: Array[Dictionary] = []
 	
 	if enable_docs:
@@ -548,6 +548,10 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 	
 	if enable_search:
 		var tool = load("res://addons/ai_assistant/tools/search_project_files_tool.gd").new()
+		tools.append(tool.get_definition())
+		
+	if enable_web_search:
+		var tool = load("res://addons/ai_assistant/tools/search_web_tool.gd").new()
 		tools.append(tool.get_definition())
 	
 	# Always include activate_skill if skills are supported/enabled

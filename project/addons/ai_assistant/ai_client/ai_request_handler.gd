@@ -392,6 +392,8 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			tool = load("res://addons/ai_assistant/tools/manage_todo_list_tool.gd").new()
 		"search_project_files":
 			tool = load("res://addons/ai_assistant/tools/search_project_files_tool.gd").new()
+		"search_web":
+			tool = load("res://addons/ai_assistant/tools/search_web_tool.gd").new()
 		"activate_skill":
 			# Special handling for activate_skill which is built-in but stateful
 			return await activate_skill(arguments.get("name", ""))

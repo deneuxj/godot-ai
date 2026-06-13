@@ -157,6 +157,23 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 
 ---
 
+## REQ-TOOL-0013: Web Search Tool (`search_web`)
+
+### Specification
+- **Method**: `search(query: String) -> Dictionary`
+- **Parameters**:
+    - `query`: The search string to query the web.
+
+### Implementation Detail
+1. **Search Execution**:
+    - Use an `HTTPRequest` node or similar mechanism to query a search API or service.
+2. **Context Safety**:
+    - Summarize or limit the length of the returned content to prevent token overflow.
+3. **Response Format**:
+    - Return a dictionary containing the most relevant snippets and URLs.
+
+---
+
 ## REQ-TOOL-0004: Tool Control Properties
 
 `AIAgentAssisted3D` and `AIChat` will have a new property group:
@@ -166,6 +183,7 @@ Uses `DirAccess` for file listing. `get_resource_info` provides metadata about s
 @export var enable_godot_docs: bool = true
 @export var enable_project_resources: bool = true
 @export var enable_node_hierarchy: bool = true
+@export var enable_web_search: bool = false
 ```
 
 When building the request, the `PromptBuilder` or the node will collect the definitions of enabled tools and pass them to the `AIClient`.
@@ -198,5 +216,6 @@ When building the request, the `PromptBuilder` or the node will collect the defi
 | REQ-TOOL-0010 | `NodeHierarchyTool` implementation details |
 | REQ-TOOL-0011 | `ManageTodoListTool` implementation details |
 | REQ-TOOL-0012 | `SearchProjectFilesTool` implementation details |
+| REQ-TOOL-0013 | `WebSearchTool` implementation details |
 | REQ-TOOL-0004 | `@export` properties in node classes |
 | REQ-TOOL-0005 | `AIRequestHandler` logging of tool calls |
