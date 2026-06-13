@@ -192,8 +192,26 @@ func adjust_walls(arguments: Dictionary) -> String:
 			var new_length = w.length + w.delta_start + w.delta_end
 			
 			if w.is_csg:
-				w.csg_box.size.x = new_length
-				w.csg_box.position.x = w.initial_local_start - w.delta_start + new_length / 2.0
+				var shift_local = (w.delta_end - w.delta_start) / 2.0
+				var delta_total = w.delta_start + w.delta_end
+				
+				var handled_children = false
+				if w.node is CSGCombiner3D:
+					for c in w.node.get_children():
+						if c is CSGBox3D and c.operation != CSGShape3D.OPERATION_SUBTRACTION:
+							handled_children = true
+							if c.size.x > 0.05: # Longitudinal layers
+								c.size.x += delta_total
+								c.position.x += shift_local
+							else: # End caps
+								if c.position.x < w.initial_local_start + w.length / 2.0:
+									c.position.x -= w.delta_start
+								else:
+									c.position.x += w.delta_end
+				
+				if not handled_children:
+					w.csg_box.size.x = new_length
+					w.csg_box.position.x = w.initial_local_start - w.delta_start + new_length / 2.0
 			else:
 				if w.mesh_instance.mesh is BoxMesh:
 					w.mesh_instance.mesh = w.mesh_instance.mesh.duplicate()
