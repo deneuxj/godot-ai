@@ -744,7 +744,7 @@ static func sanitize_history(messages: Array[Dictionary], preserve_thinking: boo
 		
 		for i in range(sanitized.size()):
 			var msg = sanitized[i]
-			if msg.role == "assistant":
+			if msg.role == "assistant" and not msg.get("interrupted", false):
 				var content = msg.get("content", "")
 				if typeof(content) == TYPE_STRING:
 					# Clean up the stripped text (also remove extra newlines left behind)

@@ -554,12 +554,18 @@ func _cleanup_after_cancel(handler: AIRequestHandler = null) -> void:
 	
 	# 2. Save partial response or ensure role alternation
 	if not partial_response.is_empty():
+		var open_count = partial_response.count("<think>")
+		var close_count = partial_response.count("</think>")
+		if open_count > close_count:
+			partial_response += "\n</think>"
+			
 		if not chat_history.is_empty() and chat_history.back().role == "assistant":
 			# If the last message is already assistant, it means it's a fallback 
 			# or an empty message from the handler. We replace its content with partial.
 			chat_history.back().content = partial_response
+			chat_history.back()["interrupted"] = true
 		else:
-			chat_history.append({"role": "assistant", "content": partial_response})
+			chat_history.append({"role": "assistant", "content": partial_response, "interrupted": true})
 		partial_response = ""
 	elif not chat_history.is_empty() and chat_history.back().role == "tool":
 		# REQ-CHAT-0016: Always end with assistant if tools were called
@@ -758,7 +764,7 @@ func compress_context(force: bool = false) -> bool:
 				var modified := false
 				
 				# Strip <think> blocks if not preserving
-				if not preserve_thinking_in_history:
+				if not preserve_thinking_in_history and not new_msg.get("interrupted", false):
 					var content = new_msg.get("content", "")
 					if typeof(content) == TYPE_STRING:
 						var stripped = regex.sub(content, "", true).strip_edges()

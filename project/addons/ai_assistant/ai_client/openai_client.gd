@@ -44,6 +44,8 @@ func _ensure_http_request() -> void:
 func cancel() -> void:
 	if is_instance_valid(_http_request):
 		_http_request.cancel_request()
+		# Unblock the await in chat_stream so it can return and allow cleanup
+		_http_request.request_completed.emit(ERR_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray())
 
 
 ## Non-streaming chat: sends [param messages] and returns the full response.
