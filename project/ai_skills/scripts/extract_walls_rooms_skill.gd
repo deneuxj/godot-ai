@@ -114,8 +114,47 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 		
 		for wall in walls_node.get_children():
 			if wall is Node3D:
-				var pos = wall.position
-				var size = _get_wall_size(wall)
+				var core_node = null
+				var first_box = null
+				if wall is CSGCombiner3D or wall.has_method("get_children"):
+					for child in wall.get_children():
+						if child is CSGBox3D:
+							if child.operation != CSGShape3D.OPERATION_SUBTRACTION:
+								if first_box == null:
+									first_box = child
+								if child.name == "Core":
+									core_node = child
+									break
+						elif child is MeshInstance3D and first_box == null:
+							first_box = child
+							
+				var target_node = wall
+				if core_node != null:
+					target_node = core_node
+				elif first_box != null:
+					target_node = first_box
+
+				var size = Vector3.ZERO
+				var global_start = wall.global_position
+				var local_start_x = 0.0
+				
+				if target_node is CSGBox3D:
+					size = target_node.size
+					local_start_x = target_node.position.x - (size.x / 2.0)
+					var local_start = Vector3(local_start_x, 0, 0)
+					global_start = target_node.get_parent().to_global(local_start)
+				elif target_node is MeshInstance3D and target_node.mesh != null:
+					size = target_node.mesh.size
+					local_start_x = target_node.position.x - (size.x / 2.0)
+					var local_start = Vector3(local_start_x, 0, 0)
+					global_start = target_node.get_parent().to_global(local_start)
+				else:
+					size = _get_wall_size(wall)
+
+				# Force Y=0 so create_wall doesn't build floating walls
+				global_start.y = 0.0
+				var pos = global_start
+
 				var rotation = wall.rotation_degrees
 				
 				# Normalize Y-axis rotation and handle 90-degree increments
@@ -170,7 +209,10 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 							if child is CSGBox3D and child.operation == CSGShape3D.OPERATION_SUBTRACTION:
 								openings_count += 1
 								var op_type = child.name.split("_")[0] if "_" in child.name else child.name
-								openings_text += "    - " + op_type + " at " + str(child.position) + " size: " + str(child.size) + "\n"
+								var center_rel_x = child.position.x - local_start_x
+								var edge_x = center_rel_x - (child.size.x / 2.0)
+								var edge_y = child.position.y - (child.size.y / 2.0)
+								openings_text += "    - " + op_type + " at offset: " + str(snapped(edge_x, 0.001)) + "m, y_offset: " + str(snapped(edge_y, 0.001)) + "m (Size: " + str(child.size) + ")\n"
 					if openings_count > 0:
 						result += "  Openings (" + str(openings_count) + "):\n" + openings_text
 					

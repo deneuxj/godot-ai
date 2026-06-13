@@ -104,7 +104,11 @@ func create_wall(arguments: Dictionary) -> String:
 	var scene_root = get_tree().get_edited_scene_root()
 	var parent_node = null
 	if scene_root:
-		parent_node = scene_root.find_child("Generated", true, false)
+		var ai_node = get_parent()
+		if ai_node:
+			parent_node = ai_node.get_node_or_null("Generated")
+		if not parent_node:
+			parent_node = scene_root.find_child("Generated", true, false)
 		if not parent_node:
 			parent_node = scene_root
 			
@@ -260,7 +264,13 @@ func delete_wall(arguments: Dictionary) -> String:
 		if not scene_root:
 			return "Error: No edited scene root found."
 			
-		var generated = scene_root.find_child("Generated", true, false)
+		var generated = null
+		var ai_node = get_parent()
+		if ai_node:
+			generated = ai_node.get_node_or_null("Generated")
+		if not generated:
+			generated = scene_root.find_child("Generated", true, false)
+			
 		if generated:
 			target_node = generated.get_node_or_null(node_identifier)
 		else:
