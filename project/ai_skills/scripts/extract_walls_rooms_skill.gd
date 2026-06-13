@@ -163,6 +163,17 @@ func extract_walls_rooms_data(arguments: Dictionary) -> String:
 					if include_details and wall.has_meta("wall_type"):
 						result += "  Type: " + str(wall.get_meta("wall_type")) + "\n"
 					
+					var openings_text = ""
+					var openings_count = 0
+					if wall is CSGCombiner3D or wall.has_method("get_children"):
+						for child in wall.get_children():
+							if child is CSGBox3D and child.operation == CSGShape3D.OPERATION_SUBTRACTION:
+								openings_count += 1
+								var op_type = child.name.split("_")[0] if "_" in child.name else child.name
+								openings_text += "    - " + op_type + " at " + str(child.position) + " size: " + str(child.size) + "\n"
+					if openings_count > 0:
+						result += "  Openings (" + str(openings_count) + "):\n" + openings_text
+					
 					result += "\n"
 				else:
 					# JSON format would be handled differently in a real implementation
@@ -358,6 +369,19 @@ func export_walls_rooms_json(arguments: Dictionary) -> String:
 					wall_data["connected_to"] = wall.get_meta("connected_to")
 				if wall.has_meta("wall_type"):
 					wall_data["type"] = wall.get_meta("wall_type")
+				
+				var openings = []
+				if wall is CSGCombiner3D or wall.has_method("get_children"):
+					for child in wall.get_children():
+						if child is CSGBox3D and child.operation == CSGShape3D.OPERATION_SUBTRACTION:
+							openings.append({
+								"name": child.name,
+								"type": child.name.split("_")[0] if "_" in child.name else "opening",
+								"position": { "x": child.position.x, "y": child.position.y, "z": child.position.z },
+								"size": { "x": child.size.x, "y": child.size.y, "z": child.size.z }
+							})
+				if openings.size() > 0:
+					wall_data["openings"] = openings
 					
 				data["walls"].append(wall_data)
 	

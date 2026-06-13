@@ -122,12 +122,38 @@ func create_wall(arguments: Dictionary) -> String:
 	root.name = wall_name
 	root.use_collision = true
 	
-	# Base Wall
+	# Core Wall
 	var wall_box := CSGBox3D.new()
-	wall_box.size = Vector3(length, 2.5, thickness)
+	wall_box.name = "Core"
+	wall_box.size = Vector3(max(0.001, length - 0.02), 2.5, max(0.001, thickness - 0.02))
 	# Center it so it starts at 0,0,0 in local space
 	wall_box.position = Vector3(length/2.0, 1.25, 0)
 	root.add_child(wall_box)
+	
+	# Layers
+	var layer_front := CSGBox3D.new()
+	layer_front.name = "Layer_Front"
+	layer_front.size = Vector3(length, 2.5, 0.01)
+	layer_front.position = Vector3(length/2.0, 1.25, thickness/2.0 - 0.005)
+	root.add_child(layer_front)
+	
+	var layer_back := CSGBox3D.new()
+	layer_back.name = "Layer_Back"
+	layer_back.size = Vector3(length, 2.5, 0.01)
+	layer_back.position = Vector3(length/2.0, 1.25, -thickness/2.0 + 0.005)
+	root.add_child(layer_back)
+	
+	var layer_left := CSGBox3D.new()
+	layer_left.name = "Layer_Left"
+	layer_left.size = Vector3(0.01, 2.5, max(0.001, thickness - 0.02))
+	layer_left.position = Vector3(0.005, 1.25, 0)
+	root.add_child(layer_left)
+	
+	var layer_right := CSGBox3D.new()
+	layer_right.name = "Layer_Right"
+	layer_right.size = Vector3(0.01, 2.5, max(0.001, thickness - 0.02))
+	layer_right.position = Vector3(length - 0.005, 1.25, 0)
+	root.add_child(layer_right)
 	
 	# Openings
 	for op in openings:
@@ -183,13 +209,17 @@ func add_opening_to_wall(arguments: Dictionary) -> String:
 		
 	var base_wall = null
 	for child in wall.get_children():
-		if child is CSGBox3D and child.operation == CSGShape3D.OPERATION_UNION:
+		if child is CSGBox3D and child.name == "Core":
 			base_wall = child
 			break
+		if base_wall == null and child is CSGBox3D and child.operation == CSGShape3D.OPERATION_UNION:
+			base_wall = child
 			
 	var thickness: float = 0.2
 	if base_wall:
 		thickness = base_wall.size.z
+		if base_wall.name == "Core":
+			thickness += 0.02
 		
 	var op: Dictionary = arguments.get("opening", {})
 	var op_type: String = op.get("type", "door")
