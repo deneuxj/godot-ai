@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1uhfd"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_td5mw"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+roughness = 0.8
+
+[node name="Dryer" type="Node3D" unique_id=2115911293]
+
+[node name="@CSGBox3D@13" type="CSGBox3D" parent="." unique_id=345440649]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.425, 0)
+size = Vector3(0.6, 0.85, 0.6)
+material = SubResource("StandardMaterial3D_1uhfd")
+
+[node name="@CSGCylinder3D@14" type="CSGCylinder3D" parent="." unique_id=1217078273]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.4, 0.31)
+radius = 0.22
+height = 0.05
+material = SubResource("StandardMaterial3D_td5mw")
+
+[node name="@CSGCylinder3D@16" type="CSGCylinder3D" parent="." unique_id=1654283835]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.4, 0.31)
+radius = 0.25
+height = 0.04
+material = SubResource("StandardMaterial3D_td5mw")
+
+[node name="@CSGCylinder3D@15" type="CSGCylinder3D" parent="@CSGCylinder3D@16" unique_id=15303077]
+operation = 2
+radius = 0.22
+height = 0.1
+
+[node name="@CSGBox3D@17" type="CSGBox3D" parent="." unique_id=556094889]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0.31)
+size = Vector3(0.56, 0.1, 0.02)
+material = SubResource("StandardMaterial3D_td5mw")

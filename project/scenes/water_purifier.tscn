@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2y6vp"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+metallic = 0.8
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1uhfd"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_umlol"]
+albedo_color = Color(0.2, 0.5, 0.8, 1)
+
+[node name="WaterPurifier" type="Node3D" unique_id=1346807460]
+
+[node name="@CSGBox3D@4" type="CSGBox3D" parent="." unique_id=1016133495]
+size = Vector3(0.4, 0.1, 0.1)
+material = SubResource("StandardMaterial3D_2y6vp")
+
+[node name="@CSGCylinder3D@5" type="CSGCylinder3D" parent="." unique_id=384827995]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, -0.15, 0)
+radius = 0.04
+height = 0.25
+material = SubResource("StandardMaterial3D_1uhfd")
+
+[node name="@CSGCylinder3D@6" type="CSGCylinder3D" parent="." unique_id=1779393809]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+radius = 0.04
+height = 0.25
+material = SubResource("StandardMaterial3D_1uhfd")
+
+[node name="@CSGCylinder3D@7" type="CSGCylinder3D" parent="." unique_id=1895011804]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, -0.15, 0)
+radius = 0.04
+height = 0.25
+material = SubResource("StandardMaterial3D_umlol")

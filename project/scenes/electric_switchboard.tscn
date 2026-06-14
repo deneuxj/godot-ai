@@ -1,0 +1,100 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2y6vp"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+metallic = 0.8
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q8joo"]
+transparency = 1
+albedo_color = Color(0.1, 0.1, 0.1, 0.5)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cyk3p"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+
+[node name="ElectricSwitchboard" type="Node3D" unique_id=226521061]
+
+[node name="@CSGBox3D@25" type="CSGBox3D" parent="." unique_id=1705279263]
+size = Vector3(0.4, 0.6, 0.1)
+material = SubResource("StandardMaterial3D_2y6vp")
+
+[node name="@CSGBox3D@26" type="CSGBox3D" parent="." unique_id=1980526187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.06)
+size = Vector3(0.38, 0.58, 0.02)
+material = SubResource("StandardMaterial3D_q8joo")
+
+[node name="@CSGBox3D@27" type="CSGBox3D" parent="." unique_id=51793603]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@28" type="CSGBox3D" parent="." unique_id=652820733]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, 0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@29" type="CSGBox3D" parent="." unique_id=1677963378]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@30" type="CSGBox3D" parent="." unique_id=1660528588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@31" type="CSGBox3D" parent="." unique_id=112165712]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@32" type="CSGBox3D" parent="." unique_id=1300532933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@33" type="CSGBox3D" parent="." unique_id=730900588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, 0, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@34" type="CSGBox3D" parent="." unique_id=945604542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@35" type="CSGBox3D" parent="." unique_id=1723923344]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@36" type="CSGBox3D" parent="." unique_id=1908059403]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@37" type="CSGBox3D" parent="." unique_id=1867202475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, -0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@38" type="CSGBox3D" parent="." unique_id=162271208]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, -0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@39" type="CSGBox3D" parent="." unique_id=448683239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@40" type="CSGBox3D" parent="." unique_id=1074118256]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, -0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
+
+[node name="@CSGBox3D@41" type="CSGBox3D" parent="." unique_id=1117007279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, -0.15, 0.04)
+size = Vector3(0.04, 0.06, 0.04)
+material = SubResource("StandardMaterial3D_cyk3p")
