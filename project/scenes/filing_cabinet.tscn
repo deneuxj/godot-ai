@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_isikk"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+metallic = 0.9
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_apwj0"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+roughness = 0.6
+
+[node name="FilingCabinet" type="Node3D" unique_id=244464205]
+
+[node name="Body" type="CSGBox3D" parent="." unique_id=828679426]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+size = Vector3(0.4, 0.52, 0.5)
+material = SubResource("StandardMaterial3D_isikk")
+
+[node name="Gap0_44" type="CSGBox3D" parent="." unique_id=1159691388]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44, 0.25)
+size = Vector3(0.42, 0.01, 0.01)
+material = SubResource("StandardMaterial3D_apwj0")
+
+[node name="Gap0_24" type="CSGBox3D" parent="." unique_id=1561796338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0.25)
+size = Vector3(0.42, 0.01, 0.01)
+material = SubResource("StandardMaterial3D_apwj0")
+
+[node name="CabWheel_-0_15_-0_2" type="CSGCylinder3D" parent="." unique_id=1051421915]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.15, 0.02, -0.2)
+radius = 0.02
+height = 0.04
+material = SubResource("StandardMaterial3D_apwj0")
+
+[node name="CabWheel_-0_15_0_2" type="CSGCylinder3D" parent="." unique_id=1879420903]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.15, 0.02, 0.2)
+radius = 0.02
+height = 0.04
+material = SubResource("StandardMaterial3D_apwj0")
+
+[node name="CabWheel_0_15_-0_2" type="CSGCylinder3D" parent="." unique_id=44217667]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.15, 0.02, -0.2)
+radius = 0.02
+height = 0.04
+material = SubResource("StandardMaterial3D_apwj0")
+
+[node name="CabWheel_0_15_0_2" type="CSGCylinder3D" parent="." unique_id=1744199007]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.15, 0.02, 0.2)
+radius = 0.02
+height = 0.04
+material = SubResource("StandardMaterial3D_apwj0")

@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uhr5u"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_isikk"]
+albedo_color = Color(0.2, 0.2, 0.2, 1)
+metallic = 0.9
+roughness = 0.4
+
+[node name="OfficeDesk" type="Node3D" unique_id=179306389]
+
+[node name="DeskTop" type="CSGBox3D" parent="." unique_id=871575167]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73, 0)
+size = Vector3(1.4, 0.04, 0.7)
+material = SubResource("StandardMaterial3D_uhr5u")
+
+[node name="Leg-0_65" type="CSGBox3D" parent="." unique_id=1078181138]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.65, 0.355, 0)
+size = Vector3(0.04, 0.71, 0.6)
+material = SubResource("StandardMaterial3D_isikk")
+
+[node name="Hole" type="CSGBox3D" parent="Leg-0_65" unique_id=465116930]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+operation = 2
+size = Vector3(0.06, 0.63, 0.52)
+
+[node name="Leg0_65" type="CSGBox3D" parent="." unique_id=1958711170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.355, 0)
+size = Vector3(0.04, 0.71, 0.6)
+material = SubResource("StandardMaterial3D_isikk")
+
+[node name="Hole" type="CSGBox3D" parent="Leg0_65" unique_id=740483325]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+operation = 2
+size = Vector3(0.06, 0.63, 0.52)
