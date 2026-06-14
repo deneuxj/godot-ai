@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f671k"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4ugu5"]
+albedo_color = Color(0.01, 0.01, 0.01, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ims6l"]
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+metallic = 0.9
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_27m2b"]
+albedo_color = Color(0.02, 0.02, 0.02, 1)
+metallic = 0.8
+roughness = 0.1
+
+[node name="TVConsole" type="Node3D" unique_id=125050154]
+
+[node name="ConsoleBody" type="CSGBox3D" parent="." unique_id=674353446]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+size = Vector3(2.4, 0.3, 0.45)
+material = SubResource("StandardMaterial3D_f671k")
+
+[node name="Gap_-0_4" type="CSGBox3D" parent="." unique_id=1681600820]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.25, 0.226)
+size = Vector3(0.01, 0.3, 0.01)
+material = SubResource("StandardMaterial3D_4ugu5")
+
+[node name="Gap_0_4" type="CSGBox3D" parent="." unique_id=416729601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.25, 0.226)
+size = Vector3(0.01, 0.3, 0.01)
+material = SubResource("StandardMaterial3D_4ugu5")
+
+[node name="Leg1" type="CSGCylinder3D" parent="." unique_id=470080508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.05, -0.15)
+radius = 0.015
+height = 0.1
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="Leg2" type="CSGCylinder3D" parent="." unique_id=1227432058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.05, 0.15)
+radius = 0.015
+height = 0.1
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="Leg3" type="CSGCylinder3D" parent="." unique_id=1242200939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.05, -0.15)
+radius = 0.015
+height = 0.1
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="Leg4" type="CSGCylinder3D" parent="." unique_id=426843225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.05, 0.15)
+radius = 0.015
+height = 0.1
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="Leg5" type="CSGCylinder3D" parent="." unique_id=79082412]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+radius = 0.015
+height = 0.1
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="TVBase" type="CSGBox3D" parent="." unique_id=400259356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.405, -0.05)
+size = Vector3(0.5, 0.01, 0.25)
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="TVNeck" type="CSGBox3D" parent="." unique_id=16220947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, -0.1)
+size = Vector3(0.1, 0.1, 0.04)
+material = SubResource("StandardMaterial3D_ims6l")
+
+[node name="TVScreen" type="CSGBox3D" parent="." unique_id=1368211047]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -0.1)
+size = Vector3(1.6, 0.9, 0.04)
+material = SubResource("StandardMaterial3D_27m2b")

@@ -1,4 +1,7 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://sotypfedi0ch"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q5xv5"]
+albedo_color = Color(0.5066189, 0.28566808, 0.048292726, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p5d0u"]
 albedo_color = Color(0.2, 0.2, 0.2, 1)
@@ -7,8 +10,8 @@ albedo_color = Color(0.2, 0.2, 0.2, 1)
 
 [node name="Table" type="CSGBox3D" parent="." unique_id=1538030310]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.75, 0.45)
-material_override = SubResource("StandardMaterial3D_p5d0u")
 size = Vector3(1.6, 0.05, 0.9)
+material = SubResource("StandardMaterial3D_q5xv5")
 
 [node name="Leg1" type="CSGBox3D" parent="Table" unique_id=475873384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, -0.375, -0.4)

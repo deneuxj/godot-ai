@@ -1,0 +1,136 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a22uj"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfqtf"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2amw2"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+metallic = 0.9
+roughness = 0.3
+
+[node name="EntranceUnit" type="Node3D" unique_id=28123497]
+
+[node name="BenchTop" type="CSGBox3D" parent="." unique_id=115218277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.43, 0)
+size = Vector3(1.2, 0.04, 0.4)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BenchSide" type="CSGBox3D" parent="." unique_id=376018238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.58, 0.205, 0)
+size = Vector3(0.04, 0.41, 0.4)
+material = SubResource("StandardMaterial3D_qfqtf")
+
+[node name="@CSGBox3D@2" type="CSGBox3D" parent="." unique_id=1575157075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58, 0.205, 0)
+size = Vector3(0.04, 0.41, 0.4)
+material = SubResource("StandardMaterial3D_qfqtf")
+
+[node name="ShoeShelf" type="CSGBox3D" parent="." unique_id=1870392640]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
+size = Vector3(1.12, 0.04, 0.38)
+material = SubResource("StandardMaterial3D_qfqtf")
+
+[node name="Divider" type="CSGBox3D" parent="." unique_id=792004663]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.205, 0)
+size = Vector3(0.04, 0.41, 0.38)
+material = SubResource("StandardMaterial3D_qfqtf")
+
+[node name="BackSlat_1" type="CSGBox3D" parent="." unique_id=1165886523]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.57, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_2" type="CSGBox3D" parent="." unique_id=264554486]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44333333, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_3" type="CSGBox3D" parent="." unique_id=255833764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31666666, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_4" type="CSGBox3D" parent="." unique_id=785419603]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_5" type="CSGBox3D" parent="." unique_id=1061871470]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06333333, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_6" type="CSGBox3D" parent="." unique_id=1601218503]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06333333, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_7" type="CSGBox3D" parent="." unique_id=1892656323]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.19, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_8" type="CSGBox3D" parent="." unique_id=1410556950]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.31666666, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_9" type="CSGBox3D" parent="." unique_id=1630550817]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.44333333, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="BackSlat_10" type="CSGBox3D" parent="." unique_id=1127460809]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.57, 1.225, -0.19)
+size = Vector3(0.06, 1.55, 0.02)
+material = SubResource("StandardMaterial3D_a22uj")
+
+[node name="TopShelf" type="CSGBox3D" parent="." unique_id=1203153109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.98, -0.05)
+size = Vector3(1.2, 0.04, 0.3)
+material = SubResource("StandardMaterial3D_qfqtf")
+
+[node name="Hook_1" type="CSGBox3D" parent="." unique_id=1055408957]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44333333, 1.65, -0.155)
+size = Vector3(0.015, 0.05, 0.05)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="@CSGBox3D@3" type="CSGBox3D" parent="Hook_1" unique_id=1848577138]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.0175)
+size = Vector3(0.015, 0.03, 0.015)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="Hook_3" type="CSGBox3D" parent="." unique_id=1395938806]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19, 1.65, -0.155)
+size = Vector3(0.015, 0.05, 0.05)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="@CSGBox3D@4" type="CSGBox3D" parent="Hook_3" unique_id=1662606478]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.0175)
+size = Vector3(0.015, 0.03, 0.015)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="Hook_5" type="CSGBox3D" parent="." unique_id=591832606]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06333333, 1.65, -0.155)
+size = Vector3(0.015, 0.05, 0.05)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="@CSGBox3D@5" type="CSGBox3D" parent="Hook_5" unique_id=1498881663]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.0175)
+size = Vector3(0.015, 0.03, 0.015)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="Hook_7" type="CSGBox3D" parent="." unique_id=1580936006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.31666666, 1.65, -0.155)
+size = Vector3(0.015, 0.05, 0.05)
+material = SubResource("StandardMaterial3D_2amw2")
+
+[node name="@CSGBox3D@6" type="CSGBox3D" parent="Hook_7" unique_id=1218754784]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.0175)
+size = Vector3(0.015, 0.03, 0.015)
+material = SubResource("StandardMaterial3D_2amw2")

@@ -5,9 +5,9 @@
 [resource]
 render_priority = 0
 shader = ExtResource("1_viupm")
-shader_parameter/base_color = Color(0.92, 0.92, 0.92, 1)
-shader_parameter/vein_color = Color(0.91, 0.86359, 0.82809997, 1)
+shader_parameter/base_color = Color(0.9, 0.86205, 0.80099994, 1)
+shader_parameter/vein_color = Color(0.98, 0.92512, 0.8428, 1)
 shader_parameter/vein_scale = 3.0
 shader_parameter/distortion = 3.0
-shader_parameter/contrast = 4.0
+shader_parameter/contrast = 0.1
 shader_parameter/roughness_base = 0.1

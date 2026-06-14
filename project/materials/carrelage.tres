@@ -6,7 +6,7 @@
 render_priority = 0
 shader = ExtResource("1_hfayd")
 shader_parameter/base_color = Color(0.92, 0.92, 0.92, 1)
-shader_parameter/vein_color = Color(0.91, 0.86359, 0.82809997, 1)
+shader_parameter/vein_color = Color(0.9689149, 0.9523333, 0.93997955, 1)
 shader_parameter/vein_scale = 3.0
 shader_parameter/distortion = 3.0
 shader_parameter/contrast = 4.0

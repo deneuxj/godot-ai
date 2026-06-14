@@ -10,12 +10,17 @@
 [ext_resource type="VoxelGIData" uid="uid://q74sjjvo6yqw" path="res://scenes/house building.VoxelGI_data.res" id="9_pu0k3"]
 [ext_resource type="Material" uid="uid://cqimmhjfoh2ok" path="res://materials/mur.tres" id="9_utsn7"]
 [ext_resource type="Material" uid="uid://c3snpp3cqjnod" path="res://materials/facade.tres" id="10_utsn7"]
+[ext_resource type="Material" uid="uid://dabycn0t0mqse" path="res://materials/mur_vert.tres" id="11_hspdl"]
 [ext_resource type="Script" uid="uid://b1v5irgglra1" path="res://scripts/fly_camera.gd" id="11_utsn7"]
-[ext_resource type="PackedScene" path="res://scenes/kitchen_furniture.tscn" id="12_vpft7"]
+[ext_resource type="PackedScene" uid="uid://sotypfedi0ch" path="res://scenes/kitchen_furniture.tscn" id="12_vpft7"]
 [ext_resource type="PackedScene" uid="uid://cv13nyr65sxd" path="res://scenes/kitchen_equipment.tscn" id="13_3obb1"]
+[ext_resource type="Material" uid="uid://cdpsk7ijbiain" path="res://materials/mur_bleu.tres" id="13_scmj5"]
 [ext_resource type="PackedScene" uid="uid://bys15q3f7tn5f" path="res://scenes/pool_table.tscn" id="14_sdlwi"]
 [ext_resource type="PackedScene" path="res://scenes/sofa.tscn" id="15_p26fb"]
 [ext_resource type="PackedScene" uid="uid://dhna771u62irp" path="res://scenes/claustra.tscn" id="16_ooaox"]
+[ext_resource type="PackedScene" path="res://scenes/tv_console.tscn" id="17_om8ys"]
+[ext_resource type="PackedScene" path="res://scenes/coffee_table.tscn" id="18_hspdl"]
+[ext_resource type="PackedScene" path="res://scenes/entrance_unit.tscn" id="21_p2xdh"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -93,8 +98,8 @@ script = ExtResource("11_utsn7")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1125362048]
 environment = SubResource("Environment_pu0k3")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2029804767]
-transform = Transform3D(0.89493436, 0.21971832, -0.38835078, 0, 0.87035567, 0.49242356, 0.4461978, -0.44068676, 0.7789112, 0, 0, 0)
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=2029804767]
+transform = Transform3D(0.752415, 0.32435414, -0.573294, 0, 0.8703556, 0.49242353, 0.6586894, -0.37050685, 0.6548686, 0, 0, 0)
 shadow_enabled = true
 
 [node name="VoxelGI" type="VoxelGI" parent="." unique_id=589590410]
@@ -4016,7 +4021,7 @@ size = Vector3(5.72798, 2.5, 0.23)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=796755405]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.87399, 1.25, 0.12)
 size = Vector3(5.74798, 2.5, 0.01)
-material = ExtResource("7_hlnjt")
+material = ExtResource("11_hspdl")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=534095023]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.87399, 1.25, -0.12)
@@ -4197,12 +4202,12 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_GAUCHE" unique_id=967210908]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.296135, 1.25, -0.245)
 size = Vector3(4.59227, 2.5, 0.01)
-material = ExtResource("7_hlnjt")
+material = ExtResource("11_hspdl")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_GAUCHE" unique_id=264159259]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.48)
-material = ExtResource("7_hlnjt")
+material = ExtResource("9_utsn7")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_GAUCHE" unique_id=1843973838]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.58727, 1.25, 0)
@@ -4360,7 +4365,7 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SEJOUR_ARRIERE" unique_id=1895470989]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.498455, 1.25, -0.245)
 size = Vector3(4.99691, 2.5, 0.01)
-material = ExtResource("7_hlnjt")
+material = ExtResource("9_utsn7")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SEJOUR_ARRIERE" unique_id=1926429267]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4392,7 +4397,7 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_ARRIERE" unique_id=1523521087]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.673915, 1.25, -0.245)
 size = Vector3(5.34783, 2.5, 0.01)
-material = ExtResource("7_hlnjt")
+material = ExtResource("11_hspdl")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_ARRIERE" unique_id=1269746809]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4644,7 +4649,7 @@ size = Vector3(4.2826, 2.5, 0.48)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/GARAGE-SEJOUR" unique_id=1272568844]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1513, 1.25, 0.245)
 size = Vector3(4.3026, 2.5, 0.01)
-material = ExtResource("7_hlnjt")
+material = ExtResource("13_scmj5")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/GARAGE-SEJOUR" unique_id=432832448]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1513, 1.25, -0.245)
@@ -4699,7 +4704,7 @@ material = ExtResource("7_hlnjt")
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=1840509035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.62399, 1.25, 0.045)
 size = Vector3(5.24798, 2.5, 0.01)
-material = ExtResource("7_hlnjt")
+material = ExtResource("13_scmj5")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=1318172122]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.62399, 1.25, -0.045)
@@ -4861,13 +4866,22 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.99315, 0, 8.932404)
 
 [node name="Sofa" parent="." unique_id=39906149 instance=ExtResource("15_p26fb")]
-transform = Transform3D(4.371139e-08, 0, -1, 0, 1, 0, -1, 0, -4.371139e-08, 10.196145, 0, 4.4895744)
+transform = Transform3D(4.371139e-08, 0, -1, 0, 1, 0, -1, 0, -4.371139e-08, 9.686084, 0, 4.4895744)
 
-[node name="Node3D" type="Node3D" parent="." unique_id=1699466335]
+[node name="WideClaustra" type="Node3D" parent="." unique_id=1699466335]
 transform = Transform3D(1, 0, 0, 0, 0.95793444, 0, 0, 0, 1, 0, 0.061344266, -0.11545181)
 
-[node name="Claustra" parent="Node3D" unique_id=55704216 instance=ExtResource("16_ooaox")]
+[node name="Claustra" parent="WideClaustra" unique_id=55704216 instance=ExtResource("16_ooaox")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.30655, 0, 3.9637666)
 
-[node name="Claustra2" parent="Node3D" unique_id=1354899620 instance=ExtResource("16_ooaox")]
+[node name="Claustra2" parent="WideClaustra" unique_id=1354899620 instance=ExtResource("16_ooaox")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.30655, 0, 5.2289934)
+
+[node name="TVConsole" parent="." unique_id=125050154 instance=ExtResource("17_om8ys")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.7490654, 0.052361727, 4.811856)
+
+[node name="CoffeeTable" parent="." unique_id=1090090303 instance=ExtResource("18_hspdl")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 8.46429, 0.04087174, 5.1163473)
+
+[node name="EntranceUnit" parent="." unique_id=28123497 instance=ExtResource("21_p2xdh")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 17.152788, 1.1920929e-07, -0.5099151)
