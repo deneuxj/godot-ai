@@ -4030,7 +4030,7 @@ material_override = ExtResource("8_utsn7")
 mesh = SubResource("BoxMesh_360gp")
 
 [node name="GarageShelves" parent="Rooms" unique_id=498425922 instance=ExtResource("9_j4x6f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.537156, 0.04205346, 2.1128051)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.537156, 0.04205346, 2.247442)
 
 [node name="Walls" type="Node3D" parent="." unique_id=1609764232]
 

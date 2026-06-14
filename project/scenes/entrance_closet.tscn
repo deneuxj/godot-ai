@@ -1,0 +1,57 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pu5bg"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_talh4"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+metallic = 0.8
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6ij36"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+roughness = 0.6
+
+[node name="EntranceCloset" type="Node3D" unique_id=1284281902]
+
+[node name="Frame" type="CSGBox3D" parent="." unique_id=354681869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+size = Vector3(1, 2.2, 0.4)
+material = SubResource("StandardMaterial3D_pu5bg")
+
+[node name="@CSGBox3D@2" type="CSGBox3D" parent="Frame" unique_id=99178968]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+operation = 2
+size = Vector3(0.96, 2.16, 0.38)
+
+[node name="TopShelf" type="CSGBox3D" parent="." unique_id=137229574]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.02)
+size = Vector3(0.96, 0.02, 0.36)
+material = SubResource("StandardMaterial3D_pu5bg")
+
+[node name="HangerBar" type="CSGCylinder3D" parent="." unique_id=2080301655]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 1.8, 0.05)
+radius = 0.015
+height = 0.96
+material = SubResource("StandardMaterial3D_talh4")
+
+[node name="LeftDoor" type="CSGBox3D" parent="." unique_id=1694135851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.245, 1.1, 0.2)
+size = Vector3(0.485, 2.16, 0.02)
+material = SubResource("StandardMaterial3D_6ij36")
+
+[node name="Handle" type="CSGBox3D" parent="LeftDoor" unique_id=1482529294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 0, 0.02)
+size = Vector3(0.01, 0.2, 0.02)
+material = SubResource("StandardMaterial3D_talh4")
+
+[node name="RightDoor" type="CSGBox3D" parent="." unique_id=1430884831]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.245, 1.1, 0.2)
+size = Vector3(0.485, 2.16, 0.02)
+material = SubResource("StandardMaterial3D_6ij36")
+
+[node name="Handle" type="CSGBox3D" parent="RightDoor" unique_id=2082165806]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.21, 0, 0.02)
+size = Vector3(0.01, 0.2, 0.02)
+material = SubResource("StandardMaterial3D_talh4")
