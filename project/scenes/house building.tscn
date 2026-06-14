@@ -50,6 +50,7 @@
 [ext_resource type="PackedScene" path="res://scenes/modern_bathtub.tscn" id="48_rhwim"]
 [ext_resource type="PackedScene" path="res://scenes/bathroom_sink.tscn" id="49_6wo2k"]
 [ext_resource type="PackedScene" path="res://scenes/bathroom_closet.tscn" id="50_v2ova"]
+[ext_resource type="PackedScene" path="res://scenes/ev_charger.tscn" id="51_v2ova"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -5039,5 +5040,8 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 12.0
 
 [node name="BathroomCloset" parent="." unique_id=691863594 instance=ExtResource("50_v2ova")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 13.124565, 0.042167544, 0.24055922)
+
+[node name="EVCharger" parent="." unique_id=1371399823 instance=ExtResource("51_v2ova")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.857934, 0.07251096, 2.7345157)
 
 [editable path="HiFiSurroundSystem"]
