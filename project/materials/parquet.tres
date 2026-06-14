@@ -5,13 +5,14 @@
 [resource]
 render_priority = 0
 shader = ExtResource("1_ddlpk")
-shader_parameter/color1 = Color(0.45, 0.25, 0.1, 1)
-shader_parameter/color2 = Color(0.2, 0.1, 0.03, 1)
+shader_parameter/color1 = Color(0.9306444, 0.64133, 0.44776744, 1)
+shader_parameter/color2 = Color(0.8125657, 0.5057818, 0.29201642, 1)
 shader_parameter/ring_scale = 15.0
 shader_parameter/ring_detail = 2.0
 shader_parameter/distortion = 0.15
 shader_parameter/grain_scale = 40.0
-shader_parameter/roughness_base = 0.8
-shader_parameter/pattern_position = Vector3(0, 0, 0)
-shader_parameter/pattern_rotation = Vector3(0, 0, 0)
-shader_parameter/pattern_scale = Vector3(1, 1, 1)
+shader_parameter/roughness_base = 0.2
+shader_parameter/plank_length = 2.0
+shader_parameter/plank_width = 0.2
+shader_parameter/interleave = 3
+shader_parameter/plank_angle = 90.0

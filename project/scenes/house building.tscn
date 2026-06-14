@@ -8,6 +8,19 @@
 [ext_resource type="Material" uid="uid://3ic6v0yowlby" path="res://materials/carrelage.tres" id="9_yghb5"]
 [ext_resource type="Material" uid="uid://c3snpp3cqjnod" path="res://materials/facade.tres" id="10_utsn7"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_hlnjt"]
+sky_material = SubResource("ProceduralSkyMaterial_g4qyj")
+
+[sub_resource type="Environment" id="Environment_pu0k3"]
+background_mode = 2
+sky = SubResource("Sky_hlnjt")
+tonemap_mode = 2
+glow_enabled = true
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g4qyj"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_41go7"]
@@ -59,6 +72,13 @@ size = Vector3(0.8, 2, 0.05)
 size = Vector3(11, 0.5, 7.5)
 
 [node name="HouseBuilding" type="Node3D" unique_id=1504574861]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1125362048]
+environment = SubResource("Environment_pu0k3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2029804767]
+transform = Transform3D(0.65868944, -0.37050685, 0.6548686, 0, 0.87035567, 0.49242356, -0.75241494, -0.3243542, 0.5732941, 0, 0, 0)
+shadow_enabled = true
 
 [node name="BlueprintReference" type="MeshInstance3D" parent="." unique_id=130754529]
 transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 12.556839, -0.021253586, 4.776621)
@@ -3907,7 +3927,7 @@ mesh = SubResource("BoxMesh_g4qyj")
 
 [node name="CELIER" type="MeshInstance3D" parent="Rooms" unique_id=1059589250]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.80307, 0, 1.560909)
-material_override = SubResource("StandardMaterial3D_g4qyj")
+material_override = ExtResource("9_yghb5")
 mesh = SubResource("BoxMesh_hlnjt")
 
 [node name="SEJOUR" type="MeshInstance3D" parent="Rooms" unique_id=1144015957]
@@ -3942,12 +3962,12 @@ mesh = SubResource("BoxMesh_ooaox")
 
 [node name="SALLE_DE_BAIN" type="MeshInstance3D" parent="Rooms" unique_id=494797873]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.613204, -9.536743e-07, -0.61408865)
-material_override = SubResource("StandardMaterial3D_g4qyj")
+material_override = ExtResource("8_utsn7")
 mesh = SubResource("BoxMesh_hspdl")
 
 [node name="WC" type="MeshInstance3D" parent="Rooms" unique_id=517479614]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.400013, 0, -0.6135415)
-material_override = SubResource("StandardMaterial3D_g4qyj")
+material_override = ExtResource("8_utsn7")
 mesh = SubResource("BoxMesh_scmj5")
 
 [node name="ENTREE" type="MeshInstance3D" parent="Rooms" unique_id=1757407191]

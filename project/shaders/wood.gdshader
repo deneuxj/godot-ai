@@ -9,26 +9,16 @@ uniform float distortion = 0.15;
 uniform float grain_scale = 40.0;
 uniform float roughness_base = 0.8;
 
-// Easy-to-edit transform properties
-uniform vec3 pattern_position = vec3(0.0);
-uniform vec3 pattern_rotation = vec3(0.0); // In degrees
-uniform vec3 pattern_scale = vec3(1.0);
+// Parquet properties
+uniform float plank_length = 2.0;
+uniform float plank_width = 0.2;
+uniform int interleave = 3;
+uniform float plank_angle = 0.0; // In degrees
 
 varying vec3 local_pos;
 
 void vertex() {
-	// Convert degrees to radians and compute rotation matrices (YXZ order)
-	vec3 rad = radians(pattern_rotation);
-	vec2 x = vec2(cos(rad.x), sin(rad.x));
-	vec2 y = vec2(cos(rad.y), sin(rad.y));
-	vec2 z = vec2(cos(rad.z), sin(rad.z));
-	
-	mat3 rx = mat3(vec3(1.0, 0.0, 0.0), vec3(0.0, x.x, x.y), vec3(0.0, -x.y, x.x));
-	mat3 ry = mat3(vec3(y.x, 0.0, -y.y), vec3(0.0, 1.0, 0.0), vec3(y.y, 0.0, y.x));
-	mat3 rz = mat3(vec3(z.x, z.y, 0.0), vec3(-z.y, z.x, 0.0), vec3(0.0, 0.0, 1.0));
-	mat3 rot = rz * rx * ry;
-	
-	local_pos = (rot * (VERTEX * pattern_scale)) + pattern_position;
+	local_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 // Pseudo-random hash for noise
@@ -68,22 +58,49 @@ float fbm(vec3 x) {
 }
 
 void fragment() {
-	// Base coordinates, scaled to create stretching along the Y axis
-	// Wood grain usually stretches along the trunk
-	vec3 p = local_pos * vec3(1.0, 0.1, 1.0); 
+	// 1. Apply user rotation around Y axis
+	float rad = radians(plank_angle);
+	float cos_a = cos(rad);
+	float sin_a = sin(rad);
+	vec2 rotated_xz = vec2(
+		local_pos.x * cos_a - local_pos.z * sin_a,
+		local_pos.x * sin_a + local_pos.z * cos_a
+	);
+	vec3 floor_pos = vec3(rotated_xz.x, local_pos.y, rotated_xz.y);
+
+	// 2. Calculate plank tiling
+	// Assume planks are aligned with X for length and Z for width
+	float row = floor(floor_pos.z / plank_width);
+	float shift = mod(row, float(interleave)) * (plank_length / float(interleave));
+	float col = floor((floor_pos.x + shift) / plank_length);
+	vec2 cell_id = vec2(col, row);
+	
+	// 3. Create a unique 3D offset per plank
+	vec3 tile_offset = vec3(
+		fract(sin(dot(cell_id, vec2(12.9898, 78.233))) * 43758.5453),
+		fract(sin(dot(cell_id, vec2(33.503, 55.126))) * 43758.5453),
+		fract(sin(dot(cell_id, vec2(10.331, 34.123))) * 43758.5453)
+	) * 100.0; // scale up offset for varied tree slice
+	
+	// 4. Wood grain logic
+	// The tree trunk runs along the plank length (X axis).
+	vec3 t_pos = floor_pos + tile_offset;
+
+	// Stretch along the X axis
+	vec3 p = t_pos * vec3(0.1, 1.0, 1.0); 
 	
 	// Add noise distortion to make rings irregular
 	float n = fbm(p * 3.0) * distortion;
 	
-	// Distance from the center (Z/X plane implies the trunk is along the Y axis)
-	float dist = length(local_pos.xz) + n;
+	// Distance from the center in the YZ plane (cross section of the tree trunk)
+	float dist = length(t_pos.yz) + n;
 	
 	// Calculate wood rings using a pattern that creates sharp edges
-	float rings = fract(dist * ring_scale + fbm(local_pos * ring_detail));
+	float rings = fract(dist * ring_scale + fbm(t_pos * ring_detail));
 	rings = smoothstep(0.0, 0.8, rings) - smoothstep(0.8, 1.0, rings);
 	
-	// Fine grain detail
-	float grain = fbm(local_pos * vec3(grain_scale, grain_scale * 0.05, grain_scale));
+	// Fine grain detail, stretched along X
+	float grain = fbm(t_pos * vec3(grain_scale * 0.05, grain_scale, grain_scale));
 	
 	// Mix colors based on rings and grain
 	float mix_factor = clamp(rings * 0.7 + grain * 0.3, 0.0, 1.0);

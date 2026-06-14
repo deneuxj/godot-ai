@@ -11,4 +11,3 @@ shader_parameter/vein_scale = 3.0
 shader_parameter/distortion = 3.0
 shader_parameter/contrast = 4.0
 shader_parameter/roughness_base = 0.1
-
