@@ -4,8 +4,11 @@
 [ext_resource type="Script" uid="uid://c1b8afhmalr2a" path="res://addons/ai_assistant/ai_chat.gd" id="2_l7ydn"]
 [ext_resource type="Script" uid="uid://3twea7kpcupj" path="res://ai_skills/scripts/extract_walls_rooms_skill.gd" id="4_41go7"]
 [ext_resource type="Script" uid="uid://cxdt17r23o083" path="res://ai_skills/scripts/create_wall.gd" id="5_guxr7"]
+[ext_resource type="Material" uid="uid://dkj8mbb3eaa3b" path="res://materials/faience.tres" id="5_yghb5"]
+[ext_resource type="Material" uid="uid://7ipovtycrx87" path="res://materials/plafond.tres" id="7_hlnjt"]
 [ext_resource type="Material" uid="uid://bfj43bqqsr1nk" path="res://materials/parquet.tres" id="8_utsn7"]
-[ext_resource type="Material" uid="uid://3ic6v0yowlby" path="res://materials/carrelage.tres" id="9_yghb5"]
+[ext_resource type="VoxelGIData" uid="uid://q74sjjvo6yqw" path="res://scenes/house building.VoxelGI_data.res" id="9_pu0k3"]
+[ext_resource type="Material" uid="uid://cqimmhjfoh2ok" path="res://materials/mur.tres" id="9_utsn7"]
 [ext_resource type="Material" uid="uid://c3snpp3cqjnod" path="res://materials/facade.tres" id="10_utsn7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
@@ -68,7 +71,11 @@ size = Vector3(3.212, 0.05, 3.378)
 [sub_resource type="BoxMesh" id="BoxMesh_om8ys"]
 size = Vector3(0.8, 2, 0.05)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlnjt"]
+albedo_color = Color(0.07878407, 0.078784145, 0.07878413, 1)
+
 [sub_resource type="BoxMesh" id="BoxMesh_to0uj"]
+material = ExtResource("10_utsn7")
 size = Vector3(11, 0.5, 7.5)
 
 [node name="HouseBuilding" type="Node3D" unique_id=1504574861]
@@ -82,6 +89,7 @@ shadow_enabled = true
 
 [node name="BlueprintReference" type="MeshInstance3D" parent="." unique_id=130754529]
 transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 12.556839, -0.021253586, 4.776621)
+visible = false
 material_override = SubResource("StandardMaterial3D_g4qyj")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_41go7")
@@ -3926,8 +3934,8 @@ material_override = SubResource("StandardMaterial3D_g4qyj")
 mesh = SubResource("BoxMesh_g4qyj")
 
 [node name="CELIER" type="MeshInstance3D" parent="Rooms" unique_id=1059589250]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.80307, 0, 1.560909)
-material_override = ExtResource("9_yghb5")
+transform = Transform3D(1.0258532, 0, 0, 0, 1, 0, 0, 0, 1, 8.80307, 0, 1.560909)
+material_override = ExtResource("5_yghb5")
 mesh = SubResource("BoxMesh_hlnjt")
 
 [node name="SEJOUR" type="MeshInstance3D" parent="Rooms" unique_id=1144015957]
@@ -3937,17 +3945,17 @@ mesh = SubResource("BoxMesh_pu0k3")
 
 [node name="CUISINE" type="MeshInstance3D" parent="Rooms" unique_id=1920073129]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.882641, 0, 4.078363)
-material_override = ExtResource("9_yghb5")
+material_override = ExtResource("5_yghb5")
 mesh = SubResource("BoxMesh_yghb5")
 
 [node name="SALON_A_MANGER" type="MeshInstance3D" parent="Rooms" unique_id=335088907]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.834398, 0, 8.974001)
-material_override = ExtResource("9_yghb5")
+material_override = ExtResource("5_yghb5")
 mesh = SubResource("BoxMesh_utsn7")
 
 [node name="COULOIR" type="MeshInstance3D" parent="Rooms" unique_id=1571771863]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.440354, -1.9073486e-06, 1.0917853)
-material_override = ExtResource("9_yghb5")
+material_override = ExtResource("5_yghb5")
 mesh = SubResource("BoxMesh_vpft7")
 
 [node name="CHAMBRE_GAUCHE" type="MeshInstance3D" parent="Rooms" unique_id=663352897]
@@ -3972,7 +3980,7 @@ mesh = SubResource("BoxMesh_scmj5")
 
 [node name="ENTREE" type="MeshInstance3D" parent="Rooms" unique_id=1757407191]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.173, 9.536743e-07, -0.6135415)
-material_override = ExtResource("9_yghb5")
+material_override = ExtResource("5_yghb5")
 mesh = SubResource("BoxMesh_p2xdh")
 
 [node name="BUREAU" type="MeshInstance3D" parent="Rooms" unique_id=555471264]
@@ -3983,7 +3991,7 @@ mesh = SubResource("BoxMesh_360gp")
 [node name="Walls" type="Node3D" parent="." unique_id=1609764232]
 
 [node name="CHAMBRE_GAUCHE-CUISINE" type="CSGCombiner3D" parent="Walls" unique_id=1062983719]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.5, 0, 7.336657)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.450994, 0, 7.336657)
 use_collision = true
 
 [node name="Core" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=1707582762]
@@ -3993,10 +4001,12 @@ size = Vector3(5.72798, 2.5, 0.23)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=796755405]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.87399, 1.25, 0.12)
 size = Vector3(5.74798, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=534095023]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.87399, 1.25, -0.12)
 size = Vector3(5.74798, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=2030863829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4005,6 +4015,7 @@ size = Vector3(0.01, 2.5, 0.23)
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CUISINE" unique_id=2001985341]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.74298, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.23)
+material = ExtResource("7_hlnjt")
 
 [node name="WC-WALL" type="CSGCombiner3D" parent="Walls" unique_id=1026424143]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.85701, 0, 0.50306153)
@@ -4017,23 +4028,28 @@ size = Vector3(1.066, 2.5, 0.08)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/WC-WALL" unique_id=500645825]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.543, 1.25, 0.045)
 size = Vector3(1.086, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/WC-WALL" unique_id=1390033303]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.543, 1.25, -0.045)
 size = Vector3(1.086, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/WC-WALL" unique_id=1202851141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/WC-WALL" unique_id=1107435901]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.081, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Door_5" type="CSGBox3D" parent="Walls/WC-WALL" unique_id=490613619]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.539, 1.05, 0)
 operation = 2
 size = Vector3(0.8, 2.1, 0.2)
+material = ExtResource("7_hlnjt")
 
 [node name="WC_GAUCHE" type="CSGCombiner3D" parent="Walls" unique_id=1560593552]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 15.90701, 0, -1.518198)
@@ -4046,10 +4062,12 @@ size = Vector3(1.98931, 2.5, 0.08)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/WC_GAUCHE" unique_id=647964351]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.004655, 1.25, 0.045)
 size = Vector3(2.00931, 2.5, 0.01)
+material = ExtResource("5_yghb5")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/WC_GAUCHE" unique_id=2108156894]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.004655, 1.25, -0.045)
 size = Vector3(2.00931, 2.5, 0.01)
+material = ExtResource("5_yghb5")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/WC_GAUCHE" unique_id=957107184]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4070,10 +4088,12 @@ size = Vector3(1.98931, 2.5, 0.08)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/WC_DROITE" unique_id=1886172205]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.004655, 1.25, 0.045)
 size = Vector3(2.00931, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/WC_DROITE" unique_id=1548312111]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.004655, 1.25, -0.045)
 size = Vector3(2.00931, 2.5, 0.01)
+material = ExtResource("5_yghb5")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/WC_DROITE" unique_id=1084196891]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4090,22 +4110,27 @@ use_collision = true
 [node name="Core" type="CSGBox3D" parent="Walls/ENTREE-BUREAU" unique_id=578968228]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.042245, 1.25, 0)
 size = Vector3(2.06449, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/ENTREE-BUREAU" unique_id=1697043225]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.042245, 1.25, 0.045)
 size = Vector3(2.08449, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/ENTREE-BUREAU" unique_id=1514131167]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.042245, 1.25, -0.045)
 size = Vector3(2.08449, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/ENTREE-BUREAU" unique_id=965675063]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/ENTREE-BUREAU" unique_id=178525180]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.07949, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="SALLE_DE_BAIN-COULOIR" type="CSGCombiner3D" parent="Walls" unique_id=920931723]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 15.85701, 0, 0.500905)
@@ -4118,23 +4143,28 @@ size = Vector3(4.617616, 2.5, 0.08)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN-COULOIR" unique_id=980239696]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.318808, 1.25, 0.045)
 size = Vector3(4.637616, 2.5, 0.01)
+material = ExtResource("5_yghb5")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN-COULOIR" unique_id=1193758058]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.318808, 1.25, -0.045)
 size = Vector3(4.637616, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN-COULOIR" unique_id=1649320541]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN-COULOIR" unique_id=667250092]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.632616, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Door_5" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN-COULOIR" unique_id=1935695655]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6058465, 1.05, 0)
 operation = 2
 size = Vector3(0.835693, 2.1, 0.2)
+material = ExtResource("7_hlnjt")
 
 [node name="SALLE_A_MANGER_GAUCHE" type="CSGCombiner3D" parent="Walls" unique_id=1772942623]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.22291, 0, 6.784399)
@@ -4152,10 +4182,12 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_GAUCHE" unique_id=967210908]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.296135, 1.25, -0.245)
 size = Vector3(4.59227, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_GAUCHE" unique_id=264159259]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.48)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_GAUCHE" unique_id=1843973838]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.58727, 1.25, 0)
@@ -4166,6 +4198,7 @@ material = ExtResource("10_utsn7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.54, 1.05, 0)
 operation = 2
 size = Vector3(1.6, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="CHAMBRE_ARRIERE" type="CSGCombiner3D" parent="Walls" unique_id=2030120119]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.56756, 0, 7.086657)
@@ -4183,6 +4216,7 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_ARRIERE" unique_id=895966339]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.158184, 1.25, -0.24499989)
 size = Vector3(6.316371, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CHAMBRE_ARRIERE" unique_id=2102037701]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4197,11 +4231,13 @@ material = ExtResource("10_utsn7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4161487, 1.05, 0)
 operation = 2
 size = Vector3(1.054297, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="Door_6" type="CSGBox3D" parent="Walls/CHAMBRE_ARRIERE" unique_id=393349967]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.533885, 1.05, 0)
 operation = 2
 size = Vector3(1.06377, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="MAISON_DROIT" type="CSGCombiner3D" parent="Walls" unique_id=24454347]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 22.66539, 0, -2.018198)
@@ -4214,6 +4250,7 @@ size = Vector3(8.83485, 2.5, 0.48)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/MAISON_DROIT" unique_id=347128677]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.427425, 1.25, 0.245)
 size = Vector3(8.85485, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/MAISON_DROIT" unique_id=737043471]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.427425, 1.25, -0.245)
@@ -4233,11 +4270,13 @@ size = Vector3(0.01, 2.5, 0.48)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.287529, 1.4, 0)
 operation = 2
 size = Vector3(1.709058, 1.2, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="Door_6" type="CSGBox3D" parent="Walls/MAISON_DROIT" unique_id=314347302]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9405925, 1.05, 0)
 operation = 2
 size = Vector3(1.077185, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="MAISON_AVANT" type="CSGCombiner3D" parent="Walls" unique_id=1093665554]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.92129, 0, -1.768198)
@@ -4250,6 +4289,7 @@ size = Vector3(11.4741, 2.5, 0.48)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/MAISON_AVANT" unique_id=1332431614]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.74705, 1.25, 0.245)
 size = Vector3(11.4941, 2.5, 0.01)
+material = ExtResource("9_utsn7")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/MAISON_AVANT" unique_id=1127796971]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.74705, 1.25, -0.245)
@@ -4269,21 +4309,25 @@ size = Vector3(0.01, 2.5, 0.48)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.49, 1.4, 0)
 operation = 2
 size = Vector3(1.2, 1.2, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="Door_6" type="CSGBox3D" parent="Walls/MAISON_AVANT" unique_id=1467867200]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.3180947, 1.05, 0)
 operation = 2
 size = Vector3(1.056189, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="Window_7" type="CSGBox3D" parent="Walls/MAISON_AVANT" unique_id=254365164]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.433752, 1.4, 0)
 operation = 2
 size = Vector3(0.491504, 1.2, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="Window_8" type="CSGBox3D" parent="Walls/MAISON_AVANT" unique_id=2143908672]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.351421, 1.4, 0)
 operation = 2
 size = Vector3(1.100842, 1.2, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="SEJOUR_ARRIERE" type="CSGCombiner3D" parent="Walls" unique_id=1949691744]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.976, 0, 7.034399)
@@ -4301,6 +4345,7 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SEJOUR_ARRIERE" unique_id=1895470989]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.498455, 1.25, -0.245)
 size = Vector3(4.99691, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SEJOUR_ARRIERE" unique_id=1926429267]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4314,6 +4359,7 @@ size = Vector3(0.01, 2.5, 0.48)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.735, 1.05, 0)
 operation = 2
 size = Vector3(1.6, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="SALLE_A_MANGER_ARRIERE" type="CSGCombiner3D" parent="Walls" unique_id=574485348]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.47291, 0, 11.12667)
@@ -4331,6 +4377,7 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_ARRIERE" unique_id=1523521087]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.673915, 1.25, -0.245)
 size = Vector3(5.34783, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_ARRIERE" unique_id=1269746809]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4345,6 +4392,7 @@ material = ExtResource("10_utsn7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.417, 1.05, 0)
 operation = 2
 size = Vector3(1.6, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="SALLE_A_MANGER_DROITE" type="CSGCombiner3D" parent="Walls" unique_id=2011094185]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.57074, 0, 7.336657)
@@ -4357,6 +4405,7 @@ size = Vector3(3.52001, 2.5, 0.48)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_DROITE" unique_id=1216229516]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.770005, 1.25, 0.245)
 size = Vector3(3.54001, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_A_MANGER_DROITE" unique_id=1981950753]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.770005, 1.25, -0.245)
@@ -4375,6 +4424,7 @@ size = Vector3(0.01, 2.5, 0.48)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.875, 1.05, 0)
 operation = 2
 size = Vector3(1.6, 2.1, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="GARAGE_GAUCHE" type="CSGCombiner3D" parent="Walls" unique_id=1597389846]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.114127, 0, -0.016584)
@@ -4404,9 +4454,10 @@ size = Vector3(0.01, 2.5, 0.18)
 material = ExtResource("10_utsn7")
 
 [node name="Door_5" type="CSGBox3D" parent="Walls/GARAGE_GAUCHE" unique_id=129082362]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.284, 1.05, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.284, 1.8582641, 0)
 operation = 2
-size = Vector3(1.2, 2.1, 0.3)
+size = Vector3(1.2, 0.48347163, 0.3)
+material = ExtResource("10_utsn7")
 
 [node name="GARAGE_AVANT" type="CSGCombiner3D" parent="Walls" unique_id=873922797]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.214127, 0, 0.083416)
@@ -4437,6 +4488,7 @@ size = Vector3(0.01, 2.5, 0.18)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.793, 1.05, 0)
 operation = 2
 size = Vector3(5, 2.1, 0.3)
+material = ExtResource("10_utsn7")
 
 [node name="GARAGE_ARRIERE" type="CSGCombiner3D" parent="Walls" unique_id=1530126023]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.214126, 0, 7.211615)
@@ -4467,6 +4519,7 @@ size = Vector3(0.01, 2.5, 0.18)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.831, 1.05, 0)
 operation = 2
 size = Vector3(0.9, 2.1, 0.3)
+material = ExtResource("10_utsn7")
 
 [node name="CELIER-CORRIDOR" type="CSGCombiner3D" parent="Walls" unique_id=2038050989]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.3194, 0, -0.011)
@@ -4475,27 +4528,33 @@ use_collision = true
 [node name="Core" type="CSGBox3D" parent="Walls/CELIER-CORRIDOR" unique_id=1439821494]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.346395, 1.25, 0)
 size = Vector3(2.67279, 2.5, 0.18)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CELIER-CORRIDOR" unique_id=247515853]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.346395, 1.25, 0.095)
 size = Vector3(2.69279, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CELIER-CORRIDOR" unique_id=776697360]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.346395, 1.25, -0.095)
 size = Vector3(2.69279, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CELIER-CORRIDOR" unique_id=2066843215]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.18)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/CELIER-CORRIDOR" unique_id=1437205182]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.68779, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.18)
+material = ExtResource("7_hlnjt")
 
 [node name="Door_5" type="CSGBox3D" parent="Walls/CELIER-CORRIDOR" unique_id=37766389]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.473, 1.05, 0)
 operation = 2
 size = Vector3(0.8, 2.1, 0.3)
+material = ExtResource("7_hlnjt")
 
 [node name="CELIER-EXTERIEUR" type="CSGCombiner3D" parent="Walls" unique_id=1723508213]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.286744, 0, 0.239)
@@ -4508,6 +4567,7 @@ size = Vector3(4.91265, 2.5, 0.48)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CELIER-EXTERIEUR" unique_id=765067875]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.466325, 1.25, 0.245)
 size = Vector3(4.93265, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CELIER-EXTERIEUR" unique_id=439649845]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.466325, 1.25, -0.245)
@@ -4526,6 +4586,7 @@ size = Vector3(0.01, 2.5, 0.48)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.493, 1.4, 0)
 operation = 2
 size = Vector3(1.1, 1.2, 0.59999996)
+material = ExtResource("10_utsn7")
 
 [node name="CELIER-GARAGE" type="CSGCombiner3D" parent="Walls" unique_id=1913279877]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6.225258, 0, 0.183607)
@@ -4542,6 +4603,7 @@ size = Vector3(2.49799, 2.5, 0.01)
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CELIER-GARAGE" unique_id=522520881]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.248995, 1.25, -0.245)
 size = Vector3(2.49799, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CELIER-GARAGE" unique_id=575989398]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4567,6 +4629,7 @@ size = Vector3(4.2826, 2.5, 0.48)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/GARAGE-SEJOUR" unique_id=1272568844]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1513, 1.25, 0.245)
 size = Vector3(4.3026, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/GARAGE-SEJOUR" unique_id=432832448]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1513, 1.25, -0.245)
@@ -4587,22 +4650,27 @@ use_collision = true
 [node name="Core" type="CSGBox3D" parent="Walls/SEJOUR-CELIER" unique_id=291912935]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.371698, 1.25, 0)
 size = Vector3(4.723396, 2.5, 0.18)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/SEJOUR-CELIER" unique_id=1485379673]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.371698, 1.25, 0.095)
 size = Vector3(4.743396, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SEJOUR-CELIER" unique_id=264532898]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.371698, 1.25, -0.095)
 size = Vector3(4.743396, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SEJOUR-CELIER" unique_id=1853819336]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.18)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/SEJOUR-CELIER" unique_id=938849377]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.738396, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.18)
+material = ExtResource("7_hlnjt")
 
 [node name="CHAMBRE_GAUCHE-CHAMBRE_DROITE" type="CSGCombiner3D" parent="Walls" unique_id=886255108]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 19.494675, 0, 6.8538775)
@@ -4611,22 +4679,27 @@ use_collision = true
 [node name="Core" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=1433241930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.62399, 1.25, 0)
 size = Vector3(5.22798, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=1840509035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.62399, 1.25, 0.045)
 size = Vector3(5.24798, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=1318172122]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.62399, 1.25, -0.045)
 size = Vector3(5.24798, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=834175017]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CHAMBRE_DROITE" unique_id=67694522]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.24298, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="SALLE_DE_BAIN_GAUCHE" type="CSGCombiner3D" parent="Walls" unique_id=2025922118]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.17129, 0, -1.518198)
@@ -4644,6 +4717,7 @@ material = ExtResource("10_utsn7")
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN_GAUCHE" unique_id=563813320]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.753599, 1.25, -0.245)
 size = Vector3(1.507198, 2.5, 0.01)
+material = ExtResource("5_yghb5")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/SALLE_DE_BAIN_GAUCHE" unique_id=1268133054]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
@@ -4664,23 +4738,28 @@ size = Vector3(2.88069, 2.5, 0.08)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CORRIDOR" unique_id=1697346637]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.450345, 1.25, 0.045)
 size = Vector3(2.90069, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CORRIDOR" unique_id=279991765]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.450345, 1.25, -0.045)
 size = Vector3(2.90069, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CORRIDOR" unique_id=536173575]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CORRIDOR" unique_id=1650428602]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.89569, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Door_5" type="CSGBox3D" parent="Walls/CHAMBRE_GAUCHE-CORRIDOR" unique_id=423407789]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.404, 1.05, 0)
 operation = 2
 size = Vector3(0.8, 2.1, 0.2)
+material = ExtResource("7_hlnjt")
 
 [node name="CHAMBRE_DROITE-CORRIDOR" type="CSGCombiner3D" parent="Walls" unique_id=159308434]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.44769, 0, 1.64355)
@@ -4693,117 +4772,60 @@ size = Vector3(2.94769, 2.5, 0.08)
 [node name="Layer_Front" type="CSGBox3D" parent="Walls/CHAMBRE_DROITE-CORRIDOR" unique_id=683334474]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.483845, 1.25, 0.045)
 size = Vector3(2.96769, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Back" type="CSGBox3D" parent="Walls/CHAMBRE_DROITE-CORRIDOR" unique_id=1148560797]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.483845, 1.25, -0.045)
 size = Vector3(2.96769, 2.5, 0.01)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Left" type="CSGBox3D" parent="Walls/CHAMBRE_DROITE-CORRIDOR" unique_id=970094797]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Layer_Right" type="CSGBox3D" parent="Walls/CHAMBRE_DROITE-CORRIDOR" unique_id=1584572218]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.96269, 1.25, 0)
 size = Vector3(0.01, 2.5, 0.08)
+material = ExtResource("7_hlnjt")
 
 [node name="Door_5" type="CSGBox3D" parent="Walls/CHAMBRE_DROITE-CORRIDOR" unique_id=1796230837]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.465, 1.05, 0)
 operation = 2
 size = Vector3(0.8, 2.1, 0.2)
+material = ExtResource("7_hlnjt")
 
 [node name="Doors" type="Node3D" parent="." unique_id=812193814]
 transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 12.556839, -0.021253586, 4.776621)
 
 [node name="Door_GARAGE-CELLAR" type="MeshInstance3D" parent="Doors" unique_id=864414324]
 transform = Transform3D(-4.3711395e-08, 0, 1, 0, 1, 0, -1, 0, -4.3711395e-08, -6.62256, 1.0425874, -3.46006)
+visible = false
 material_override = SubResource("StandardMaterial3D_g4qyj")
 mesh = SubResource("BoxMesh_om8ys")
 skeleton = NodePath("../../AI")
-
-[node name="AIChat" type="Node" parent="." unique_id=2067919272]
-script = ExtResource("2_l7ydn")
-enable_modify_resources = true
-enable_validate_resources = true
-use_router = true
-chat_history = Array[Dictionary]([{
-"content": "Hello",
-"role": "user"
-}, {
-"content": "Hello! I'm here to help you with any Godot 4 tasks you might have. Whether it's scripting, scene management, resource exploration, or anything else related to the engine, just let me know what you need.
-
-What would you like to work on today?",
-"role": "assistant"
-}, {
-"content": "How does one check if something is null in GDScript?",
-"role": "user"
-}, {
-"content": "In GDScript, there are several ways to check if something is `null`:
-
-**1. Direct comparison:**
-```gdscript
-if my_variable == null:
-    pass
-    
-# or
-if my_variable != null:
-    pass
-```
-
-**2. Using the \"is\" operator (more readable):**
-```gdscript
-if some_node is Node:
-    # Has a parent and exists in scene tree
-    
-if some_node is not Node:
-    # Is detached or doesn't exist yet
-```
-
-**3. For Optional types (GDScript 2.0 pattern):**
-```gdscript
-# If you have an Optional[int]:
-match optional_value:
-    Some(value):
-        pass
-    None:
-        pass
-```
-
-**4. Using the get() method for Dictionary/Array access with null default:**
-```gdscript
-var x = my_dict.get(\"key\", null)  # returns null if key doesn't exist
-if x == null:
-    pass
-```
-
-The `is null` / `is not null` form is generally preferred for readability and matches common GDScript conventions.
-
-Is there a specific scenario you're trying to handle?",
-"role": "assistant"
-}])
-routing_history = Array[Dictionary]([{
-"decision": "technician",
-"prompt": "[TRANSCRIPT_START]
-USER: Hello
-ASSISTANT: Hello! I'm here to help you with any Godot 4 tasks you might have. Whether it's scripting, scene management, resource exploration, or anything else related to the engine, just let me know what you need.
-
-What would you like to work on today?
-USER: How does one check if something is null in GDScript?
-[TRANSCRIPT_END]
-
-Decision:",
-"raw_response": "",
-"reasoning_on": false,
-"timestamp": "2026-05-17T15:39:29"
-}])
 
 [node name="Roof" type="Node3D" parent="." unique_id=1685499608]
 
 [node name="Inclined" type="CSGCombiner3D" parent="Roof" unique_id=69771043]
 
-[node name="CSGPolygon3D" type="CSGPolygon3D" parent="Roof/Inclined" unique_id=233263150]
+[node name="RoofMain" type="CSGPolygon3D" parent="Roof/Inclined" unique_id=233263150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.913725, 2.493781, 11.37343)
 polygon = PackedVector2Array(0, 0, 0, 1, 12.1, 0.2, 12.1, 0)
 depth = 13.45
+material = ExtResource("10_utsn7")
+
+[node name="RoofUpper" type="CSGPolygon3D" parent="Roof/Inclined" unique_id=1687932454]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.913725, 2.493781, 11.37343)
+polygon = PackedVector2Array(0, 1, 0, 1.05, 12.1, 0.25, 12.1, 0.2)
+depth = 13.45
+material = SubResource("StandardMaterial3D_hlnjt")
+
+[node name="RoofUnder" type="CSGPolygon3D" parent="Roof/Inclined" unique_id=2131646534]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.913725, 2.493781, 11.37343)
+polygon = PackedVector2Array(0, -0.05, 0, 0, 12.1, 0, 12.1, -0.05)
+depth = 13.45
+material = ExtResource("7_hlnjt")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Roof/Inclined" unique_id=1532414474]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.583912, 2.7433124, 9.375092)
@@ -4813,3 +4835,8 @@ size = Vector3(7.383667, 1, 4.0841064)
 [node name="Flat" type="MeshInstance3D" parent="Roof" unique_id=53152122]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4531345, 2.7494476, 3.672411)
 mesh = SubResource("BoxMesh_to0uj")
+
+[node name="VoxelGI" type="VoxelGI" parent="." unique_id=589590410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.606201, 1.8149109, 4.5737915)
+size = Vector3(33.212402, 4.6277466, 15.8585205)
+data = ExtResource("9_pu0k3")
