@@ -101,16 +101,21 @@ func _patch_existing_file(path: String, target_line: int, old_content: String, n
 	var old_lines = old_content.split("\n")
 	var old_line_count = old_lines.size()
 
-	# Search for old_content in a window around target_line (+/- 5 lines)
+	# Search for old_content in a window around target_line (+/- 20 lines)
 	var found_at = -1
-	for offset in [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5]:
+	var offsets = [0]
+	for i in range(1, 21):
+		offsets.append(i)
+		offsets.append(-i)
+		
+	for offset in offsets:
 		var current_start = target_line + offset
 		if current_start < 1 or current_start + old_line_count - 1 > total_lines:
 			continue
 		
 		var match_found = true
 		for i in range(old_line_count):
-			if lines[current_start + i - 1] != old_lines[i]:
+			if lines[current_start + i - 1].strip_edges() != old_lines[i].strip_edges():
 				match_found = false
 				break
 		

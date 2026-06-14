@@ -8,26 +8,10 @@ uniform float distortion = 3.0;
 uniform float contrast = 4.0;
 uniform float roughness_base = 0.1;
 
-// Easy-to-edit transform properties
-uniform vec3 pattern_position = vec3(0.0);
-uniform vec3 pattern_rotation = vec3(0.0); // In degrees
-uniform vec3 pattern_scale = vec3(1.0);
-
 varying vec3 local_pos;
 
 void vertex() {
-	// Convert degrees to radians and compute rotation matrices (YXZ order)
-	vec3 rad = radians(pattern_rotation);
-	vec2 x = vec2(cos(rad.x), sin(rad.x));
-	vec2 y = vec2(cos(rad.y), sin(rad.y));
-	vec2 z = vec2(cos(rad.z), sin(rad.z));
-	
-	mat3 rx = mat3(vec3(1.0, 0.0, 0.0), vec3(0.0, x.x, x.y), vec3(0.0, -x.y, x.x));
-	mat3 ry = mat3(vec3(y.x, 0.0, -y.y), vec3(0.0, 1.0, 0.0), vec3(y.y, 0.0, y.x));
-	mat3 rz = mat3(vec3(z.x, z.y, 0.0), vec3(-z.y, z.x, 0.0), vec3(0.0, 0.0, 1.0));
-	mat3 rot = rz * rx * ry;
-	
-	local_pos = (rot * (VERTEX * pattern_scale)) + pattern_position;
+	local_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 // Pseudo-random hash for noise
@@ -67,21 +51,37 @@ float fbm(vec3 x) {
 }
 
 void fragment() {
+	// Calculate a grid-based seed to ensure each 0.6m x 0.6m tile is unique
+	// We use the floor of (position / size) to create distinct "cells"
+	vec3 tile_size = vec3(0.6, 0.6, 0.6);
+	vec3 cell_id = floor(local_pos / tile_size);
+	
+	// Use a hash of the cell ID to provide a unique offset for each tile.
+	// This ensures that even if the marble pattern is continuous in "tile space",
+	// each 0.6m block has its own unique variation.
+	vec3 tile_offset = vec3(
+		fract(sin(dot(cell_id, vec3(12.9898, 78.233, 45.164))) * 43758.5453),
+		fract(sin(dot(cell_id, vec3(33.503, 55.126, 11.921))) * 43758.5453),
+		fract(sin(dot(cell_id, vec3(10.331, 34.123, 72.445))) * 43758.5453)
+	);
+
+	// Use the tiled position for all subsequent calculations
+	vec3 t_pos = local_pos + tile_offset;
+
 	// Domain warping for organic, swirling veins
-	vec3 q = vec3(fbm(local_pos + vec3(0.0, 0.0, 0.0)),
-				  fbm(local_pos + vec3(5.2, 1.3, 2.8)),
-				  fbm(local_pos + vec3(2.4, 9.2, 5.1)));
+	vec3 q = vec3(fbm(t_pos + vec3(0.0, 0.0, 0.0)),
+				  fbm(t_pos + vec3(5.2, 1.3, 2.8)),
+				  fbm(t_pos + vec3(2.4, 9.2, 5.1)));
 				  
-	vec3 r = vec3(fbm(local_pos + distortion * q + vec3(1.7, 9.2, 2.4)),
-				  fbm(local_pos + distortion * q + vec3(8.3, 2.8, 6.1)),
-				  fbm(local_pos + distortion * q + vec3(3.9, 4.5, 8.2)));
+	vec3 r = vec3(fbm(t_pos + distortion * q + vec3(1.7, 9.2, 2.4)),
+				  fbm(t_pos + distortion * q + vec3(8.3, 2.8, 6.1)),
+				  fbm(t_pos + distortion * q + vec3(3.9, 4.5, 8.2)));
 
 	// Base FBM with warped coordinates
-	float n = fbm(local_pos * vein_scale + distortion * r);
+	float n = fbm(t_pos * vein_scale + distortion * r);
 	
 	// Create the marble veins using a sine wave
-	// Using abs() on a sine wave creates the classic sharp "dips" for veins
-	float marble = abs(sin(local_pos.x * vein_scale + n * 10.0));
+	float marble = abs(sin(t_pos.x * vein_scale + n * 10.0));
 	
 	// Sharpen the veins to make them thin and crisp
 	marble = pow(marble, contrast);
@@ -91,8 +91,4 @@ void fragment() {
 	
 	ALBEDO = albedo;
 	ROUGHNESS = roughness_base;
-	
-	// Optional: add a tiny bit of clearcoat if your environment supports it
-	// CLEARCOAT = 1.0;
-	// CLEARCOAT_ROUGHNESS = 0.05;
 }

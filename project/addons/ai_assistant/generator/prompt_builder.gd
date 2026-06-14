@@ -140,6 +140,7 @@ Task Management:
 
 Surgical Editing Rules:
 - When using `modify_project_resource`, you MUST provide the `old_content` parameter with the exact text you intend to replace. This ensures a safe match.
+- Keep `old_content` as small as possible while remaining unique. Do not attempt to replace entire functions if you only need to change a few lines inside them.
 - If a modification fails to fix an error reported by `validate_project_resource`, DO NOT guess. Use `explore_project_resources` with `start_line` and `end_line` to read the actual file content and verify the state of the file before retrying.
 
 CRITICAL: Tool Calling Format
@@ -215,6 +216,7 @@ Task Management:
 
 Surgical Editing Rules:
 - When using `modify_project_resource`, you MUST provide the `old_content` parameter with the exact text you intend to replace. This ensures a safe match.
+- Keep `old_content` as small as possible while remaining unique. Do not attempt to replace entire functions if you only need to change a few lines inside them.
 - If a modification fails to fix an error reported by `validate_project_resource`, DO NOT guess. Use `explore_project_resources` with `start_line` and `end_line` to read the actual file content and verify the state of the file before retrying.
 
 CRITICAL: Tool Calling Format
@@ -262,6 +264,7 @@ Task Management:
 
 Surgical Editing Rules:
 - When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
+- Keep [code]old_content[/code] as small as possible while remaining unique. Do not attempt to replace entire functions if you only need to change a few lines inside them.
 - If a modification fails to fix an error reported by [code]validate_project_resource[/code], DO NOT guess. Use [code]explore_project_resources[/code] with [code]start_line[/code] and [code]end_line[/code] to read the actual file content and verify the state of the file before retrying.
 
 CRITICAL: Tool Calling Format
@@ -365,6 +368,7 @@ GDScript 2.0 Best Practices:
 
 Surgical Editing Rules:
 - When using [code]modify_project_resource[/code], you MUST provide the [code]old_content[/code] parameter with the exact text you intend to replace. This ensures a safe match.
+- Keep [code]old_content[/code] as small as possible while remaining unique. Do not attempt to replace entire functions if you only need to change a few lines inside them.
 - If a modification fails to fix an error reported by [code]validate_project_resource[/code], DO NOT guess. Use [code]explore_project_resources[/code] with [code]start_line[/code] and [code]end_line[/code] to read the actual file content and verify the state of the file before retrying.
 
 CRITICAL: Tool Calling Format
