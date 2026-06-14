@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://b23t0q8tp18rn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c2srs"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+metallic = 0.8
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u6qap"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j0gjg"]
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+metallic = 0.9
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ftclx"]
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ud4gu"]
+albedo_color = Color(1, 0, 0, 1)
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+emission_energy_multiplier = 2.0
+
+[node name="TeslaModel3" type="Node3D" unique_id=47789013]
+
+[node name="Body" type="CSGCombiner3D" parent="." unique_id=282598465]
+
+[node name="GlassRoof" type="CSGPolygon3D" parent="." unique_id=1935292245]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6833984)
+polygon = PackedVector2Array(1.2, 0.76, 0.2, 1.41, -0.6, 1.41, -1.8, 0.91, -1.8, 0.5, 1.2, 0.5)
+depth = 1.4
+material = SubResource("StandardMaterial3D_c2srs")
+
+[node name="SideGlass_-0_93" type="CSGPolygon3D" parent="." unique_id=11352107]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.955)
+polygon = PackedVector2Array(0.9, 0.76, 0.2, 1.35, -0.6, 1.35, -1.4, 0.91, -1.4, 0.6, 0.9, 0.6)
+depth = 0.05
+material = SubResource("StandardMaterial3D_c2srs")
+
+[node name="SideGlass_0_93" type="CSGPolygon3D" parent="." unique_id=385633113]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.0398132)
+polygon = PackedVector2Array(0.9, 0.76, 0.2, 1.35, -0.6, 1.35, -1.4, 0.91, -1.4, 0.6, 0.9, 0.6)
+depth = 0.05
+material = SubResource("StandardMaterial3D_c2srs")
+
+[node name="Tire_-1_4_-0_85" type="CSGCylinder3D" parent="." unique_id=730733573]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, -0.85)
+radius = 0.35
+height = 0.25
+material = SubResource("StandardMaterial3D_u6qap")
+
+[node name="Rim_-1_4_-0_85" type="CSGCylinder3D" parent="." unique_id=148929253]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, -0.85)
+radius = 0.25
+height = 0.26
+material = SubResource("StandardMaterial3D_j0gjg")
+
+[node name="Tire_-1_4_0_85" type="CSGCylinder3D" parent="." unique_id=1722288200]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, 0.85)
+radius = 0.35
+height = 0.25
+material = SubResource("StandardMaterial3D_u6qap")
+
+[node name="Rim_-1_4_0_85" type="CSGCylinder3D" parent="." unique_id=2009603929]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, 0.85)
+radius = 0.25
+height = 0.26
+material = SubResource("StandardMaterial3D_j0gjg")
+
+[node name="Tire_1_4_-0_85" type="CSGCylinder3D" parent="." unique_id=750899361]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, -0.85)
+radius = 0.35
+height = 0.25
+material = SubResource("StandardMaterial3D_u6qap")
+
+[node name="Rim_1_4_-0_85" type="CSGCylinder3D" parent="." unique_id=1689228605]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, -0.85)
+radius = 0.25
+height = 0.26
+material = SubResource("StandardMaterial3D_j0gjg")
+
+[node name="Tire_1_4_0_85" type="CSGCylinder3D" parent="." unique_id=715170509]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, 0.85)
+radius = 0.35
+height = 0.25
+material = SubResource("StandardMaterial3D_u6qap")
+
+[node name="Rim_1_4_0_85" type="CSGCylinder3D" parent="." unique_id=1362373557]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, 0.85)
+radius = 0.25
+height = 0.26
+material = SubResource("StandardMaterial3D_j0gjg")
+
+[node name="Headlights" type="CSGBox3D" parent="." unique_id=599867331]
+transform = Transform3D(0.9950042, -0.09983342, 0, 0.09983342, 0.9950042, 0, 0, 0, 1, 2.22, 0.46, 0)
+size = Vector3(0.2, 0.1, 1.7)
+material = SubResource("StandardMaterial3D_ftclx")
+
+[node name="Taillights" type="CSGBox3D" parent="." unique_id=1023764800]
+transform = Transform3D(0.9800666, 0.19866933, 0, -0.19866933, 0.9800666, 0, 0, 0, 1, -2.28, 0.65, 0)
+size = Vector3(0.1, 0.1, 1.7)
+material = SubResource("StandardMaterial3D_ud4gu")
