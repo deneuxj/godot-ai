@@ -1,0 +1,65 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fkccb"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_50tqh"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_svrb2"]
+albedo_color = Color(0.2, 1, 0.2, 1)
+emission_enabled = true
+emission = Color(0.2, 1, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3on0v"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+roughness = 0.8
+
+[node name="EVCharger" type="Node3D" unique_id=1371399823]
+
+[node name="MainBox" type="CSGBox3D" parent="." unique_id=782632898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+size = Vector3(0.2, 0.4, 0.1)
+material = SubResource("StandardMaterial3D_fkccb")
+
+[node name="FrontPanel" type="CSGBox3D" parent="MainBox" unique_id=998454569]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.05)
+size = Vector3(0.18, 0.38, 0.02)
+material = SubResource("StandardMaterial3D_50tqh")
+
+[node name="LED" type="CSGCylinder3D" parent="MainBox/FrontPanel" unique_id=1997765553]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.1, 0.01)
+radius = 0.01
+height = 0.02
+material = SubResource("StandardMaterial3D_svrb2")
+
+[node name="Holster" type="CSGBox3D" parent="MainBox" unique_id=49155259]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, -0.1, 0.02)
+size = Vector3(0.06, 0.1, 0.1)
+material = SubResource("StandardMaterial3D_50tqh")
+
+[node name="Plug" type="CSGCylinder3D" parent="MainBox" unique_id=538066439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, -0.05, 0.06)
+radius = 0.025
+height = 0.15
+material = SubResource("StandardMaterial3D_3on0v")
+
+[node name="CableCoil" type="CSGCylinder3D" parent="." unique_id=1068971513]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.9, 0.05)
+radius = 0.15
+height = 0.04
+material = SubResource("StandardMaterial3D_3on0v")
+
+[node name="@CSGCylinder3D@2" type="CSGCylinder3D" parent="CableCoil" unique_id=155361629]
+operation = 2
+radius = 0.11
+height = 0.05
+material = SubResource("StandardMaterial3D_3on0v")
+
+[node name="CordConnection" type="CSGCylinder3D" parent="." unique_id=1537793139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0.05)
+radius = 0.02
+height = 0.2
+material = SubResource("StandardMaterial3D_3on0v")

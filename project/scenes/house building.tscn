@@ -48,6 +48,8 @@
 [ext_resource type="PackedScene" uid="uid://y6iwjppik725" path="res://scenes/hanging_wc.tscn" id="46_gyj00"]
 [ext_resource type="PackedScene" path="res://scenes/shower_corner.tscn" id="47_gyj00"]
 [ext_resource type="PackedScene" path="res://scenes/modern_bathtub.tscn" id="48_rhwim"]
+[ext_resource type="PackedScene" path="res://scenes/bathroom_sink.tscn" id="49_6wo2k"]
+[ext_resource type="PackedScene" path="res://scenes/bathroom_closet.tscn" id="50_v2ova"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -5031,5 +5033,11 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 15.147263, 0, -0.86028624)
 
 [node name="ModernBathtub" parent="." unique_id=1160416672 instance=ExtResource("48_rhwim")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.51316, 0.04364729, -1.0831575)
+
+[node name="BathroomSink" parent="." unique_id=1077073055 instance=ExtResource("49_6wo2k")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 12.065267, 0.03826636, 0.17473501)
+
+[node name="BathroomCloset" parent="." unique_id=691863594 instance=ExtResource("50_v2ova")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 13.124565, 0.042167544, 0.24055922)
 
 [editable path="HiFiSurroundSystem"]
