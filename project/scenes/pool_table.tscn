@@ -1,0 +1,271 @@
+[gd_scene format=3 uid="uid://bys15q3f7tn5f"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l47mk"]
+albedo_color = Color(0.3, 0.15, 0.05, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0ykj2"]
+albedo_color = Color(0.1, 0.4, 0.2, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d1x20"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lc8th"]
+albedo_color = Color(1, 0.8, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_660v7"]
+albedo_color = Color(0, 0, 0.8, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c5dqc"]
+albedo_color = Color(0.8, 0, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yk164"]
+albedo_color = Color(0.5, 0, 0.5, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_762mq"]
+albedo_color = Color(1, 0.4, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wfwny"]
+albedo_color = Color(0, 0.6, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x5c5t"]
+albedo_color = Color(0.6, 0, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ofc7q"]
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y62tc"]
+albedo_color = Color(1, 0.8, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u2mbw"]
+albedo_color = Color(0, 0, 0.8, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6fu4m"]
+albedo_color = Color(0.8, 0, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gqx4y"]
+albedo_color = Color(0.5, 0, 0.5, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tdian"]
+albedo_color = Color(1, 0.4, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dulua"]
+albedo_color = Color(0, 0.6, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5pucx"]
+albedo_color = Color(0.6, 0, 0, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t8l6p"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cc3jq"]
+albedo_color = Color(0.85, 0.7, 0.5, 1)
+
+[node name="PoolTable" type="Node3D" unique_id=94072633]
+
+[node name="TableStructure" type="CSGCombiner3D" parent="." unique_id=2116801075]
+
+[node name="Leg_-1_1_-0_5" type="CSGBox3D" parent="TableStructure" unique_id=1779655455]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.35, -0.5)
+size = Vector3(0.15, 0.7, 0.15)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="Leg_-1_1_0_5" type="CSGBox3D" parent="TableStructure" unique_id=1245278641]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.35, 0.5)
+size = Vector3(0.15, 0.7, 0.15)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="Leg_1_1_-0_5" type="CSGBox3D" parent="TableStructure" unique_id=338756306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.35, -0.5)
+size = Vector3(0.15, 0.7, 0.15)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="Leg_1_1_0_5" type="CSGBox3D" parent="TableStructure" unique_id=2036887846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.35, 0.5)
+size = Vector3(0.15, 0.7, 0.15)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="Base" type="CSGBox3D" parent="TableStructure" unique_id=464680647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775, 0)
+size = Vector3(2.5, 0.15, 1.3)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="Cloth" type="CSGBox3D" parent="TableStructure" unique_id=1090496300]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.86, 0)
+size = Vector3(2.3, 0.02, 1.1)
+material = SubResource("StandardMaterial3D_0ykj2")
+
+[node name="RailTop" type="CSGBox3D" parent="TableStructure" unique_id=367661210]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, -0.6)
+size = Vector3(2.5, 0.05, 0.1)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="RailBot" type="CSGBox3D" parent="TableStructure" unique_id=682916094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0.6)
+size = Vector3(2.5, 0.05, 0.1)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="RailLeft" type="CSGBox3D" parent="TableStructure" unique_id=1632427738]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.875, 0)
+size = Vector3(0.1, 0.05, 1.3)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="RailRight" type="CSGBox3D" parent="TableStructure" unique_id=1658834009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.875, 0)
+size = Vector3(0.1, 0.05, 1.3)
+material = SubResource("StandardMaterial3D_l47mk")
+
+[node name="Pocket1" type="CSGCylinder3D" parent="TableStructure" unique_id=739995047]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15, 0.85, -0.55)
+operation = 2
+radius = 0.06
+height = 0.2
+material = SubResource("StandardMaterial3D_d1x20")
+
+[node name="Pocket2" type="CSGCylinder3D" parent="TableStructure" unique_id=166327369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.15, 0.85, -0.55)
+operation = 2
+radius = 0.06
+height = 0.2
+material = SubResource("StandardMaterial3D_d1x20")
+
+[node name="Pocket3" type="CSGCylinder3D" parent="TableStructure" unique_id=1543772341]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15, 0.85, 0.55)
+operation = 2
+radius = 0.06
+height = 0.2
+material = SubResource("StandardMaterial3D_d1x20")
+
+[node name="Pocket4" type="CSGCylinder3D" parent="TableStructure" unique_id=1260630162]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.15, 0.85, 0.55)
+operation = 2
+radius = 0.06
+height = 0.2
+material = SubResource("StandardMaterial3D_d1x20")
+
+[node name="Pocket5" type="CSGCylinder3D" parent="TableStructure" unique_id=2071990742]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, -0.5569957)
+operation = 2
+radius = 0.06
+height = 0.2
+material = SubResource("StandardMaterial3D_d1x20")
+
+[node name="Pocket6" type="CSGCylinder3D" parent="TableStructure" unique_id=2817071]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0.5482235)
+operation = 2
+radius = 0.06
+height = 0.2
+material = SubResource("StandardMaterial3D_d1x20")
+
+[node name="Balls" type="Node3D" parent="." unique_id=1029604344]
+
+[node name="Ball1" type="CSGSphere3D" parent="Balls" unique_id=1181405869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.8985, 0)
+material_override = SubResource("StandardMaterial3D_lc8th")
+radius = 0.0285
+
+[node name="Ball2" type="CSGSphere3D" parent="Balls" unique_id=340178696]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45059606, 0.8985, -0.0292125)
+material_override = SubResource("StandardMaterial3D_660v7")
+radius = 0.0285
+
+[node name="Ball3" type="CSGSphere3D" parent="Balls" unique_id=1105667874]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45059606, 0.8985, 0.0292125)
+material_override = SubResource("StandardMaterial3D_c5dqc")
+radius = 0.0285
+
+[node name="Ball4" type="CSGSphere3D" parent="Balls" unique_id=1878807081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5011921, 0.8985, -0.058425)
+material_override = SubResource("StandardMaterial3D_yk164")
+radius = 0.0285
+
+[node name="Ball5" type="CSGSphere3D" parent="Balls" unique_id=550302330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5011921, 0.8985, 0)
+material_override = SubResource("StandardMaterial3D_762mq")
+radius = 0.0285
+
+[node name="Ball6" type="CSGSphere3D" parent="Balls" unique_id=1962816686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5011921, 0.8985, 0.058425)
+material_override = SubResource("StandardMaterial3D_wfwny")
+radius = 0.0285
+
+[node name="Ball7" type="CSGSphere3D" parent="Balls" unique_id=476712922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55178815, 0.8985, -0.0876375)
+material_override = SubResource("StandardMaterial3D_x5c5t")
+radius = 0.0285
+
+[node name="Ball8" type="CSGSphere3D" parent="Balls" unique_id=860841737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55178815, 0.8985, -0.0292125)
+material_override = SubResource("StandardMaterial3D_ofc7q")
+radius = 0.0285
+
+[node name="Ball9" type="CSGSphere3D" parent="Balls" unique_id=1469548344]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55178815, 0.8985, 0.0292125)
+material_override = SubResource("StandardMaterial3D_y62tc")
+radius = 0.0285
+
+[node name="Ball10" type="CSGSphere3D" parent="Balls" unique_id=1210687244]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55178815, 0.8985, 0.0876375)
+material_override = SubResource("StandardMaterial3D_u2mbw")
+radius = 0.0285
+
+[node name="Ball11" type="CSGSphere3D" parent="Balls" unique_id=667271163]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6023842, 0.8985, -0.11685)
+material_override = SubResource("StandardMaterial3D_6fu4m")
+radius = 0.0285
+
+[node name="Ball12" type="CSGSphere3D" parent="Balls" unique_id=1857233970]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6023842, 0.8985, -0.058425)
+material_override = SubResource("StandardMaterial3D_gqx4y")
+radius = 0.0285
+
+[node name="Ball13" type="CSGSphere3D" parent="Balls" unique_id=1233534583]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6023842, 0.8985, 0)
+material_override = SubResource("StandardMaterial3D_tdian")
+radius = 0.0285
+
+[node name="Ball14" type="CSGSphere3D" parent="Balls" unique_id=665288175]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6023842, 0.8985, 0.058425)
+material_override = SubResource("StandardMaterial3D_dulua")
+radius = 0.0285
+
+[node name="Ball15" type="CSGSphere3D" parent="Balls" unique_id=1266374609]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6023842, 0.8985, 0.11685)
+material_override = SubResource("StandardMaterial3D_5pucx")
+radius = 0.0285
+
+[node name="CueBall" type="CSGSphere3D" parent="Balls" unique_id=1075313338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.8985, 0)
+material_override = SubResource("StandardMaterial3D_t8l6p")
+radius = 0.0285
+
+[node name="Cues" type="Node3D" parent="." unique_id=1486572923]
+
+[node name="Cue1" type="CSGCylinder3D" parent="Cues" unique_id=632951638]
+transform = Transform3D(0.9800666, -0.19866933, 0, -8.684112e-09, -4.284007e-08, -1, 0.19866933, 0.9800666, -4.371139e-08, 0, 0.91, 0.55)
+material_override = SubResource("StandardMaterial3D_cc3jq")
+radius = 0.012
+height = 1.45
+
+[node name="Cue2" type="CSGCylinder3D" parent="Cues" unique_id=194277428]
+transform = Transform3D(0.9887711, 0.14943814, 0, -0.14943814, 0.9887711, 0, 0, 0, 1, -1.35, 0.725, 0.2)
+material_override = SubResource("StandardMaterial3D_cc3jq")
+radius = 0.012
+height = 1.45

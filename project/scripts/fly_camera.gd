@@ -5,6 +5,9 @@ extends Camera3D
 @export var mouse_sensitivity: float = 0.002
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_SPACE:
+		take_picture()
+
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
@@ -40,3 +43,10 @@ func _process(delta: float) -> void:
 		current_speed *= 3.0
 		
 	position += move_vec * current_speed * delta
+
+func take_picture() -> void:
+	var image = get_viewport().get_texture().get_image()
+	var time_str = Time.get_datetime_string_from_system().replace(":", "-").replace("T", "_")
+	var path = "user://screenshot_%s.png" % time_str
+	image.save_png(path)
+	print("Screenshot saved to: ", ProjectSettings.globalize_path(path))
