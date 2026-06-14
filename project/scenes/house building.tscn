@@ -25,6 +25,7 @@
 [ext_resource type="PackedScene" path="res://scenes/office_chair.tscn" id="23_achnd"]
 [ext_resource type="PackedScene" path="res://scenes/filing_cabinet.tscn" id="24_ollkf"]
 [ext_resource type="PackedScene" path="res://scenes/floor_mat.tscn" id="25_fx61v"]
+[ext_resource type="PackedScene" path="res://scenes/office_cabinet.tscn" id="26_achnd"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -4901,3 +4902,9 @@ transform = Transform3D(1.1920929e-07, 0, -1, 0, 1, 0, 1, 0, 1.1920929e-07, 22.1
 
 [node name="FloorMat" parent="." unique_id=2037564586 instance=ExtResource("25_fx61v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.445354, 0.03482473, -0.36811298)
+
+[node name="OfficeCabinet" parent="." unique_id=45410776 instance=ExtResource("26_achnd")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 19.762, 0, -0.08195722)
+
+[node name="OfficeCabinet2" parent="." unique_id=131163787 instance=ExtResource("26_achnd")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 19.762, 0, -0.88536346)

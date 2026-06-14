@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dsq3q"]
+albedo_color = Color(0.7, 0.7, 0.7, 1)
+roughness = 0.9
+
+[node name="BedroomRug" type="Node3D" unique_id=1343470322]
+
+[node name="Rug" type="CSGBox3D" parent="." unique_id=1204540634]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0)
+size = Vector3(2.5, 0.01, 3.5)
+material = SubResource("StandardMaterial3D_dsq3q")
