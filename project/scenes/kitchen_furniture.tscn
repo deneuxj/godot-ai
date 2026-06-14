@@ -1,0 +1,132 @@
+[gd_scene format=3]
+
+[node name="KitchenFurniture" type="Node3D" unique_id=492224391]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.88, 0, 4.07)
+
+[node name="Table" type="CSGBox3D" parent="." unique_id=1312462993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+size = Vector3(1.6, 0.05, 0.9)
+
+[node name="Leg1" type="CSGBox3D" parent="Table" unique_id=245206848]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, -0.375, -0.4)
+size = Vector3(0.05, 0.75, 0.05)
+
+[node name="Leg2" type="CSGBox3D" parent="Table" unique_id=300867728]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, -0.375, -0.4)
+size = Vector3(0.05, 0.75, 0.05)
+
+[node name="Leg3" type="CSGBox3D" parent="Table" unique_id=2114805448]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, -0.375, 0.4)
+size = Vector3(0.05, 0.75, 0.05)
+
+[node name="Leg4" type="CSGBox3D" parent="Table" unique_id=1776157801]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, -0.375, 0.4)
+size = Vector3(0.05, 0.75, 0.05)
+
+[node name="Chair1" type="CSGCombiner3D" parent="." unique_id=1978239928]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.7)
+
+[node name="Seat" type="CSGBox3D" parent="Chair1" unique_id=1078395602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+size = Vector3(0.4, 0.05, 0.4)
+
+[node name="Back" type="CSGBox3D" parent="Chair1" unique_id=1571316246]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.175)
+size = Vector3(0.4, 0.4, 0.05)
+
+[node name="Leg1" type="CSGBox3D" parent="Chair1" unique_id=321858880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg2" type="CSGBox3D" parent="Chair1" unique_id=1671065870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg3" type="CSGBox3D" parent="Chair1" unique_id=465312216]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg4" type="CSGBox3D" parent="Chair1" unique_id=1179663825]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Chair2" type="CSGCombiner3D" parent="." unique_id=227648489]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0.7)
+
+[node name="Seat" type="CSGBox3D" parent="Chair2" unique_id=535584532]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+size = Vector3(0.4, 0.05, 0.4)
+
+[node name="Back" type="CSGBox3D" parent="Chair2" unique_id=1370932183]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.175)
+size = Vector3(0.4, 0.4, 0.05)
+
+[node name="Leg1" type="CSGBox3D" parent="Chair2" unique_id=851462294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg2" type="CSGBox3D" parent="Chair2" unique_id=1192756673]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg3" type="CSGBox3D" parent="Chair2" unique_id=621399037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg4" type="CSGBox3D" parent="Chair2" unique_id=1765254191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Chair3" type="CSGCombiner3D" parent="." unique_id=1274750440]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.9, 0, 0)
+
+[node name="Seat" type="CSGBox3D" parent="Chair3" unique_id=1444393525]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+size = Vector3(0.4, 0.05, 0.4)
+
+[node name="Back" type="CSGBox3D" parent="Chair3" unique_id=218713576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.175)
+size = Vector3(0.4, 0.4, 0.05)
+
+[node name="Leg1" type="CSGBox3D" parent="Chair3" unique_id=1218323263]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg2" type="CSGBox3D" parent="Chair3" unique_id=1977340664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg3" type="CSGBox3D" parent="Chair3" unique_id=528582915]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg4" type="CSGBox3D" parent="Chair3" unique_id=1011804913]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Chair4" type="CSGCombiner3D" parent="." unique_id=623623678]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.9, 0, 0)
+
+[node name="Seat" type="CSGBox3D" parent="Chair4" unique_id=1628046775]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+size = Vector3(0.4, 0.05, 0.4)
+
+[node name="Back" type="CSGBox3D" parent="Chair4" unique_id=2071227560]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, -0.175)
+size = Vector3(0.4, 0.4, 0.05)
+
+[node name="Leg1" type="CSGBox3D" parent="Chair4" unique_id=1492258338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg2" type="CSGBox3D" parent="Chair4" unique_id=1641593588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, -0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg3" type="CSGBox3D" parent="Chair4" unique_id=1926528068]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
+
+[node name="Leg4" type="CSGBox3D" parent="Chair4" unique_id=999910279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.225, 0.18)
+size = Vector3(0.03, 0.45, 0.03)
