@@ -1,57 +1,274 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cv13nyr65sxd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_thetp"]
-albedo_color = Color(0.85, 0.85, 0.85, 1)
-metallic = 0.9
-roughness = 0.3
+albedo_color = Color(0.05, 0.05, 0.05, 1)
+roughness = 0.9
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eit8t"]
-albedo_color = Color(0.5, 0.35, 0.2, 1)
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+metallic = 0.9
+roughness = 0.8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jfp38"]
-albedo_color = Color(0.25, 0.25, 0.25, 1)
+albedo_color = Color(0.01, 0.01, 0.01, 1)
+metallic = 0.5
+roughness = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j7yus"]
-albedo_color = Color(0.05, 0.05, 0.05, 1)
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+metallic = 0.9
+roughness = 0.2
 
-[node name="KitchenEquipment" type="Node3D" unique_id=562726910]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_voqg7"]
+albedo_color = Color(0.65, 0.65, 0.65, 1)
+roughness = 0.6
 
-[node name="Fridge" type="CSGBox3D" parent="." unique_id=1539548282]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1, -0.35)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sjvma"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+metallic = 0.6
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tp28s"]
+albedo_color = Color(0.02, 0.02, 0.02, 1)
+metallic = 0.6
+roughness = 0.1
+
+[node name="KitchenEquipment" type="Node3D" unique_id=833108560]
+
+[node name="PlinthMain" type="CSGBox3D" parent="." unique_id=2012066465]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0472167, 0.05, -0.275)
 material_override = SubResource("StandardMaterial3D_thetp")
-size = Vector3(0.8, 2, 0.7)
+size = Vector3(4.3055663, 0.1, 0.55)
 
-[node name="CounterBase" type="CSGBox3D" parent="." unique_id=1074057009]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.43, -0.3)
+[node name="Island" type="Node3D" parent="." unique_id=1109747481]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6391422, 0, 0)
+
+[node name="PlinthIsland" type="CSGBox3D" parent="Island" unique_id=1336455225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.05, -1.2)
+material_override = SubResource("StandardMaterial3D_thetp")
+size = Vector3(0.5, 0.1, 1.3)
+
+[node name="IslandBase" type="CSGBox3D" parent="Island" unique_id=1377929169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.48, -0.94)
 material_override = SubResource("StandardMaterial3D_eit8t")
-size = Vector3(2.4, 0.86, 0.6)
+size = Vector3(0.6, 0.76, 1.88)
 
-[node name="CounterTop" type="CSGBox3D" parent="." unique_id=771676547]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.88, -0.31)
+[node name="IslandGap1" type="CSGBox3D" parent="Island" unique_id=1951021922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.605, 0.6, -1.25)
 material_override = SubResource("StandardMaterial3D_jfp38")
-size = Vector3(2.4, 0.04, 0.62)
+size = Vector3(0.01, 0.01, 1.2)
 
-[node name="Oven" type="CSGBox3D" parent="." unique_id=1226082654]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.43, -0.31)
+[node name="IslandGap2" type="CSGBox3D" parent="Island" unique_id=175303701]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.605, 0.35, -1.25)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.01, 0.01, 1.2)
+
+[node name="Handle_Is1" type="CSGBox3D" parent="Island" unique_id=552289516]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.61, 0.82, -1.25)
 material_override = SubResource("StandardMaterial3D_j7yus")
-size = Vector3(0.6, 0.86, 0.62)
+size = Vector3(0.02, 0.02, 0.3)
 
-[node name="Stove" type="CSGBox3D" parent="." unique_id=113795435]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.91, -0.3)
+[node name="Handle_Is2" type="CSGBox3D" parent="Island" unique_id=1494301530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.61, 0.55, -1.25)
 material_override = SubResource("StandardMaterial3D_j7yus")
-size = Vector3(0.6, 0.02, 0.6)
+size = Vector3(0.02, 0.02, 0.3)
 
-[node name="Sink" type="CSGBox3D" parent="." unique_id=1230735548]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.91, -0.3)
-material_override = SubResource("StandardMaterial3D_thetp")
-size = Vector3(0.5, 0.02, 0.4)
+[node name="Handle_Is3" type="CSGBox3D" parent="Island" unique_id=1440890902]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.61, 0.3, -1.25)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.02, 0.02, 0.3)
 
-[node name="Faucet" type="CSGBox3D" parent="." unique_id=409023817]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.035, -0.15)
-material_override = SubResource("StandardMaterial3D_thetp")
-size = Vector3(0.04, 0.25, 0.04)
+[node name="CounterIsland" type="CSGBox3D" parent="Island" unique_id=484127500]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.88, -0.95)
+material_override = SubResource("StandardMaterial3D_voqg7")
+size = Vector3(0.6, 0.04, 1.9)
 
-[node name="OverheadCabinets" type="CSGBox3D" parent="." unique_id=502591020]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.6, -0.15)
+[node name="SinkBasin" type="CSGBox3D" parent="." unique_id=175013292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.905, -0.3)
+material_override = SubResource("StandardMaterial3D_sjvma")
+size = Vector3(0.5, 0.01, 0.4)
+
+[node name="SinkBaseAndHandle" type="Node3D" parent="." unique_id=2002823942]
+
+[node name="SinkBase" type="CSGBox3D" parent="SinkBaseAndHandle" unique_id=1611979450]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.48, -0.29)
 material_override = SubResource("StandardMaterial3D_eit8t")
-size = Vector3(2.4, 0.7, 0.3)
+size = Vector3(0.6, 0.76, 0.58)
+
+[node name="Handle_Sink" type="CSGBox3D" parent="SinkBaseAndHandle" unique_id=1677417682]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.82, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="SinkBaseAndHandle2" type="Node3D" parent="." unique_id=1438506390]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6057478, 0, 0)
+
+[node name="SinkBase" type="CSGBox3D" parent="SinkBaseAndHandle2" unique_id=868519762]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.48, -0.29)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(0.6, 0.76, 0.58)
+
+[node name="Handle_Sink" type="CSGBox3D" parent="SinkBaseAndHandle2" unique_id=1513672720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.82, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="Faucet" type="CSGBox3D" parent="." unique_id=833778672]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 1.03, -0.16480607)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.03, 0.25, 0.03)
+
+[node name="DishwasherBase" type="CSGBox3D" parent="." unique_id=1781264842]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.48, -0.29)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(0.6, 0.76, 0.58)
+
+[node name="Handle_DW" type="CSGBox3D" parent="." unique_id=292885023]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.82, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="DishwasherControl" type="CSGBox3D" parent="." unique_id=56967100]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.785, -0.585)
+material_override = SubResource("StandardMaterial3D_tp28s")
+size = Vector3(0.58, 0.15, 0.02)
+
+[node name="CooktopBase" type="CSGBox3D" parent="." unique_id=236068054]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.48, -0.29)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(1.2, 0.76, 0.58)
+
+[node name="CooktopGap" type="CSGBox3D" parent="." unique_id=1159009224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.48, -0.585)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(1.2, 0.01, 0.02)
+
+[node name="Handle_CookTop" type="CSGBox3D" parent="." unique_id=993572059]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.82, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.4, 0.02, 0.02)
+
+[node name="Handle_CookBot" type="CSGBox3D" parent="." unique_id=973358796]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.44, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.4, 0.02, 0.02)
+
+[node name="Cooktop" type="CSGBox3D" parent="." unique_id=942450861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.905, -0.3)
+material_override = SubResource("StandardMaterial3D_tp28s")
+size = Vector3(0.6, 0.01, 0.5)
+
+[node name="OvenCabinet" type="CSGBox3D" parent="." unique_id=41909519]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1.15, -0.29)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(0.6, 2.1, 0.58)
+
+[node name="Oven" type="CSGBox3D" parent="." unique_id=1520229198]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1, -0.575)
+material_override = SubResource("StandardMaterial3D_tp28s")
+size = Vector3(0.56, 0.56, 0.03)
+
+[node name="Microwave" type="CSGBox3D" parent="." unique_id=570702557]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1.55, -0.575)
+material_override = SubResource("StandardMaterial3D_tp28s")
+size = Vector3(0.56, 0.38, 0.03)
+
+[node name="OvenGap1" type="CSGBox3D" parent="." unique_id=1749293666]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0.7, -0.585)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.6, 0.01, 0.02)
+
+[node name="Handle_OvenDrawer" type="CSGBox3D" parent="." unique_id=1393046034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 0.65, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="FridgeCabinet" type="CSGBox3D" parent="." unique_id=1925415352]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 1.15, -0.29)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(0.6, 2.1, 0.58)
+
+[node name="FridgeGap" type="CSGBox3D" parent="." unique_id=1126922241]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 0.9, -0.585)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.6, 0.01, 0.02)
+
+[node name="Handle_Fridge" type="CSGBox3D" parent="." unique_id=754387323]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 1.3, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="Handle_Freezer" type="CSGBox3D" parent="." unique_id=1319608601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 0.85, -0.59)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="CounterMain" type="CSGBox3D" parent="." unique_id=1175728898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4808838, 0.88, -0.3)
+material_override = SubResource("StandardMaterial3D_voqg7")
+size = Vector3(3.0382323, 0.04, 0.6)
+
+[node name="Backsplash" type="CSGBox3D" parent="." unique_id=505908891]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.2, -0.01)
+material_override = SubResource("StandardMaterial3D_voqg7")
+size = Vector3(3, 0.6, 0.02)
+
+[node name="OverheadCabinets" type="CSGBox3D" parent="." unique_id=1887263075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.85, -0.175)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(3, 0.7, 0.35)
+
+[node name="OHGap1" type="CSGBox3D" parent="." unique_id=1502899894]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.85, -0.355)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.01, 0.7, 0.01)
+
+[node name="Handle_OH1" type="CSGBox3D" parent="." unique_id=619105996]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.52, -0.36)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="OHGap2" type="CSGBox3D" parent="." unique_id=324670222]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.85, -0.355)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.01, 0.7, 0.01)
+
+[node name="Handle_OH2" type="CSGBox3D" parent="." unique_id=1062148416]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 1.52, -0.36)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="OHGap3" type="CSGBox3D" parent="." unique_id=1206304389]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.85, -0.355)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.01, 0.7, 0.01)
+
+[node name="Handle_OH3" type="CSGBox3D" parent="." unique_id=348948067]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.52, -0.36)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="OHGap4" type="CSGBox3D" parent="." unique_id=1253416551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1.85, -0.355)
+material_override = SubResource("StandardMaterial3D_jfp38")
+size = Vector3(0.01, 0.7, 0.01)
+
+[node name="Handle_OH4" type="CSGBox3D" parent="." unique_id=477629483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 1.52, -0.36)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="Handle_OH5" type="CSGBox3D" parent="." unique_id=780263076]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 1.52, -0.36)
+material_override = SubResource("StandardMaterial3D_j7yus")
+size = Vector3(0.2, 0.02, 0.02)
+
+[node name="FillerOverhead" type="CSGBox3D" parent="." unique_id=307325505]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.35, -0.175)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(3, 0.3, 0.35)
+
+[node name="FillerTall" type="CSGBox3D" parent="." unique_id=2040957827]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 2.35, -0.3)
+material_override = SubResource("StandardMaterial3D_eit8t")
+size = Vector3(1.2, 0.3, 0.6)

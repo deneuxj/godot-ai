@@ -26,7 +26,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="AI Assistant Project"
-run/main_scene="uid://b3rgo3vfiuvs0"
+run/main_scene="uid://mqvirxux57g"
 config/features=PackedStringArray("4.6")
 
 [dotnet]
