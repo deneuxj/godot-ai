@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ih1ct"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nn741"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+metallic = 0.9
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ynsm"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0hoa1"]
+albedo_color = Color(0, 0, 0, 1)
+emission_enabled = true
+emission = Color(0.8, 0.2, 0.8, 1)
+emission_energy_multiplier = 3.0
+
+[node name="GamingDesk" type="Node3D" unique_id=902209454]
+
+[node name="Desktop" type="CSGBox3D" parent="." unique_id=1453080779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73, 0)
+size = Vector3(1.6, 0.04, 0.8)
+material = SubResource("StandardMaterial3D_ih1ct")
+
+[node name="Leg-0_75" type="CSGBox3D" parent="." unique_id=585048370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0.355, 0)
+size = Vector3(0.04, 0.71, 0.6)
+material = SubResource("StandardMaterial3D_nn741")
+
+[node name="Leg0_75" type="CSGBox3D" parent="." unique_id=1357989528]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0.355, 0)
+size = Vector3(0.04, 0.71, 0.6)
+material = SubResource("StandardMaterial3D_nn741")
+
+[node name="PCTower" type="CSGBox3D" parent="." unique_id=1399771106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.99, -0.1)
+size = Vector3(0.22, 0.48, 0.45)
+material = SubResource("StandardMaterial3D_5ynsm")
+
+[node name="RGBStrip" type="CSGBox3D" parent="." unique_id=1016447693]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.99, 0.125)
+size = Vector3(0.02, 0.4, 0.02)
+material = SubResource("StandardMaterial3D_0hoa1")
+
+[node name="Monitor-0_35" type="CSGBox3D" parent="." unique_id=2081303710]
+transform = Transform3D(0.9800666, 0, 0.19866933, 0, 1, 0, -0.19866933, 0, 0.9800666, -0.35, 1.05, -0.2)
+size = Vector3(0.6, 0.35, 0.02)
+material = SubResource("StandardMaterial3D_5ynsm")
+
+[node name="Monitor0_25" type="CSGBox3D" parent="." unique_id=764253379]
+transform = Transform3D(0.9800666, 0, -0.19866933, 0, 1, 0, 0.19866933, 0, 0.9800666, 0.25, 1.05, -0.2)
+size = Vector3(0.6, 0.35, 0.02)
+material = SubResource("StandardMaterial3D_5ynsm")
+
+[node name="Keyboard" type="CSGBox3D" parent="." unique_id=1505523825]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.76, 0.2)
+size = Vector3(0.4, 0.02, 0.15)
+material = SubResource("StandardMaterial3D_5ynsm")
+
+[node name="Mouse" type="CSGBox3D" parent="." unique_id=653240134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.76, 0.2)
+size = Vector3(0.06, 0.03, 0.1)
+material = SubResource("StandardMaterial3D_5ynsm")

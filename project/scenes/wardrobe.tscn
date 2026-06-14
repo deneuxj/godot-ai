@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://t0737x06dtxa"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cbist"]
 albedo_color = Color(0.65, 0.45, 0.25, 1)
@@ -16,11 +16,11 @@ size = Vector3(2.4, 2.2, 0.6)
 material = SubResource("StandardMaterial3D_cbist")
 
 [node name="Door1" type="CSGBox3D" parent="." unique_id=1363423913]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 1.1, 0.27)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 1.1, 0.2982122)
 size = Vector3(1.2, 2.16, 0.02)
 material = SubResource("StandardMaterial3D_r15ec")
 
 [node name="Door2" type="CSGBox3D" parent="." unique_id=1965984812]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.1, 0.29)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.1, 0.31821218)
 size = Vector3(1.2, 2.16, 0.02)
 material = SubResource("StandardMaterial3D_r15ec")

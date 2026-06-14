@@ -1,0 +1,55 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i51bn"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vwsrp"]
+albedo_color = Color(0.2, 0.3, 0.4, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nn741"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+metallic = 0.9
+roughness = 0.3
+
+[node name="SofaBed" type="Node3D" unique_id=1100601175]
+
+[node name="Base" type="CSGBox3D" parent="." unique_id=2128112057]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+size = Vector3(2, 0.2, 0.9)
+material = SubResource("StandardMaterial3D_i51bn")
+
+[node name="Seat" type="CSGBox3D" parent="." unique_id=2124648649]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0.1)
+size = Vector3(1.9, 0.15, 0.7)
+material = SubResource("StandardMaterial3D_vwsrp")
+
+[node name="Back" type="CSGBox3D" parent="." unique_id=1546416948]
+transform = Transform3D(1, 0, 0, 0, 0.9800666, 0.19866933, 0, -0.19866933, 0.9800666, 0, 0.65, -0.3)
+size = Vector3(1.9, 0.5, 0.15)
+material = SubResource("StandardMaterial3D_vwsrp")
+
+[node name="Leg_-0_9_-0_3" type="CSGCylinder3D" parent="." unique_id=690816829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.05, -0.3)
+radius = 0.02
+height = 0.1
+material = SubResource("StandardMaterial3D_nn741")
+
+[node name="Leg_-0_9_0_3" type="CSGCylinder3D" parent="." unique_id=1257289313]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.05, 0.3)
+radius = 0.02
+height = 0.1
+material = SubResource("StandardMaterial3D_nn741")
+
+[node name="Leg_0_9_-0_3" type="CSGCylinder3D" parent="." unique_id=722422576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.05, -0.3)
+radius = 0.02
+height = 0.1
+material = SubResource("StandardMaterial3D_nn741")
+
+[node name="Leg_0_9_0_3" type="CSGCylinder3D" parent="." unique_id=1138779928]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0.05, 0.3)
+radius = 0.02
+height = 0.1
+material = SubResource("StandardMaterial3D_nn741")

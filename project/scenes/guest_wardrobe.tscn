@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i51bn"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ynsm"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+roughness = 0.8
+
+[node name="GuestWardrobe" type="Node3D" unique_id=1175480839]
+
+[node name="Body" type="CSGBox3D" parent="." unique_id=1179096598]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+size = Vector3(1.8, 2.2, 0.6)
+material = SubResource("StandardMaterial3D_i51bn")
+
+[node name="Door1" type="CSGBox3D" parent="." unique_id=496485400]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 1.1, 0.27)
+size = Vector3(0.9, 2.16, 0.02)
+material = SubResource("StandardMaterial3D_5ynsm")
+
+[node name="Door2" type="CSGBox3D" parent="." unique_id=506696518]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 1.1, 0.29)
+size = Vector3(0.9, 2.16, 0.02)
+material = SubResource("StandardMaterial3D_5ynsm")
