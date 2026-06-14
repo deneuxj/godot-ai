@@ -44,6 +44,8 @@
 [ext_resource type="PackedScene" path="res://scenes/utility_sink.tscn" id="42_rhwim"]
 [ext_resource type="PackedScene" path="res://scenes/entrance_closet.tscn" id="43_ih64o"]
 [ext_resource type="PackedScene" path="res://scenes/bedroom_commode.tscn" id="44_og0ed"]
+[ext_resource type="PackedScene" path="res://scenes/small_wash_basin.tscn" id="45_p5yjb"]
+[ext_resource type="PackedScene" uid="uid://y6iwjppik725" path="res://scenes/hanging_wc.tscn" id="46_gyj00"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -5013,5 +5015,14 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 19.1
 
 [node name="BedroomCommode" parent="." unique_id=99753433 instance=ExtResource("44_og0ed")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 19.21695, 0.04151666, 6.327967)
+
+[node name="SmallWashBasin" parent="." unique_id=568735604 instance=ExtResource("45_p5yjb")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.83333, 0.03330922, -0.24491632)
+
+[node name="HangingWC" parent="." unique_id=745336093 instance=ExtResource("46_gyj00")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.36474, 0, -1.3156761)
+
+[node name="HangingWC2" parent="." unique_id=1107664189 instance=ExtResource("46_gyj00")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.079261, 0, -1.3156761)
 
 [editable path="HiFiSurroundSystem"]

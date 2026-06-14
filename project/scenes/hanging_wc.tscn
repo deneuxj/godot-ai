@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://y6iwjppik725"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h8g8c"]
 albedo_color = Color(0.3, 0.3, 0.3, 1)
@@ -25,7 +25,7 @@ size = Vector3(0.6, 1.1, 0.2)
 material = SubResource("StandardMaterial3D_h8g8c")
 
 [node name="FlushPlate" type="CSGBox3D" parent="WallFrame" unique_id=1597694392]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.01)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.47321147, 0.10070134)
 size = Vector3(0.2, 0.15, 0.02)
 material = SubResource("StandardMaterial3D_bdkie")
 
@@ -42,7 +42,7 @@ height = 0.04
 material = SubResource("StandardMaterial3D_j80to")
 
 [node name="Bowl" type="CSGBox3D" parent="." unique_id=43607099]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.18268427)
 size = Vector3(0.36, 0.32, 0.52)
 material = SubResource("StandardMaterial3D_j80to")
 
@@ -60,7 +60,7 @@ height = 0.33
 material = SubResource("StandardMaterial3D_j80to")
 
 [node name="SeatCover" type="CSGBox3D" parent="." unique_id=848916732]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0.26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0.18268427)
 size = Vector3(0.36, 0.03, 0.52)
 material = SubResource("StandardMaterial3D_fqjml")
 
