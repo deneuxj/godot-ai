@@ -12,34 +12,34 @@ roughness = 0.9
 albedo_color = Color(0.7, 0.7, 0.7, 1)
 roughness = 0.9
 
-[node name="KingBed" type="Node3D" unique_id=1933825027]
+[node name="DoubleBed" type="Node3D" unique_id=1933825027]
 
 [node name="Frame" type="CSGBox3D" parent="." unique_id=789004492]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
-size = Vector3(1.9, 0.3, 2.1)
+size = Vector3(1.5, 0.3, 2.1)
 material = SubResource("StandardMaterial3D_cbist")
 
 [node name="Headboard" type="CSGBox3D" parent="." unique_id=1860014253]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -1)
-size = Vector3(1.9, 1, 0.1)
+size = Vector3(1.5, 1, 0.1)
 material = SubResource("StandardMaterial3D_cbist")
 
 [node name="Mattress" type="CSGBox3D" parent="." unique_id=1138212243]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
-size = Vector3(1.8, 0.2, 2)
+size = Vector3(1.4, 0.2, 2)
 material = SubResource("StandardMaterial3D_wokg5")
 
 [node name="Blanket" type="CSGBox3D" parent="." unique_id=1057997112]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51, 0.3)
-size = Vector3(1.82, 0.05, 1.4)
+size = Vector3(1.42, 0.05, 1.4)
 material = SubResource("StandardMaterial3D_dsq3q")
 
 [node name="Pillow-0_45" type="CSGBox3D" parent="." unique_id=1310581734]
-transform = Transform3D(1, 0, 0, 0, 0.9800666, -0.19866933, 0, 0.19866933, 0.9800666, -0.45, 0.55, -0.7)
-size = Vector3(0.7, 0.1, 0.4)
+transform = Transform3D(1, 0, 0, 0, 0.9800666, -0.19866933, 0, 0.19866933, 0.9800666, -0.35, 0.55, -0.7)
+size = Vector3(0.6, 0.1, 0.4)
 material = SubResource("StandardMaterial3D_wokg5")
 
 [node name="Pillow0_45" type="CSGBox3D" parent="." unique_id=1110923327]
-transform = Transform3D(1, 0, 0, 0, 0.9800666, -0.19866933, 0, 0.19866933, 0.9800666, 0.45, 0.55, -0.7)
-size = Vector3(0.7, 0.1, 0.4)
+transform = Transform3D(1, 0, 0, 0, 0.9800666, -0.19866933, 0, 0.19866933, 0.9800666, 0.35, 0.55, -0.7)
+size = Vector3(0.6, 0.1, 0.4)
 material = SubResource("StandardMaterial3D_wokg5")
