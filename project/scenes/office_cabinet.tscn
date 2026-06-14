@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ggxf1"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_55all"]
+albedo_color = Color(0.18, 0.18, 0.18, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c35rj"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+metallic = 0.9
+roughness = 0.3
+
+[node name="OfficeCabinet" type="Node3D" unique_id=45410776]
+
+[node name="Frame" type="CSGBox3D" parent="." unique_id=825572228]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+size = Vector3(0.8, 1.8, 0.4)
+material = SubResource("StandardMaterial3D_ggxf1")
+
+[node name="InnerHole" type="CSGBox3D" parent="Frame" unique_id=83532300]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01)
+operation = 2
+size = Vector3(0.76, 1.76, 0.39)
+
+[node name="Shelf_1" type="CSGBox3D" parent="." unique_id=183252305]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+size = Vector3(0.76, 0.02, 0.38)
+material = SubResource("StandardMaterial3D_ggxf1")
+
+[node name="Shelf_2" type="CSGBox3D" parent="." unique_id=1547042640]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+size = Vector3(0.76, 0.02, 0.38)
+material = SubResource("StandardMaterial3D_ggxf1")
+
+[node name="Shelf_3" type="CSGBox3D" parent="." unique_id=1357294440]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+size = Vector3(0.76, 0.02, 0.38)
+material = SubResource("StandardMaterial3D_ggxf1")
+
+[node name="DoorLeft" type="CSGBox3D" parent="." unique_id=105916646]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19, 0.36, 0.19)
+size = Vector3(0.375, 0.68, 0.02)
+material = SubResource("StandardMaterial3D_55all")
+
+[node name="HandleLeft" type="CSGBox3D" parent="." unique_id=1133632595]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, 0.6, 0.21)
+size = Vector3(0.01, 0.15, 0.02)
+material = SubResource("StandardMaterial3D_c35rj")
+
+[node name="DoorRight" type="CSGBox3D" parent="." unique_id=742639573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.19, 0.36, 0.19)
+size = Vector3(0.375, 0.68, 0.02)
+material = SubResource("StandardMaterial3D_55all")
+
+[node name="HandleRight" type="CSGBox3D" parent="." unique_id=271905290]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0.6, 0.21)
+size = Vector3(0.01, 0.15, 0.02)
+material = SubResource("StandardMaterial3D_c35rj")

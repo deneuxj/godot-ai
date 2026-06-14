@@ -21,6 +21,10 @@
 [ext_resource type="PackedScene" path="res://scenes/tv_console.tscn" id="17_om8ys"]
 [ext_resource type="PackedScene" path="res://scenes/coffee_table.tscn" id="18_hspdl"]
 [ext_resource type="PackedScene" path="res://scenes/entrance_unit.tscn" id="21_p2xdh"]
+[ext_resource type="PackedScene" path="res://scenes/office_desk.tscn" id="22_1cvff"]
+[ext_resource type="PackedScene" path="res://scenes/office_chair.tscn" id="23_achnd"]
+[ext_resource type="PackedScene" path="res://scenes/filing_cabinet.tscn" id="24_ollkf"]
+[ext_resource type="PackedScene" path="res://scenes/floor_mat.tscn" id="25_fx61v"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -4885,3 +4889,15 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 8.46
 
 [node name="EntranceUnit" parent="." unique_id=28123497 instance=ExtResource("21_p2xdh")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 17.152788, 1.1920929e-07, -0.5099151)
+
+[node name="OfficeDesk" parent="." unique_id=179306389 instance=ExtResource("22_1cvff")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 22.01906, 0.05852008, -0.3468356)
+
+[node name="OfficeChair" parent="." unique_id=1618307995 instance=ExtResource("23_achnd")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 21.39668, 0.043269157, -0.27920848)
+
+[node name="FilingCabinet" parent="." unique_id=244464205 instance=ExtResource("24_ollkf")]
+transform = Transform3D(1.1920929e-07, 0, -1, 0, 1, 0, 1, 0, 1.1920929e-07, 22.159946, 0, -1.266394)
+
+[node name="FloorMat" parent="." unique_id=2037564586 instance=ExtResource("25_fx61v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.445354, 0.03482473, -0.36811298)
