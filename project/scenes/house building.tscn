@@ -12,6 +12,7 @@
 [ext_resource type="Material" uid="uid://c3snpp3cqjnod" path="res://materials/facade.tres" id="10_utsn7"]
 [ext_resource type="Script" uid="uid://b1v5irgglra1" path="res://scripts/fly_camera.gd" id="11_utsn7"]
 [ext_resource type="PackedScene" path="res://scenes/kitchen_furniture.tscn" id="12_vpft7"]
+[ext_resource type="PackedScene" path="res://scenes/kitchen_equipment.tscn" id="13_3obb1"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -4848,4 +4849,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 5, 15)
 script = ExtResource("11_utsn7")
 
 [node name="KitchenFurniture" parent="." unique_id=492224391 instance=ExtResource("12_vpft7")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.088238, 0, 3.449001)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.08, 0, 3.62)
+
+[node name="KitchenEquipment" parent="." unique_id=1327815687 instance=ExtResource("13_3obb1")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.314926, 0, 5.0473213)
