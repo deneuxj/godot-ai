@@ -7,6 +7,7 @@
 [ext_resource type="Material" uid="uid://dkj8mbb3eaa3b" path="res://materials/faience.tres" id="5_yghb5"]
 [ext_resource type="Material" uid="uid://7ipovtycrx87" path="res://materials/plafond.tres" id="7_hlnjt"]
 [ext_resource type="Material" uid="uid://bfj43bqqsr1nk" path="res://materials/parquet.tres" id="8_utsn7"]
+[ext_resource type="PackedScene" path="res://scenes/garage_shelves.tscn" id="9_j4x6f"]
 [ext_resource type="VoxelGIData" uid="uid://q74sjjvo6yqw" path="res://scenes/house building.VoxelGI_data.res" id="9_pu0k3"]
 [ext_resource type="Material" uid="uid://cqimmhjfoh2ok" path="res://materials/mur.tres" id="9_utsn7"]
 [ext_resource type="Material" uid="uid://c3snpp3cqjnod" path="res://materials/facade.tres" id="10_utsn7"]
@@ -35,6 +36,12 @@
 [ext_resource type="PackedScene" path="res://scenes/gaming_desk.tscn" id="33_7aox4"]
 [ext_resource type="PackedScene" uid="uid://b7ug5roboyo6j" path="res://scenes/hifi_system.tscn" id="34_u02sr"]
 [ext_resource type="PackedScene" uid="uid://q3hus1cgtc41" path="res://scenes/boxy_car.tscn" id="35_7aox4"]
+[ext_resource type="PackedScene" path="res://scenes/electric_switchboard.tscn" id="37_ih64o"]
+[ext_resource type="PackedScene" path="res://scenes/water_heater.tscn" id="38_og0ed"]
+[ext_resource type="PackedScene" path="res://scenes/water_purifier.tscn" id="39_6qs7f"]
+[ext_resource type="PackedScene" path="res://scenes/washing_machine.tscn" id="40_p5yjb"]
+[ext_resource type="PackedScene" path="res://scenes/dryer.tscn" id="41_gyj00"]
+[ext_resource type="PackedScene" path="res://scenes/utility_sink.tscn" id="42_rhwim"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -4022,6 +4029,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.059189, 9.536743e-07, -0.0
 material_override = ExtResource("8_utsn7")
 mesh = SubResource("BoxMesh_360gp")
 
+[node name="GarageShelves" parent="Rooms" unique_id=498425922 instance=ExtResource("9_j4x6f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.537156, 0.04205346, 2.1128051)
+
 [node name="Walls" type="Node3D" parent="." unique_id=1609764232]
 
 [node name="CHAMBRE_GAUCHE-CUISINE" type="CSGCombiner3D" parent="Walls" unique_id=1062983719]
@@ -4977,5 +4987,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.038375378, 0, -0.28109264)
 
 [node name="BoxyCar" parent="." unique_id=1678878159 instance=ExtResource("35_7aox4")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.5791812, 0.048075438, 3.1623507)
+
+[node name="ElectricSwitchboard" parent="." unique_id=226521061 instance=ExtResource("37_ih64o")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.536214, 1.297224, 0.75825894)
+
+[node name="WaterHeater" parent="." unique_id=812176554 instance=ExtResource("38_og0ed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.899992, 0.7326921, 0.7922276)
+
+[node name="WaterPurifier" parent="." unique_id=1346807460 instance=ExtResource("39_6qs7f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.414777, 0.89362335, 0.5528771)
+
+[node name="WashingMachine" parent="." unique_id=1128174086 instance=ExtResource("40_p5yjb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.423386, 0.040567636, 0.8680428)
+
+[node name="Dryer" parent="." unique_id=2115911293 instance=ExtResource("41_gyj00")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.05414, 0.03299296, 0.8688326)
+
+[node name="UtilitySink" parent="." unique_id=548181626 instance=ExtResource("42_rhwim")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.666618, 1.1920929e-07, 0.8053013)
 
 [editable path="HiFiSurroundSystem"]
