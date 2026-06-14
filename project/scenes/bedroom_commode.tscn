@@ -1,0 +1,72 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_chn7v"]
+albedo_color = Color(0.12, 0.12, 0.12, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vxtpg"]
+albedo_color = Color(0.7, 0.7, 0.7, 1)
+metallic = 0.8
+roughness = 0.3
+
+[node name="BedroomCommode" type="Node3D" unique_id=99753433]
+
+[node name="Frame" type="CSGBox3D" parent="." unique_id=1981100049]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+size = Vector3(1, 1.3, 0.45)
+material = SubResource("StandardMaterial3D_chn7v")
+
+[node name="Drawer_1" type="CSGBox3D" parent="." unique_id=1737181935]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0.235)
+size = Vector3(0.96, 0.24, 0.02)
+material = SubResource("StandardMaterial3D_chn7v")
+
+[node name="Handle" type="CSGCylinder3D" parent="Drawer_1" unique_id=1104214201]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0.02)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_vxtpg")
+
+[node name="Drawer_2" type="CSGBox3D" parent="." unique_id=1978527463]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.39, 0.235)
+size = Vector3(0.96, 0.24, 0.02)
+material = SubResource("StandardMaterial3D_chn7v")
+
+[node name="Handle" type="CSGCylinder3D" parent="Drawer_2" unique_id=1288099170]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0.02)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_vxtpg")
+
+[node name="Drawer_3" type="CSGBox3D" parent="." unique_id=2042703379]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0.235)
+size = Vector3(0.96, 0.24, 0.02)
+material = SubResource("StandardMaterial3D_chn7v")
+
+[node name="Handle" type="CSGCylinder3D" parent="Drawer_3" unique_id=195675817]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0.02)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_vxtpg")
+
+[node name="Drawer_4" type="CSGBox3D" parent="." unique_id=434024647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.91, 0.235)
+size = Vector3(0.96, 0.24, 0.02)
+material = SubResource("StandardMaterial3D_chn7v")
+
+[node name="Handle" type="CSGCylinder3D" parent="Drawer_4" unique_id=298364865]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0.02)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_vxtpg")
+
+[node name="Drawer_5" type="CSGBox3D" parent="." unique_id=1171467436]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.17, 0.235)
+size = Vector3(0.96, 0.24, 0.02)
+material = SubResource("StandardMaterial3D_chn7v")
+
+[node name="Handle" type="CSGCylinder3D" parent="Drawer_5" unique_id=854165404]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0.02)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_vxtpg")

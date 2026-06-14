@@ -4939,7 +4939,7 @@ transform = Transform3D(0.6688578, 0, 0, 0, 1, 0, 0, 0, 1, 17.387941, 0, 1.98409
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.8365033, 17.8773, 0.021606505, 4.3818135)
 
 [node name="KingBed" parent="." unique_id=1933825027 instance=ExtResource("29_2q861")]
-transform = Transform3D(-3.383819e-08, 0, 1, 0, 1, 0, -0.7741276, 0, -4.371139e-08, 17.63338, 0.033631086, 4.3329635)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 17.63338, 0.033631086, 4.3329635)
 
 [node name="Nightstand" parent="." unique_id=1595748777 instance=ExtResource("30_n6o0a")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.787968, 0.045199633, 5.494292)
