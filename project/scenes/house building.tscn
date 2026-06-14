@@ -33,6 +33,7 @@
 [ext_resource type="PackedScene" uid="uid://d04468u6t7xnx" path="res://scenes/guest_wardrobe.tscn" id="31_n6o0a"]
 [ext_resource type="PackedScene" path="res://scenes/sofa_bed.tscn" id="32_u02sr"]
 [ext_resource type="PackedScene" path="res://scenes/gaming_desk.tscn" id="33_7aox4"]
+[ext_resource type="PackedScene" uid="uid://b7ug5roboyo6j" path="res://scenes/hifi_system.tscn" id="34_u02sr"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -4948,3 +4949,29 @@ transform = Transform3D(0.25881907, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, 0.2588
 
 [node name="FloorMat2" parent="." unique_id=1659855105 instance=ExtResource("25_fx61v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.191307, 0.0329175, 6.0186563)
+
+[node name="HiFiSurroundSystem" parent="." unique_id=369446226 instance=ExtResource("34_u02sr")]
+transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, 8.844387, 0.045806527, 5.041658)
+
+[node name="TowerSpeaker_L" parent="HiFiSurroundSystem" index="0" unique_id=1489045711]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5747571, 0.49999988, -2.2444973)
+
+[node name="TowerSpeaker_R" parent="HiFiSurroundSystem" index="1" unique_id=334132151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2386806, 0.5, -2.2360792)
+
+[node name="CenterSpeaker" parent="HiFiSurroundSystem" index="2" unique_id=1793760829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18450165, 0.49539596, -1.9562078)
+
+[node name="Subwoofer" parent="HiFiSurroundSystem" index="3" unique_id=688775675]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6947653, 0.19999988, -2.024899)
+
+[node name="Node3D" parent="HiFiSurroundSystem" index="4" unique_id=586458044]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.99099016, 0, -0.24072456)
+
+[node name="AVReceiver" parent="HiFiSurroundSystem" index="5" unique_id=580068081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7982755, 0.48000014, -2.047461)
+
+[node name="Node3D2" parent="HiFiSurroundSystem" index="6" unique_id=1191921271]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.038375378, 0, -0.28109264)
+
+[editable path="HiFiSurroundSystem"]

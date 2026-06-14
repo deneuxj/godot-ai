@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b7ug5roboyo6j"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_et8ae"]
 albedo_color = Color(0.08, 0.08, 0.08, 1)
@@ -96,47 +96,26 @@ radius = 0.12
 height = 0.02
 material = SubResource("StandardMaterial3D_2bpsk")
 
-[node name="RearStandBase_L" type="CSGCylinder3D" parent="." unique_id=460068843]
+[node name="Node3D" type="Node3D" parent="." unique_id=586458044]
+
+[node name="RearStandBase_L" type="CSGCylinder3D" parent="Node3D" unique_id=460068843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.01, 2.5)
 radius = 0.15
 height = 0.02
 material = SubResource("StandardMaterial3D_8bhlc")
 
-[node name="RearPole_L" type="CSGCylinder3D" parent="." unique_id=521590621]
+[node name="RearPole_L" type="CSGCylinder3D" parent="Node3D" unique_id=521590621]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.45, 2.5)
 radius = 0.01
 height = 0.9
 material = SubResource("StandardMaterial3D_8bhlc")
 
-[node name="RearSpeaker_L" type="CSGBox3D" parent="." unique_id=2073966631]
+[node name="RearSpeaker_L" type="CSGBox3D" parent="Node3D" unique_id=2073966631]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.95, 2.5)
 size = Vector3(0.15, 0.2, 0.15)
 material = SubResource("StandardMaterial3D_et8ae")
 
-[node name="Cone0_0_-0_07500000298023" type="CSGCylinder3D" parent="RearSpeaker_L" unique_id=301198995]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.075)
-radius = 0.05
-height = 0.02
-material = SubResource("StandardMaterial3D_2bpsk")
-
-[node name="RearStandBase_R" type="CSGCylinder3D" parent="." unique_id=1506762510]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.01, 2.5)
-radius = 0.15
-height = 0.02
-material = SubResource("StandardMaterial3D_8bhlc")
-
-[node name="RearPole_R" type="CSGCylinder3D" parent="." unique_id=1258899445]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.45, 2.5)
-radius = 0.01
-height = 0.9
-material = SubResource("StandardMaterial3D_8bhlc")
-
-[node name="RearSpeaker_R" type="CSGBox3D" parent="." unique_id=2043106694]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.95, 2.5)
-size = Vector3(0.15, 0.2, 0.15)
-material = SubResource("StandardMaterial3D_et8ae")
-
-[node name="Cone0_0_-0_07500000298023" type="CSGCylinder3D" parent="RearSpeaker_R" unique_id=1398879174]
+[node name="Cone0_0_-0_07500000298023" type="CSGCylinder3D" parent="Node3D/RearSpeaker_L" unique_id=301198995]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.075)
 radius = 0.05
 height = 0.02
@@ -157,3 +136,28 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.15
 radius = 0.03
 height = 0.02
 material = SubResource("StandardMaterial3D_8bhlc")
+
+[node name="Node3D2" type="Node3D" parent="." unique_id=1191921271]
+
+[node name="RearStandBase_R" type="CSGCylinder3D" parent="Node3D2" unique_id=1506762510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.01, 2.5)
+radius = 0.15
+height = 0.02
+material = SubResource("StandardMaterial3D_8bhlc")
+
+[node name="RearPole_R" type="CSGCylinder3D" parent="Node3D2" unique_id=1258899445]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.45, 2.5)
+radius = 0.01
+height = 0.9
+material = SubResource("StandardMaterial3D_8bhlc")
+
+[node name="RearSpeaker_R" type="CSGBox3D" parent="Node3D2" unique_id=2043106694]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.95, 2.5)
+size = Vector3(0.15, 0.2, 0.15)
+material = SubResource("StandardMaterial3D_et8ae")
+
+[node name="Cone0_0_-0_07500000298023" type="CSGCylinder3D" parent="Node3D2/RearSpeaker_R" unique_id=1398879174]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.075)
+radius = 0.05
+height = 0.02
+material = SubResource("StandardMaterial3D_2bpsk")
