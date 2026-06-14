@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j80to"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bdkie"]
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+metallic = 0.8
+roughness = 0.3
+
+[node name="SmallWashBasin" type="Node3D" unique_id=568735604]
+
+[node name="SinkBody" type="CSGBox3D" parent="." unique_id=631457740]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0.125)
+size = Vector3(0.4, 0.15, 0.25)
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="@CSGBox3D@7" type="CSGBox3D" parent="SinkBody" unique_id=1826005563]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0.02)
+operation = 2
+size = Vector3(0.34, 0.12, 0.16)
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="Faucet" type="CSGCylinder3D" parent="SinkBody" unique_id=1491182766]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, -0.08)
+radius = 0.015
+height = 0.1
+material = SubResource("StandardMaterial3D_bdkie")
+
+[node name="@CSGCylinder3D@8" type="CSGCylinder3D" parent="SinkBody/Faucet" unique_id=526402125]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.04, 0.05)
+radius = 0.012
+height = 0.1
+material = SubResource("StandardMaterial3D_bdkie")

@@ -1,0 +1,71 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h8g8c"]
+albedo_color = Color(0.3, 0.3, 0.3, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bdkie"]
+albedo_color = Color(0.8, 0.8, 0.8, 1)
+metallic = 0.8
+roughness = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j80to"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fqjml"]
+albedo_color = Color(0.95, 0.95, 0.95, 1)
+roughness = 0.3
+
+[node name="HangingWC" type="Node3D" unique_id=745336093]
+
+[node name="WallFrame" type="CSGBox3D" parent="." unique_id=2022459017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -0.1)
+size = Vector3(0.6, 1.1, 0.2)
+material = SubResource("StandardMaterial3D_h8g8c")
+
+[node name="FlushPlate" type="CSGBox3D" parent="WallFrame" unique_id=1597694392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.01)
+size = Vector3(0.2, 0.15, 0.02)
+material = SubResource("StandardMaterial3D_bdkie")
+
+[node name="@CSGCylinder3D@2" type="CSGCylinder3D" parent="WallFrame/FlushPlate" unique_id=143882257]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.05, 0, 0.01)
+radius = 0.03
+height = 0.04
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="@CSGCylinder3D@3" type="CSGCylinder3D" parent="WallFrame/FlushPlate" unique_id=2134753935]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.04, 0, 0.01)
+radius = 0.02
+height = 0.04
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="Bowl" type="CSGBox3D" parent="." unique_id=43607099]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.26)
+size = Vector3(0.36, 0.32, 0.52)
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="@CSGCylinder3D@4" type="CSGCylinder3D" parent="Bowl" unique_id=442199073]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.26)
+radius = 0.18
+height = 0.32
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="@CSGCylinder3D@5" type="CSGCylinder3D" parent="Bowl" unique_id=657255525]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.1)
+operation = 2
+radius = 0.13
+height = 0.33
+material = SubResource("StandardMaterial3D_j80to")
+
+[node name="SeatCover" type="CSGBox3D" parent="." unique_id=848916732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.575, 0.26)
+size = Vector3(0.36, 0.03, 0.52)
+material = SubResource("StandardMaterial3D_fqjml")
+
+[node name="@CSGCylinder3D@6" type="CSGCylinder3D" parent="SeatCover" unique_id=722429319]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.26)
+radius = 0.18
+height = 0.03
+material = SubResource("StandardMaterial3D_fqjml")

@@ -43,6 +43,7 @@
 [ext_resource type="PackedScene" path="res://scenes/dryer.tscn" id="41_gyj00"]
 [ext_resource type="PackedScene" path="res://scenes/utility_sink.tscn" id="42_rhwim"]
 [ext_resource type="PackedScene" path="res://scenes/entrance_closet.tscn" id="43_ih64o"]
+[ext_resource type="PackedScene" path="res://scenes/bedroom_commode.tscn" id="44_og0ed"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -5009,5 +5010,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.666618, 1.1920929e-07, 0.80
 
 [node name="EntranceCloset" parent="." unique_id=1284281902 instance=ExtResource("43_ih64o")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 19.179174, 0, -0.5398638)
+
+[node name="BedroomCommode" parent="." unique_id=99753433 instance=ExtResource("44_og0ed")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 19.21695, 0.04151666, 6.327967)
 
 [editable path="HiFiSurroundSystem"]
