@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://cv13nyr65sxd" path="res://scenes/kitchen_equipment.tscn" id="13_3obb1"]
 [ext_resource type="PackedScene" uid="uid://bys15q3f7tn5f" path="res://scenes/pool_table.tscn" id="14_sdlwi"]
 [ext_resource type="PackedScene" path="res://scenes/sofa.tscn" id="15_p26fb"]
-[ext_resource type="PackedScene" path="res://scenes/claustra.tscn" id="16_ooaox"]
+[ext_resource type="PackedScene" uid="uid://dhna771u62irp" path="res://scenes/claustra.tscn" id="16_ooaox"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -87,14 +87,14 @@ size = Vector3(11, 0.5, 7.5)
 [node name="HouseBuilding" type="Node3D" unique_id=1504574861]
 
 [node name="FlyCamera" type="Camera3D" parent="." unique_id=846510030]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 5, 15)
+transform = Transform3D(-0.68996066, 0, 0.72384685, 0, 1, 0, -0.72384685, 0, -0.68996066, 15.719988, 1.7623947, 1.1066413)
 script = ExtResource("11_utsn7")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1125362048]
 environment = SubResource("Environment_pu0k3")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2029804767]
-transform = Transform3D(0.65868944, -0.37050685, 0.6548686, 0, 0.87035567, 0.49242356, -0.75241494, -0.3243542, 0.5732941, 0, 0, 0)
+transform = Transform3D(0.89493436, 0.21971832, -0.38835078, 0, 0.87035567, 0.49242356, 0.4461978, -0.44068676, 0.7789112, 0, 0, 0)
 shadow_enabled = true
 
 [node name="VoxelGI" type="VoxelGI" parent="." unique_id=589590410]
@@ -4861,10 +4861,10 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.2
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.99315, 0, 8.932404)
 
 [node name="Sofa" parent="." unique_id=39906149 instance=ExtResource("15_p26fb")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 10.196145, 0, 4.4895744)
+transform = Transform3D(4.371139e-08, 0, -1, 0, 1, 0, -1, 0, -4.371139e-08, 10.196145, 0, 4.4895744)
 
 [node name="Node3D" type="Node3D" parent="." unique_id=1699466335]
-transform = Transform3D(1, 0, 0, 0, 0.9692527, 0, 0, 0, 1, 0, 0, -0.11545181)
+transform = Transform3D(1, 0, 0, 0, 0.95793444, 0, 0, 0, 1, 0, 0.061344266, -0.11545181)
 
 [node name="Claustra" parent="Node3D" unique_id=55704216 instance=ExtResource("16_ooaox")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 11.30655, 0, 3.9637666)
