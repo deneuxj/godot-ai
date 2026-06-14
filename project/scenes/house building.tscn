@@ -47,6 +47,7 @@
 [ext_resource type="PackedScene" path="res://scenes/small_wash_basin.tscn" id="45_p5yjb"]
 [ext_resource type="PackedScene" uid="uid://y6iwjppik725" path="res://scenes/hanging_wc.tscn" id="46_gyj00"]
 [ext_resource type="PackedScene" path="res://scenes/shower_corner.tscn" id="47_gyj00"]
+[ext_resource type="PackedScene" path="res://scenes/modern_bathtub.tscn" id="48_rhwim"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -61,13 +62,13 @@ sky = SubResource("Sky_hlnjt")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g4qyj"]
-
 [sub_resource type="PlaneMesh" id="PlaneMesh_41go7"]
 size = Vector2(29.7, 21)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_guxr7"]
 albedo_texture = ExtResource("1_q5coy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g4qyj"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_g4qyj"]
 size = Vector3(6.111873, 0.05, 7.1281986)
@@ -136,7 +137,6 @@ data = ExtResource("9_pu0k3")
 [node name="BlueprintReference" type="MeshInstance3D" parent="." unique_id=130754529]
 transform = Transform3D(0.95, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 12.556839, -0.021253586, 4.776621)
 visible = false
-material_override = SubResource("StandardMaterial3D_g4qyj")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_41go7")
 surface_material_override/0 = SubResource("StandardMaterial3D_guxr7")
@@ -5028,5 +5028,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.079261, 0, -1.4232056)
 
 [node name="ShowerCorner" parent="." unique_id=357846499 instance=ExtResource("47_gyj00")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 15.147263, 0, -0.86028624)
+
+[node name="ModernBathtub" parent="." unique_id=1160416672 instance=ExtResource("48_rhwim")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.51316, 0.04364729, -1.0831575)
 
 [editable path="HiFiSurroundSystem"]

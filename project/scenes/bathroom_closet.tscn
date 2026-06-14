@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_unspq"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nigho"]
+albedo_color = Color(0.95, 0.95, 0.95, 1)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p7xjy"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+metallic = 0.9
+roughness = 0.1
+
+[node name="BathroomCloset" type="Node3D" unique_id=691863594]
+
+[node name="ClosetBody" type="CSGBox3D" parent="." unique_id=242919475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+size = Vector3(0.4, 2, 0.4)
+material = SubResource("StandardMaterial3D_unspq")
+
+[node name="TopDoor" type="CSGBox3D" parent="ClosetBody" unique_id=1880196921]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.39, 0.2)
+size = Vector3(0.38, 1.18, 0.02)
+material = SubResource("StandardMaterial3D_nigho")
+
+[node name="Handle" type="CSGBox3D" parent="ClosetBody/TopDoor" unique_id=701298633]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, -0.4, 0.02)
+size = Vector3(0.01, 0.15, 0.02)
+material = SubResource("StandardMaterial3D_p7xjy")
+
+[node name="BottomDoor" type="CSGBox3D" parent="ClosetBody" unique_id=1057356803]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0.2)
+size = Vector3(0.38, 0.78, 0.02)
+material = SubResource("StandardMaterial3D_nigho")
+
+[node name="Handle" type="CSGBox3D" parent="ClosetBody/BottomDoor" unique_id=1361389515]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.3, 0.02)
+size = Vector3(0.01, 0.15, 0.02)
+material = SubResource("StandardMaterial3D_p7xjy")

@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_unspq"]
+albedo_color = Color(0.65, 0.45, 0.25, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nigho"]
+albedo_color = Color(0.95, 0.95, 0.95, 1)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p7xjy"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+metallic = 0.9
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7nb4e"]
+albedo_color = Color(0.8, 0.9, 1, 1)
+metallic = 1.0
+roughness = 0.0
+
+[node name="BathroomSink" type="Node3D" unique_id=1077073055]
+
+[node name="VanityBase" type="CSGBox3D" parent="." unique_id=2060374782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+size = Vector3(1.2, 0.4, 0.5)
+material = SubResource("StandardMaterial3D_unspq")
+
+[node name="SinkTop" type="CSGBox3D" parent="." unique_id=1421645023]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+size = Vector3(1.2, 0.1, 0.5)
+material = SubResource("StandardMaterial3D_nigho")
+
+[node name="@CSGBox3D@2" type="CSGBox3D" parent="SinkTop" unique_id=751378706]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.05)
+operation = 2
+size = Vector3(1, 0.08, 0.3)
+material = SubResource("StandardMaterial3D_nigho")
+
+[node name="Faucet_-0_25" type="CSGCylinder3D" parent="." unique_id=244084932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 0.975, -0.15)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_p7xjy")
+
+[node name="@CSGCylinder3D@3" type="CSGCylinder3D" parent="Faucet_-0_25" unique_id=679704138]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.06, 0.05)
+radius = 0.012
+height = 0.1
+material = SubResource("StandardMaterial3D_p7xjy")
+
+[node name="Faucet_0_25" type="CSGCylinder3D" parent="." unique_id=2102017366]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.975, -0.15)
+radius = 0.015
+height = 0.15
+material = SubResource("StandardMaterial3D_p7xjy")
+
+[node name="@CSGCylinder3D@4" type="CSGCylinder3D" parent="Faucet_0_25" unique_id=1400906026]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.06, 0.05)
+radius = 0.012
+height = 0.1
+material = SubResource("StandardMaterial3D_p7xjy")
+
+[node name="Mirror" type="CSGBox3D" parent="." unique_id=552590751]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.24)
+size = Vector3(1.2, 0.8, 0.02)
+material = SubResource("StandardMaterial3D_7nb4e")
