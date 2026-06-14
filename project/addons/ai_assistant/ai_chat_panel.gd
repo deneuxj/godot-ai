@@ -280,20 +280,41 @@ func _on_todo_list_updated(list: Array[Dictionary]) -> void:
 		return
 	
 	var done_count = 0
-	for task in list:
-		if task.done:
+	var current_idx = list.size()
+	for i in range(list.size()):
+		if list[i].done:
 			done_count += 1
+		elif current_idx == list.size():
+			current_idx = i
 	
 	var progress_text = " (%d/%d)" % [done_count, list.size()]
 	
-	# Find first incomplete task
-	var current_task_text = "All tasks completed!"
-	for task in list:
-		if not task.done:
-			current_task_text = task.text
-			break
+	var completed_to_show = 1 if current_idx > 0 else 0
+	var non_completed_available = list.size() - current_idx
+	var non_completed_to_show = min(non_completed_available, 5 - completed_to_show)
+	
+	var extra_slots = 5 - (completed_to_show + non_completed_to_show)
+	if extra_slots > 0 and current_idx > completed_to_show:
+		completed_to_show += min(current_idx - completed_to_show, extra_slots)
+		
+	var start_idx = current_idx - completed_to_show
+	var end_idx = current_idx + non_completed_to_show
+	
+	var display_lines = PackedStringArray()
+	for i in range(start_idx, end_idx):
+		var task = list[i]
+		if task.done:
+			display_lines.append("✓ " + task.text)
+		elif i == current_idx:
+			display_lines.append("> " + task.text)
+		else:
+			display_lines.append("  " + task.text)
 			
-	_todo_label.text = "TODO: %s%s" % [current_task_text, progress_text]
+	_todo_label.text = "TODO%s:\n%s" % [progress_text, "\n".join(display_lines)]
+	
+	var current_task_text = "All tasks completed!"
+	if current_idx < list.size():
+		current_task_text = list[current_idx].text
 	_todo_label.tooltip_text = "Current Task: " + current_task_text
 
 
