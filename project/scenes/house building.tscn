@@ -10,6 +10,7 @@
 [ext_resource type="VoxelGIData" uid="uid://q74sjjvo6yqw" path="res://scenes/house building.VoxelGI_data.res" id="9_pu0k3"]
 [ext_resource type="Material" uid="uid://cqimmhjfoh2ok" path="res://materials/mur.tres" id="9_utsn7"]
 [ext_resource type="Material" uid="uid://c3snpp3cqjnod" path="res://materials/facade.tres" id="10_utsn7"]
+[ext_resource type="Script" uid="uid://b1v5irgglra1" path="res://scripts/fly_camera.gd" id="11_utsn7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -4840,3 +4841,7 @@ mesh = SubResource("BoxMesh_to0uj")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.606201, 1.8149109, 4.5737915)
 size = Vector3(33.212402, 4.6277466, 15.8585205)
 data = ExtResource("9_pu0k3")
+
+[node name="FlyCamera" type="Camera3D" parent="." unique_id=846510030]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 5, 15)
+script = ExtResource("11_utsn7")
