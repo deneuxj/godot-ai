@@ -1,0 +1,127 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0t6je"]
+albedo_color = Color(0.2, 0.4, 0.8, 1)
+metallic = 0.5
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sod1j"]
+albedo_color = Color(0.1, 0.1, 0.1, 1)
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1ii80"]
+albedo_color = Color(1, 1, 0.8, 1)
+emission_enabled = true
+emission = Color(1, 1, 0.8, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j6fd3"]
+albedo_color = Color(1, 0, 0, 1)
+emission_enabled = true
+emission = Color(1, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x76yj"]
+albedo_color = Color(0.15, 0.15, 0.15, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_026jn"]
+albedo_color = Color(0.7, 0.7, 0.7, 1)
+metallic = 0.8
+
+[node name="BoxyCar" type="Node3D" unique_id=1678878159]
+
+[node name="LowerBody" type="CSGBox3D" parent="." unique_id=1305395336]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+size = Vector3(4.5, 0.6, 1.8)
+material = SubResource("StandardMaterial3D_0t6je")
+
+[node name="Cabin" type="CSGBox3D" parent="." unique_id=2143410975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.05, 0)
+size = Vector3(2.4, 0.6, 1.6)
+material = SubResource("StandardMaterial3D_0t6je")
+
+[node name="Windshield" type="CSGBox3D" parent="." unique_id=77750571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.05, 0)
+size = Vector3(0.05, 0.45, 1.4)
+material = SubResource("StandardMaterial3D_sod1j")
+
+[node name="RearWindow" type="CSGBox3D" parent="." unique_id=1571127657]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 1.05, 0)
+size = Vector3(0.05, 0.45, 1.4)
+material = SubResource("StandardMaterial3D_sod1j")
+
+[node name="SideWindows" type="CSGBox3D" parent="." unique_id=1853001208]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.05, 0)
+size = Vector3(2, 0.45, 1.65)
+material = SubResource("StandardMaterial3D_sod1j")
+
+[node name="Grille" type="CSGBox3D" parent="." unique_id=1444444708]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 0.45, 0)
+size = Vector3(0.05, 0.2, 1)
+material = SubResource("StandardMaterial3D_sod1j")
+
+[node name="Headlight-0_65" type="CSGBox3D" parent="." unique_id=1588119719]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 0.45, -0.65)
+size = Vector3(0.05, 0.2, 0.3)
+material = SubResource("StandardMaterial3D_1ii80")
+
+[node name="Taillight-0_65" type="CSGBox3D" parent="." unique_id=891980153]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 0.55, -0.65)
+size = Vector3(0.05, 0.15, 0.4)
+material = SubResource("StandardMaterial3D_j6fd3")
+
+[node name="Headlight0_65" type="CSGBox3D" parent="." unique_id=1007306741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 0.45, 0.65)
+size = Vector3(0.05, 0.2, 0.3)
+material = SubResource("StandardMaterial3D_1ii80")
+
+[node name="Taillight0_65" type="CSGBox3D" parent="." unique_id=1977726180]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 0.55, 0.65)
+size = Vector3(0.05, 0.15, 0.4)
+material = SubResource("StandardMaterial3D_j6fd3")
+
+[node name="Tire-1_4_-0_95" type="CSGCylinder3D" parent="." unique_id=2011231386]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, -0.95)
+radius = 0.35
+height = 0.2
+material = SubResource("StandardMaterial3D_x76yj")
+
+[node name="Rim-1_4_-0_95" type="CSGCylinder3D" parent="." unique_id=392339705]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, -0.95)
+radius = 0.2
+height = 0.22
+material = SubResource("StandardMaterial3D_026jn")
+
+[node name="Tire-1_4_0_95" type="CSGCylinder3D" parent="." unique_id=911152816]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, 0.95)
+radius = 0.35
+height = 0.2
+material = SubResource("StandardMaterial3D_x76yj")
+
+[node name="Rim-1_4_0_95" type="CSGCylinder3D" parent="." unique_id=663865287]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.4, 0.35, 0.95)
+radius = 0.2
+height = 0.22
+material = SubResource("StandardMaterial3D_026jn")
+
+[node name="Tire1_4_-0_95" type="CSGCylinder3D" parent="." unique_id=81051702]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, -0.95)
+radius = 0.35
+height = 0.2
+material = SubResource("StandardMaterial3D_x76yj")
+
+[node name="Rim1_4_-0_95" type="CSGCylinder3D" parent="." unique_id=1292830203]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, -0.95)
+radius = 0.2
+height = 0.22
+material = SubResource("StandardMaterial3D_026jn")
+
+[node name="Tire1_4_0_95" type="CSGCylinder3D" parent="." unique_id=299018754]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, 0.95)
+radius = 0.35
+height = 0.2
+material = SubResource("StandardMaterial3D_x76yj")
+
+[node name="Rim1_4_0_95" type="CSGCylinder3D" parent="." unique_id=1355310680]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.4, 0.35, 0.95)
+radius = 0.2
+height = 0.22
+material = SubResource("StandardMaterial3D_026jn")
