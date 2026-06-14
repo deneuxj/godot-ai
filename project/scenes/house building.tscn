@@ -46,6 +46,7 @@
 [ext_resource type="PackedScene" path="res://scenes/bedroom_commode.tscn" id="44_og0ed"]
 [ext_resource type="PackedScene" path="res://scenes/small_wash_basin.tscn" id="45_p5yjb"]
 [ext_resource type="PackedScene" uid="uid://y6iwjppik725" path="res://scenes/hanging_wc.tscn" id="46_gyj00"]
+[ext_resource type="PackedScene" path="res://scenes/shower_corner.tscn" id="47_gyj00"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g4qyj"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -5023,6 +5024,9 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.8
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.36474, 0, -1.3156761)
 
 [node name="HangingWC2" parent="." unique_id=1107664189 instance=ExtResource("46_gyj00")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.079261, 0, -1.3156761)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.079261, 0, -1.4232056)
+
+[node name="ShowerCorner" parent="." unique_id=357846499 instance=ExtResource("47_gyj00")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, 15.147263, 0, -0.86028624)
 
 [editable path="HiFiSurroundSystem"]

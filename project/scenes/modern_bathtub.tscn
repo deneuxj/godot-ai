@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6vp7j"]
+albedo_color = Color(0.95, 0.95, 0.95, 1)
+roughness = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vq2o6"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+metallic = 0.9
+roughness = 0.1
+
+[node name="ModernBathtub" type="Node3D" unique_id=1160416672]
+
+[node name="TubBody" type="CSGBox3D" parent="." unique_id=1750563662]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+size = Vector3(1.7, 0.6, 0.7)
+material = SubResource("StandardMaterial3D_6vp7j")
+
+[node name="@CSGBox3D@2" type="CSGBox3D" parent="TubBody" unique_id=1491482764]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+operation = 2
+size = Vector3(1.55, 0.55, 0.56)
+material = SubResource("StandardMaterial3D_6vp7j")
+
+[node name="FaucetColumn" type="CSGCylinder3D" parent="." unique_id=573521484]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.4)
+radius = 0.02
+height = 0.8
+material = SubResource("StandardMaterial3D_vq2o6")
+
+[node name="FaucetSpout" type="CSGCylinder3D" parent="FaucetColumn" unique_id=250750643]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.38, 0.08)
+radius = 0.015
+height = 0.2
+material = SubResource("StandardMaterial3D_vq2o6")
+
+[node name="MixerHandle" type="CSGCylinder3D" parent="FaucetColumn" unique_id=828213274]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.04, 0.3, 0)
+radius = 0.01
+height = 0.1
+material = SubResource("StandardMaterial3D_vq2o6")
