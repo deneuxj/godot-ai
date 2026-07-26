@@ -19,6 +19,11 @@ func get_parameters() -> Dictionary:
 			"script_content": {
 				"type": "string",
 				"description": "The complete GDScript source code. It MUST define a 'static func execute(node: Node)'."
+			},
+			"reload_editor_scene": {
+				"type": "boolean",
+				"description": "If true, reloads the current editor scene after executing the script to reflect changes visually. Set to true if your script modifies the currently open scene.",
+				"default": false
 			}
 		},
 		"required": ["script_content"]
@@ -27,6 +32,7 @@ func get_parameters() -> Dictionary:
 
 func execute(arguments: Dictionary) -> String:
 	var script_content = arguments.get("script_content", "")
+	var reload_editor_scene = arguments.get("reload_editor_scene", false)
 
 	if script_content.is_empty():
 		return "Error: script_content is empty."
@@ -78,5 +84,11 @@ func execute(arguments: Dictionary) -> String:
 		var captured = logger.call("get_captured_errors")
 		if not captured.is_empty():
 			result_msg = "Error: Script executed but encountered runtime errors:\n" + captured
+
+	if reload_editor_scene and Engine.is_editor_hint():
+		var edited_scene = EditorInterface.get_edited_scene_root()
+		if edited_scene and not edited_scene.scene_file_path.is_empty():
+			EditorInterface.reload_scene_from_path(edited_scene.scene_file_path)
+			result_msg += "\nNote: The current editor scene was reloaded."
 
 	return result_msg

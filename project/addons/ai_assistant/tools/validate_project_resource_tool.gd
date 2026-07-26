@@ -62,7 +62,7 @@ func execute(arguments: Dictionary) -> String:
 
 
 func _validate_script(path: String) -> String:
-	var script = load(path) as GDScript
+	var script = ResourceLoader.load(path, "GDScript", ResourceLoader.CACHE_MODE_IGNORE) as GDScript
 	if not script:
 		return "Error: Failed to load script '%s'." % path
 	
@@ -75,7 +75,7 @@ func _validate_script(path: String) -> String:
 
 func _validate_general_resource(path: String) -> String:
 	# Attempt to load the resource to trigger validation/dependency checks
-	var res = ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_REPLACE)
+	var res = ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_IGNORE)
 	if res:
 		return "Success: Resource '%s' loaded correctly." % path
 	else:
