@@ -92,7 +92,6 @@ var output_filename: String = "":
 @export
 var api_endpoint: String = ""
 
-@export
 var api_key: String = ""
 
 @export

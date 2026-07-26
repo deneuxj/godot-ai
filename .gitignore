@@ -4,3 +4,4 @@ project/.godot
 project/generated/
 
 .antigravitycli/
+.env

@@ -64,7 +64,6 @@ var technician_system_prompt: String = ""
 var api_endpoint: String = ""
 
 ## API key for authentication (overrides project settings if not empty).
-@export
 var api_key: String = ""
 
 ## Model name to use (overrides project settings if not empty).

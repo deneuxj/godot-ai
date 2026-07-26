@@ -138,6 +138,7 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 
 	# 4. Execute request loop (handles tool calls)
 	var final_response: String = ""
+	var final_response_dict: Dictionary = {}
 	var current_messages = messages.duplicate()
 	tools_invoked = false
 	new_messages.clear()
@@ -170,6 +171,11 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 				"role": "assistant",
 				"tool_calls": tool_calls
 			}
+			
+			for key in result.keys():
+				if key != "role" and key != "content" and key != "tool_calls":
+					assistant_msg[key] = result[key]
+					
 			if result.has("content") and not str(result["content"]).is_empty():
 				assistant_msg["content"] = result["content"]
 				
@@ -204,7 +210,12 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 			# Continue loop to send tool results back to AI
 			continue
 		else:
-			final_response = str(result)
+			if typeof(result) == TYPE_DICTIONARY:
+				final_response = str(result.get("content", ""))
+				# Store the full result dictionary temporarily so we can extract its extras later
+				final_response_dict = result
+			else:
+				final_response = str(result)
 			hit_limit = false
 			break
 			
@@ -214,6 +225,11 @@ func execute(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Stri
 
 	if not final_response.is_empty():
 		var final_msg = {"role": "assistant", "content": final_response}
+		if not final_response_dict.is_empty():
+			for key in final_response_dict.keys():
+				if key != "role" and key != "content" and key != "tool_calls":
+					final_msg[key] = final_response_dict[key]
+					
 		current_messages.append(final_msg)
 		new_messages.append(final_msg)
 	elif tools_invoked:
@@ -254,7 +270,7 @@ func _is_lm_studio(url: String) -> bool:
 	host.add_child(http)
 	
 	var headers: PackedStringArray = ["Content-Type: application/json"]
-	var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+	var key_to_use = api_key if not api_key.is_empty() else AISettings.get_api_key()
 	if not key_to_use.is_empty():
 		headers.append("Authorization: Bearer " + key_to_use)
 	
@@ -405,7 +421,11 @@ func _execute_tool(tool_call: Dictionary) -> String:
 			return await activate_skill(arguments.get("name", ""))
 	
 	if tool:
-		tool.context_node = _parent
+		if is_instance_valid(_parent):
+			tool.context_node = _parent
+		else:
+			tool.context_node = null
+			
 		print("AI calling tool: ", function_name, " with args: ", arguments)
 		return await tool.execute(arguments)
 	
@@ -460,7 +480,7 @@ func load_model(model_id: String) -> Error:
 	if await _is_lm_studio(endpoint_to_use):
 		var client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
 		client.set_endpoint(endpoint_to_use)
-		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_api_key()
 		client.set_api_key(key_to_use)
 		_parent.add_child(client)
 		
@@ -483,7 +503,7 @@ func unload_model(model_id: String) -> Error:
 	if await _is_lm_studio(endpoint_to_use):
 		var client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
 		client.set_endpoint(endpoint_to_use)
-		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_api_key()
 		client.set_api_key(key_to_use)
 		_parent.add_child(client)
 		var err = await client.unload_model(model_id)
@@ -503,7 +523,7 @@ func supports_vision(model_id: String) -> bool:
 	if is_lms:
 		var client = load("res://addons/ai_assistant/ai_client/lm_studio_client.gd").new()
 		client.set_endpoint(endpoint_to_use)
-		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_string(AISettings.CONN, "api_key")
+		var key_to_use = api_key if not api_key.is_empty() else AISettings.get_api_key()
 		client.set_api_key(key_to_use)
 		_parent.add_child(client)
 		var result = await client.supports_vision(model_id)

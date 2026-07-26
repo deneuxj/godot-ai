@@ -76,7 +76,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 	if not tools.is_empty():
 		body["tools"] = tools
 
-	var headers: PackedStringArray = ["Content-Type: application/json", "Connection: close"]
+	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
@@ -98,7 +98,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 	var response_code: int = result[1]
 	var response_body: String = result[3].get_string_from_utf8()
 
-	if error_code_param != OK:
+	if error_code_param != OK and error_code_param != HTTPRequest.RESULT_CONNECTION_ERROR:
 		push_error("HTTP request failed: %d" % error_code_param)
 		return ""
 
@@ -213,7 +213,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	if not tools.is_empty():
 		body["tools"] = tools
 
-	var headers: PackedStringArray = ["Content-Type: application/json", "Connection: close"]
+	var headers: PackedStringArray = ["Content-Type: application/json"]
 	if api_key != "":
 		headers.append("Authorization: Bearer " + api_key)
 
@@ -238,7 +238,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	var response_code: int = result[1]
 	var response_body: String = result[3].get_string_from_utf8()
 
-	if http_error != OK:
+	if http_error != OK and http_error != HTTPRequest.RESULT_CONNECTION_ERROR:
 		push_error("HTTP request failed: %d" % http_error)
 		return ""
 
@@ -251,6 +251,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 	var tool_calls: Array = []
 	var in_reasoning := false
 	var final_finish_reason: String = ""
+	var message_extras: Dictionary = {}
 	
 	var lines: PackedStringArray = response_body.split("\n")
 	print("[%s] OpenAIClient: Found %d lines in response body." % [Time.get_time_string_from_system(), lines.size()])
@@ -276,6 +277,13 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		if finish_reason:
 			print("[%s] OpenAIClient: Chunk finish_reason: %s" % [Time.get_time_string_from_system(), finish_reason])
 			final_finish_reason = str(finish_reason)
+			
+		for key in delta.keys():
+			if key != "role" and key != "content" and key != "tool_calls" and key != "reasoning_content":
+				if not message_extras.has(key):
+					message_extras[key] = delta[key]
+				elif typeof(message_extras[key]) == TYPE_STRING and typeof(delta[key]) == TYPE_STRING:
+					message_extras[key] += delta[key]
 		
 		# Handle reasoning content if present (common in LM Studio/Qwen/DeepSeek)
 		var reasoning_chunk: String = delta.get("reasoning_content", "")
@@ -308,6 +316,14 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 				if tc.has("function"):
 					if tc["function"].has("name"): target["function"]["name"] += tc["function"]["name"]
 					if tc["function"].has("arguments"): target["function"]["arguments"] += tc["function"]["arguments"]
+				
+				# Preserve any extra fields Google (or others) might send, like extra_content
+				for key in tc.keys():
+					if key != "id" and key != "function" and key != "index" and key != "type":
+						if not target.has(key):
+							target[key] = tc[key]
+						elif typeof(target[key]) == TYPE_STRING and typeof(tc[key]) == TYPE_STRING:
+							target[key] += tc[key]
 
 		var chunk_content: String = delta.get("content", "")
 		if chunk_content != "":
@@ -340,10 +356,13 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 		tool_calls.clear()
 
 	if not tool_calls.is_empty():
-		return {
+		var ret = {
 			"content": full_content,
 			"tool_calls": tool_calls
 		}
+		for k in message_extras:
+			ret[k] = message_extras[k]
+		return ret
 	
 	# Fallback: Parse XML tool calls from full_content if standard tool_calls is empty
 	# Pattern: <tool_call>{ "name": "...", "arguments": { ... } }</tool_call>
@@ -393,4 +412,7 @@ func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> 
 				"tool_calls": xml_tool_calls
 			}
 
-	return full_content
+	var final_ret = { "content": full_content }
+	for k in message_extras:
+		final_ret[k] = message_extras[k]
+	return final_ret

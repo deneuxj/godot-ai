@@ -23,6 +23,12 @@ func _enter_tree() -> void:
 	_logger = CUSTOM_LOGGER.new()
 	OS.add_logger(_logger)
 	
+	if Engine.is_editor_hint():
+		var editor_settings = get_editor_interface().get_editor_settings()
+		if editor_settings and not editor_settings.has_setting("ai/connection/api_key"):
+			editor_settings.set_setting("ai/connection/api_key", "")
+			editor_settings.set_initial_value("ai/connection/api_key", "", false)
+	
 	# Also register it with ScriptExecutor for easy access.
 	ScriptExecutor.register_logger(_logger)
 
@@ -51,7 +57,6 @@ func _register_project_settings() -> void:
 	# Connection Settings
 	_set_setting("ai/connection/base_url", "http://localhost:1234", "Base URL for the AI API (e.g. http://localhost:1234)")
 
-	_set_setting("ai/connection/api_key", "", "API Key for authentication")
 	_set_setting("ai/connection/model", "local-model", "Model name to use")
 	_set_setting("ai/connection/router_model", "router-model", "Fast model for workload analysis")
 	_set_setting("ai/connection/analyst_model", "analyst-model", "Complex model for reasoning and planning")

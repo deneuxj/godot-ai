@@ -40,12 +40,19 @@ func get_parameters() -> Dictionary:
 
 
 func execute(arguments: Dictionary) -> String:
-	if not context_node:
-		return "Error: No context node provided to the tool."
+	var base_node: Node = context_node
+	
+	if not is_instance_valid(base_node):
+		if Engine.is_editor_hint():
+			# Try to fallback to the edited scene root if the original context is gone
+			base_node = EditorInterface.get_edited_scene_root()
+				
+	if not is_instance_valid(base_node):
+		return "Error: No valid context node provided to the tool, and could not fallback to edited scene root."
 
 	var command: String = arguments.get("command", "")
 	var relative_path: String = arguments.get("path", ".")
-	var target_node: Node = context_node.get_node_or_null(relative_path)
+	var target_node: Node = base_node.get_node_or_null(relative_path)
 
 	if not target_node:
 		return "Error: Node not found at path: " + relative_path
