@@ -12,7 +12,7 @@ extends Node2D
 @export var api_endpoint: String = "http://localhost:1234"
 
 ## API key (leave empty for servers that don't require auth).
-@export var api_key: String = ""
+var api_key: String = ""
 
 ## Model name to use.
 @export var model_name: String = "local-model"

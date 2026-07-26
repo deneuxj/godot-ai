@@ -27,7 +27,6 @@
 [ext_resource type="PackedScene" path="res://scenes/filing_cabinet.tscn" id="24_ollkf"]
 [ext_resource type="PackedScene" path="res://scenes/floor_mat.tscn" id="25_fx61v"]
 [ext_resource type="PackedScene" path="res://scenes/office_cabinet.tscn" id="26_achnd"]
-[ext_resource type="PackedScene" uid="uid://t0737x06dtxa" path="res://scenes/wardrobe.tscn" id="27_mmqnu"]
 [ext_resource type="PackedScene" path="res://scenes/bedroom_rug.tscn" id="28_c8sqe"]
 [ext_resource type="PackedScene" path="res://scenes/double_bed.tscn" id="29_2q861"]
 [ext_resource type="PackedScene" path="res://scenes/nightstand.tscn" id="30_n6o0a"]
@@ -4040,6 +4039,9 @@ mesh = SubResource("BoxMesh_360gp")
 [node name="GarageShelves" parent="Rooms" unique_id=498425922 instance=ExtResource("9_j4x6f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.537156, 0.04205346, 2.247442)
 
+[node name="BathroomCabinet" parent="Rooms" unique_id=749182312 instance=ExtResource("26_achnd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.531, 0, 0.751)
+
 [node name="Walls" type="Node3D" parent="." unique_id=1609764232]
 
 [node name="CHAMBRE_GAUCHE-CUISINE" type="CSGCombiner3D" parent="Walls" unique_id=1062983719]
@@ -4939,9 +4941,6 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 19.9
 [node name="OfficeCabinet2" parent="." unique_id=131163787 instance=ExtResource("26_achnd")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 19.762, 0, -0.88536346)
 
-[node name="Wardrobe" parent="." unique_id=1331903854 instance=ExtResource("27_mmqnu")]
-transform = Transform3D(0.6688578, 0, 0, 0, 1, 0, 0, 0, 1, 17.387941, 0, 1.9840951)
-
 [node name="BedroomRug" parent="." unique_id=1343470322 instance=ExtResource("28_c8sqe")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.8365033, 17.8773, 0.021606505, 4.3818135)
 
@@ -4956,6 +4955,9 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 16.7
 
 [node name="GuestWardrobe" parent="." unique_id=1175480839 instance=ExtResource("31_n6o0a")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.531319, 0, 2.045779)
+
+[node name="GuestWardrobe2" parent="." unique_id=1655563363 instance=ExtResource("31_n6o0a")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.508072, 0, 2.045779)
 
 [node name="SofaBed" parent="." unique_id=1100601175 instance=ExtResource("32_u02sr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 20.037327, 0, 4.052187)

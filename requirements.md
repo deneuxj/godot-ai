@@ -76,7 +76,6 @@ REQ-AIINTG-0005: When a compilation, parse, or load error occurs, the error mess
 
 REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/connection/base_url` - API endpoint URL
-  - `ai/connection/api_key` - Authentication key (optional)
   - `ai/connection/model` - Default model name (general purpose)
   - `ai/connection/router_model` - Fast model for workload analysis
   - `ai/connection/analyst_model` - Complex model for reasoning and planning
@@ -85,6 +84,8 @@ REQ-AIINTG-0004: The following project settings shall be configurable:
   - `ai/generation/context_limit` - Maximum allowed context tokens before compression triggers
   - `ai/generation/max_retries` - Maximum number of correction attempts
   - `ai/generation/system_prompt` - Custom system prompt (optional override)
+
+REQ-AIINTG-0010: To prevent sensitive data from being checked into version control, the API key shall NOT be stored in Project Settings. Instead, it must be stored in the Godot Editor Settings (for editor use) or read from Environment Variables like `OPENAI_API_KEY` (for runtime use).
 
 REQ-AIINTG-0006: The maximum number of attempts to correct a generated script/scene shall be configurable in the project settings.
 

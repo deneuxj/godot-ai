@@ -104,7 +104,7 @@ When an error occurs, the conversation history is updated as follows:
 ### Implementation (`settings/ai_settings.gd` & `ai_chat_panel.gd`)
 The existing `OpenAIClient` will be reused for both Google Gemini and Kimi K3 since they offer OpenAI-compatible endpoints. 
 - **Presets System**: Add a new property `backend_preset` (enum) to `AISettings` (e.g., `LM Studio`, `Gemini`, `Kimi`).
-- Changing the preset will automatically populate `ai/connection/base_url` and default model names (e.g., `gemini-1.5-pro` for Gemini, `moonshot-v1-32k` for Kimi) while allowing the user to provide their own `api_key`.
+- Changing the preset will automatically populate `ai/connection/base_url` and default model names (e.g., `gemini-1.5-pro` for Gemini, `moonshot-v1-32k` for Kimi). User must configure the `api_key` in Editor Settings.
 - The `AIChat` editor UI will expose a dropdown to select the active backend preset.
 
 ### Reasoning History & Multi-modal Payload (`OpenAIClient` & `AIChat`)
