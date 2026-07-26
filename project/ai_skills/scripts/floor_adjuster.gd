@@ -1,4 +1,5 @@
 @tool
+# REQ-SKILL-0008: Provide a "floor-adjuster" skill
 class_name FloorAdjusterSkill
 extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
 

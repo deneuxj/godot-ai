@@ -1,4 +1,5 @@
 @tool
+# REQ-SKILL-0007: Provide a "wall-adjuster" skill
 class_name WallAdjusterSkill
 extends "res://addons/ai_assistant/skills/ai_skill_node.gd"
 
