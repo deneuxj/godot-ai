@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://b2n5l8ado6mar"]
+
+[ext_resource type="Script" uid="uid://c1b8afhmalr2a" path="res://addons/ai_assistant/ai_chat.gd" id="1_wgeu2"]
+
+[node name="Node3D" type="Node3D" unique_id=28038324]
+
+[node name="AIChat" type="Node" parent="." unique_id=822729194]
+script = ExtResource("1_wgeu2")
+api_endpoint = "https://generativelanguage.googleapis.com/v1beta/openai"
+model = "gemini-3.6-flash"
+enable_modify_resources = true
+enable_validate_resources = true
+enable_web_search = true
+enable_read_webpage = true
+todo_list = Array[Dictionary]([{
+"done": false,
+"text": "Design the Tesla Model 3 node hierarchy structure"
+}])
+chat_history = Array[Dictionary]([{
+"content": "test",
+"role": "user"
+}, {
+"role": "assistant",
+"tool_calls": [{
+"function": {
+"arguments": "{\"command\":\"list_files\"}",
+"name": "explore_project_resources"
+},
+"id": "da2hzq8k",
+"type": "function"
+}]
+}, {
+"content": "Contents of res://:
+Directories: addons/, ai_skills/, generated/, materials/, reference/, scenes/, scripts/, shaders/, testing/
+Files: blueprint.jpg, blueprint.jpg.import, gemini.tscn, gemini_script.gd, gemini_script.gd.uid, materials.tscn, plan.txt, project.godot, scripted-node-creation.txt, test_api_key.gd, test_api_key.gd.uid, test_editor_settings.gd, test_editor_settings.gd.uid, test_http.gd, test_http.gd.uid, test_settings.gd, test_settings.gd.uid, topo.txt, walls.txt, walls_rooms_data.json",
+"name": "explore_project_resources",
+"role": "tool",
+"tool_call_id": "da2hzq8k"
+}, {
+"content": "...",
+"role": "assistant"
+}, {
+"content": "Generate a hierarchy of nodes representing a tesla modele 3",
+"role": "user"
+}, {
+"role": "assistant",
+"tool_calls": [{
+"function": {
+"arguments": "{\"operation\":\"add\",\"task\":\"Design the Tesla Model 3 node hierarchy structure\"}",
+"name": "manage_todo_list"
+},
+"id": "aii614k2",
+"type": "function"
+}]
+}, {
+"content": "{\"index\":0,\"message\":\"Task added: Design the Tesla Model 3 node hierarchy structure\",\"success\":true}",
+"name": "manage_todo_list",
+"role": "tool",
+"tool_call_id": "aii614k2"
+}, {
+"content": "...",
+"role": "assistant"
+}, {
+"content": "Try running the script again, but do not instruct to reload the editor.",
+"role": "user"
+}, {
+"role": "assistant",
+"tool_calls": [{
+"extra_content": {
+"google": {
+"thought_signature": "EtIECs8EARFNMg/8kbUofOFb+w8awQQVI9uUfqE94Nk/PZYnkEDlLFKV4b7VZ8/tyKc9iR0a/yvfuHd8+Vw8yAODmRL082AMx0s88g/tfQxczaHAkMlq8tSJ0oPwYcKUWb/xxzp4WcheKjhslmfrJR5w9N2reaFAGBk+nMPpRV0R75BSLWuiM8ktM3HJFqa/r5QSyQud5dwJ+JtDEKuygancZLvhNsMLmXcfuQccRarQWuWHtwi0N9tQ4z2wBDXWwE6Yeur70Ojsbzh88gPo2m8QrfC/ndVL5MTcz3JMvd/ZCd6EIibmEgeVzn+zxl6bdwzDYMMuG0wNMfhXKaIAf/SBHvGnPn0ur1ISZVcgv28YW+Z7TdPe2deZqvipcTtJvJnOShmsnMQG6TYLGjW/zpnx/kvmyxyayd4S/guUUFK6bg48u1J0Na2VwvzqI4J2aNxG7m6deQpfrMhFsn7+WbrnpbE2Q2Rv2tW7ssZBGj8nui6XXVK5nX3zpa4ioKzAEBOVteKRo/jrxEMVKar1OptVcDL090BNtyLbSs4p+ECk7gaRq08FFnBjq8SCQ2E6mVFURJWYYGAnB+cdETDBCwRApwKoPMmPDba9l5Lv+mfPVMfRESWT2myvBaW6GUZhDLvbs92gGoVILMMxoVD+63HHaiwrVXUu0geRuQ5wPXy04XeHn+fW7ccOyqmTweki0SxGiIVZDdmzx5bGdlhu5cg5NZszHQekN+YFmgpokUe5bBBdHxw8CNEvNbbSIMLnP7W/K3LpZLjSbIxCJgGEx1n97BUe"
+}
+},
+"function": {
+"arguments": "{\"command\":\"list_files\",\"path\":\"res://scripts\"}",
+"name": "explore_project_resources"
+},
+"id": "LL9OeXc3",
+"type": "function"
+}]
+}, {
+"content": "Contents of res://scripts:
+Files: apply_stucco.gd, apply_stucco.gd.uid, claustra_controller.gd, claustra_controller.gd.uid, fly_camera.gd, fly_camera.gd.uid",
+"name": "explore_project_resources",
+"role": "tool",
+"tool_call_id": "LL9OeXc3"
+}, {
+"role": "assistant",
+"tool_calls": [{
+"extra_content": {
+"google": {
+"thought_signature": "El8KXQERTTIPKs6L8MIAp6LwXKryO+qZjl+p0eMFQUkfYoMc36G1OmiCq6q4KzOp6hhwi5lNj1d0uWjj4duc6aCDg1p7HvnGxpjlA43AiEw1qCKSYZOim+Mpb2xUsm6MLw=="
+}
+},
+"function": {
+"arguments": "{\"path\":\"res://scenes\",\"command\":\"list_files\"}",
+"name": "explore_project_resources"
+},
+"id": "mMYvjfld",
+"type": "function"
+}]
+}, {
+"content": "Contents of res://scenes:
+Files: bathroom_closet.tscn, bathroom_sink.tscn, bedroom_commode.tscn, bedroom_rug.tscn, boxy_car.tscn, claustra.tscn, coffee_table.tscn, double_bed.tscn, dryer.tscn, electric_switchboard.tscn, entrance_closet.tscn, entrance_unit.tscn, ev_charger.tscn, filing_cabinet.tscn, floor_mat.tscn, gaming_desk.tscn, garage_shelves.tscn, guest_wardrobe.tscn, hanging_wc.tscn, hifi_system.tscn, house building.VoxelGI_data.res, house building.tscn, kitchen_equipment.tscn, kitchen_furniture.tscn, modern_bathtub.tscn, nightstand.tscn, office_cabinet.tscn, office_chair.tscn, office_desk.tscn, pool_table.tscn, shower_corner.tscn, small_wash_basin.tscn, sofa.tscn, sofa_bed.tscn, tv_console.tscn, utility_sink.tscn, wardrobe.tscn, washing_machine.tscn, water_heater.tscn, water_purifier.tscn",
+"name": "explore_project_resources",
+"role": "tool",
+"tool_call_id": "mMYvjfld"
+}, {
+"role": "assistant",
+"tool_calls": [{
+"extra_content": {
+"google": {
+"thought_signature": "ErwBCrkBARFNMg9rkQhUDuISuAOTFGLfA3pp1Jaty+oadnaEXJVNOKgcJG9Kvw2AQTef/mqDzZeR8sbCI+CEc9mlwVVXlupQRwlIh8mskN7BgQQEbebDxdHfsiZWSvLMR8aD3Swh1hBvFHh9uIAaTcngFjZTsN5m1exoCGdWM2V7iBLqfTLfckGVQxAolMqhbnfQdeweH2okzatlLWDQZDoKoLWaTb0c+OFPRwk3NI1/49RH98TwFaKZA/Yl0XE="
+}
+},
+"function": {
+"arguments": "{\"path\":\"res://generated\",\"command\":\"list_files\"}",
+"name": "explore_project_resources"
+},
+"id": "xEzn3p9U",
+"type": "function"
+}]
+}, {
+"content": "Contents of res://generated:
+Files: AgentAssisted3D.gd, AgentAssisted3D.gd.uid, AgentAssisted3D.tscn, AgentAssisted3D_last_generation.gd, AgentAssisted3D_last_generation.gd.uid, generate house.gd, generate house.gd.uid, generate house.tscn, generate mouton.gd, generate mouton.gd.uid, generate mouton.tscn, mock_test_file.txt",
+"name": "explore_project_resources",
+"role": "tool",
+"tool_call_id": "xEzn3p9U"
+}, {
+"content": "...",
+"role": "assistant"
+}])
+metadata/_custom_type_script = "uid://c1b8afhmalr2a"

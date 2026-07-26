@@ -135,7 +135,7 @@ static func create_openai_client() -> OpenAIClient:
 	
 	client.set_endpoint(AISettings.get_string(AISettings.CONN, "base_url"))
 	
-	var api_key: String = AISettings.get_string(AISettings.CONN, "api_key")
+	var api_key: String = AISettings.get_api_key()
 	if api_key != "":
 		client.set_api_key(api_key)
 	
