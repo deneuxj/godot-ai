@@ -90,7 +90,10 @@ func execute(arguments: Dictionary) -> String:
 	if reload_editor_scene and Engine.is_editor_hint():
 		var edited_scene = EditorInterface.get_edited_scene_root()
 		if edited_scene and not edited_scene.scene_file_path.is_empty():
-			EditorInterface.reload_scene_from_path(edited_scene.scene_file_path)
-			result_msg += "\nNote: The current editor scene was reloaded."
+			if context_node and (context_node == edited_scene or edited_scene.is_ancestor_of(context_node)):
+				result_msg += "\nNote: The scene was NOT reloaded automatically because the AI assistant node is inside it and would be destroyed. Please instruct the user to reload the scene manually."
+			else:
+				EditorInterface.call_deferred("reload_scene_from_path", edited_scene.scene_file_path)
+				result_msg += "\nNote: The current editor scene was reloaded."
 
 	return result_msg
