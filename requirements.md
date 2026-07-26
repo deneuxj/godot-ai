@@ -107,6 +107,20 @@ REQ-AIINTG-0010: When the workload router selects the **Technician** model:
   - The final response shall include a concise summary of the actions performed (e.g., files created, nodes modified).
   - If the task could not be completed, the response shall explicitly state the failure and describe the specific obstacle or error encountered.
 
+### Cloud Integration (Gemini & Kimi)
+
+REQ-CLOUD-0001: The plugin shall support Google Gemini models (e.g., Gemini Flash, Gemini Pro).
+  - This can be achieved by using Gemini's OpenAI-compatible endpoint.
+
+REQ-CLOUD-0002: The plugin shall support Moonshot Kimi models (e.g., Kimi K3).
+  - Since Kimi provides an OpenAI-compatible API, the existing OpenAI client shall be used by configuring the base URL and API key appropriately.
+
+REQ-CLOUD-0003: The editor settings and `AIChat` UI shall provide easy presets or configuration profiles for quickly switching between local (LM Studio), Google Gemini, and Kimi K3 backends.
+
+REQ-CLOUD-0004: To ensure stability with reasoning models (e.g., Kimi K3), the plugin shall preserve the complete thinking/reasoning history (`reasoning_content`) of assistant messages across multi-turn conversations. Context compression must not truncate this data for retained messages.
+
+REQ-CLOUD-0005: When attaching image data for vision-capable cloud models (like Kimi K3 or Gemini), the `OpenAIClient` shall format the message content as an array of objects (using `type: "image_url"` and base64 data) rather than a simple string, strictly adhering to the standard OpenAI multi-modal specification.
+
 ### LM Studio Integration (Native)
 
 REQ-LMSTUDIO-0001: The plugin shall auto-detect if the AI backend is LM Studio and enable native REST API features (`/api/v1/*`) when available.

@@ -99,6 +99,20 @@ When an error occurs, the conversation history is updated as follows:
 
 ---
 
+## Cloud Integrations (REQ-CLOUD-0001, 0002, 0003)
+
+### Implementation (`settings/ai_settings.gd` & `ai_chat_panel.gd`)
+The existing `OpenAIClient` will be reused for both Google Gemini and Kimi K3 since they offer OpenAI-compatible endpoints. 
+- **Presets System**: Add a new property `backend_preset` (enum) to `AISettings` (e.g., `LM Studio`, `Gemini`, `Kimi`).
+- Changing the preset will automatically populate `ai/connection/base_url` and default model names (e.g., `gemini-1.5-pro` for Gemini, `moonshot-v1-32k` for Kimi) while allowing the user to provide their own `api_key`.
+- The `AIChat` editor UI will expose a dropdown to select the active backend preset.
+
+### Reasoning History & Multi-modal Payload (`OpenAIClient` & `AIChat`)
+- **Preserve Thinking**: The `AIChat` context compression must be updated to ensure `reasoning_content` (or equivalent fields returned by reasoning models) remains intact inside the message dictionary and is passed back to the `OpenAIClient`.
+- **Image Objects**: When generating the payload, `OpenAIClient` will construct multi-modal messages by formatting the `content` property as an array containing both `{ "type": "text", "text": "..." }` and `{ "type": "image_url", "image_url": { "url": "data:image/jpeg;base64,..." } }` objects rather than a concatenated string, ensuring strict compatibility with K3 and Gemini.
+
+---
+
 ## Requirements Coverage
 
 | Requirement | Covered By |
@@ -113,3 +127,8 @@ When an error occurs, the conversation history is updated as follows:
 | REQ-AIINTG-0009 | `PromptBuilder` Analyst-specific system prompt |
 | REQ-AIINTG-0010 | `PromptBuilder` Technician-specific system prompt and reporting |
 | REQ-NODE3D-0010 | `AIClient.cancel()` method implementation |
+| REQ-CLOUD-0001 | Reusing `OpenAIClient` for Gemini's OpenAI-compatible endpoint |
+| REQ-CLOUD-0002 | Reusing `OpenAIClient` for Kimi's API |
+| REQ-CLOUD-0003 | `backend_preset` enum in `AISettings` and UI dropdown in `AIChatPanel` |
+| REQ-CLOUD-0004 | Updating `AIChat` history pruning and `OpenAIClient` payload building to keep `reasoning_content` |
+| REQ-CLOUD-0005 | `OpenAIClient` payload formatting for array-of-objects image data |
