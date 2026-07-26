@@ -245,6 +245,9 @@ func _cleanup(client: AIClient) -> void:
 
 
 func _is_lm_studio(url: String) -> bool:
+	if not AISettings.get_bool(AISettings.CONN, "enable_lm_studio_features", true):
+		return false
+		
 	var check_url = url + "/api/v1/models"
 	var http := HTTPRequest.new()
 	var host = get_persistent_host(_parent)

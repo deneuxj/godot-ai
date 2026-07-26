@@ -71,6 +71,18 @@ var api_key: String = ""
 @export
 var model: String = ""
 
+## Router model to use for workload analysis (overrides project settings if not empty).
+@export
+var router_model: String = ""
+
+## Analyst model to use for complex planning (overrides project settings if not empty).
+@export
+var analyst_model: String = ""
+
+## Technician model to use for implementation (overrides project settings if not empty).
+@export
+var technician_model: String = ""
+
 ## Maximum tokens override (0 means use project settings).
 @export
 var max_tokens: int = 0
@@ -87,7 +99,6 @@ var preserve_thinking_in_history: bool = false
 
 @export_group("Tools")
 
-@export
 # REQ-TOOL-0004: Properties to enable/disable specific tools
 @export
 var enable_godot_docs: bool = true
@@ -312,8 +323,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	
 	if use_router and final_model.is_empty():
 		status_updated.emit("Processing...")
-		var router_model := AISettings.get_string(AISettings.CONN, "router_model")
-		if not router_model.is_empty():
+		var active_router_model := router_model if not router_model.is_empty() else AISettings.get_string(AISettings.CONN, "router_model")
+		if not active_router_model.is_empty():
 			var routing_messages: Array[Dictionary] = [
 				{"role": "system", "content": PromptBuilder.get_router_prompt(router_system_prompt)}
 			]
@@ -348,7 +359,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 			routing_messages.append({"role": "user", "content": presentation})
 
-			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, router_model)
+			var router_handler := AIRequestHandler.new(self, api_endpoint, api_key, active_router_model)
 			router_handler.prompt_provider = PromptBuilder.create_simple_provider(PromptBuilder.get_router_prompt(router_system_prompt))
 			router_handler.max_tokens = 64 # Small response for routing
 
@@ -356,7 +367,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			_active_handler = router_handler
 
 			# Ensure router model is loaded
-			await router_handler.load_model(router_model)
+			await router_handler.load_model(active_router_model)
 			if chat_status == ChatStatus.CANCELLED:
 				_cleanup_after_cancel(router_handler)
 				return
@@ -388,7 +399,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 			if workload.contains("analyst"):
 
-				final_model = AISettings.get_string(AISettings.CONN, "analyst_model")
+				final_model = analyst_model if not analyst_model.is_empty() else AISettings.get_string(AISettings.CONN, "analyst_model")
 				active_system_prompt = PromptBuilder.get_analyst_prompt(analyst_system_prompt)
 
 				# REQ-LMSTUDIO-0004: Set analyst reasoning to "off" by default for Qwen.
@@ -397,7 +408,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 
 				status_updated.emit("Thinking...")
 			elif workload.contains("technician"):
-				final_model = AISettings.get_string(AISettings.CONN, "technician_model")
+				final_model = technician_model if not technician_model.is_empty() else AISettings.get_string(AISettings.CONN, "technician_model")
 				active_system_prompt = PromptBuilder.get_technician_prompt(technician_system_prompt)
 
 				# Disable reasoning for technician to avoid formatting issues (XML/stop) with Qwen
@@ -463,7 +474,8 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 			new_msg.content = text_only
 		final_messages.append(new_msg)
 	
-	final_messages = PromptBuilder.sanitize_history(final_messages, preserve_thinking_in_history)
+	var preserve = preserve_thinking_in_history if preserve_thinking_in_history else AISettings.get_bool(AISettings.GEN, "preserve_thinking")
+	final_messages = PromptBuilder.sanitize_history(final_messages, preserve)
 	
 	var tools := get_current_tool_definitions()
 
@@ -790,7 +802,8 @@ func compress_context(force: bool = false) -> bool:
 				var modified := false
 				
 				# Strip <think> blocks if not preserving
-				if not preserve_thinking_in_history and not new_msg.get("interrupted", false):
+				var preserve = preserve_thinking_in_history if preserve_thinking_in_history else AISettings.get_bool(AISettings.GEN, "preserve_thinking")
+				if not preserve and not new_msg.get("interrupted", false):
 					var content = new_msg.get("content", "")
 					if typeof(content) == TYPE_STRING:
 						var stripped = regex.sub(content, "", true).strip_edges()

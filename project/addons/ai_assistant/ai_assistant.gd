@@ -56,10 +56,12 @@ func _register_project_settings() -> void:
 	_set_setting("ai/connection/router_model", "router-model", "Fast model for workload analysis")
 	_set_setting("ai/connection/analyst_model", "analyst-model", "Complex model for reasoning and planning")
 	_set_setting("ai/connection/technician_model", "technician-model", "Fast model for implementation and tools")
+	_set_setting("ai/connection/enable_lm_studio_features", true, "Enable LM Studio specific APIs (e.g., model loading/unloading)", TYPE_BOOL)
 	
 	# Generation Settings
 	_set_setting("ai/generation/max_tokens", 4096, "Max tokens in response", TYPE_INT, PROPERTY_HINT_RANGE, "1,32768,1")
 	_set_setting("ai/generation/context_limit", 8192, "Max allowed context tokens before compression", TYPE_INT, PROPERTY_HINT_RANGE, "1,128000,1")
+	_set_setting("ai/generation/preserve_thinking", false, "Preserve <think> blocks in context globally", TYPE_BOOL)
 	_set_setting("ai/generation/max_retries", 5, "Max correction attempts", TYPE_INT, PROPERTY_HINT_RANGE, "0,20,1")
 	_set_setting("ai/generation/timeout_ms", 60000, "Request timeout in ms", TYPE_INT, PROPERTY_HINT_RANGE, "1000,300000,1000")
 	_set_setting("ai/generation/system_prompt", "", "Custom system prompt override", TYPE_STRING, PROPERTY_HINT_MULTILINE_TEXT)

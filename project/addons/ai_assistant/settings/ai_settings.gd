@@ -26,3 +26,11 @@ static func get_int(subgroup: String, key: String) -> int:
 	if ProjectSettings.has_setting(full_key):
 		return int(ProjectSettings.get_setting(full_key))
 	return 0
+
+## Get a bool value from a subgroup.
+static func get_bool(subgroup: String, key: String, default_value: bool = false) -> bool:
+	var full_key := subgroup + key
+	if ProjectSettings.has_setting(full_key):
+		return bool(ProjectSettings.get_setting(full_key))
+	return default_value
+

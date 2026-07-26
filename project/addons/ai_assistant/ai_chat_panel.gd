@@ -28,6 +28,7 @@ var _current_node: AIChat = null
 @onready var _compress_button: Button = find_child("CompressButton")
 @onready var _copy_context_button: Button = find_child("CopyContextButton")
 @onready var _aggressive_check: CheckButton = find_child("AggressiveCompression")
+@onready var _provider_preset_button: OptionButton = find_child("ProviderPresetButton")
 
 
 var _pending_attachments: Array[String] = []
@@ -55,6 +56,13 @@ func _on_ready() -> void:
 		_aggressive_check.toggled.connect(_on_aggressive_toggled)
 	if _attachment_dialog:
 		_attachment_dialog.file_selected.connect(_on_file_selected)
+	if _provider_preset_button:
+		_provider_preset_button.add_item("Apply Preset...", 0)
+		_provider_preset_button.add_item("LM Studio (Local)", 1)
+		_provider_preset_button.add_item("Google Gemini", 2)
+		_provider_preset_button.add_item("Moonshot Kimi", 3)
+		_provider_preset_button.selected = 0
+		_provider_preset_button.item_selected.connect(_on_provider_preset_selected)
 
 
 func _on_exit_tree() -> void:
@@ -201,6 +209,42 @@ func _on_copy_context_pressed() -> void:
 func _on_aggressive_toggled(toggled: bool) -> void:
 	if is_instance_valid(_current_node):
 		_current_node.aggressive_compression = toggled
+
+
+func _on_provider_preset_selected(index: int) -> void:
+	if not is_instance_valid(_current_node) or index == 0:
+		return
+		
+	match index:
+		1: # LM Studio
+			_current_node.api_endpoint = "http://localhost:1234"
+			_current_node.model = "local-model"
+			_current_node.router_model = "local-model"
+			_current_node.analyst_model = "local-model"
+			_current_node.technician_model = "local-model"
+			_current_node.preserve_thinking_in_history = false
+		2: # Gemini
+			_current_node.api_endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/"
+			_current_node.model = "gemini-2.5-flash"
+			_current_node.router_model = "gemini-2.5-flash"
+			_current_node.technician_model = "gemini-2.5-flash"
+			_current_node.analyst_model = "gemini-3.1-pro"
+			_current_node.preserve_thinking_in_history = false
+		3: # Kimi
+			_current_node.api_endpoint = "https://api.moonshot.cn/v1"
+			_current_node.model = "moonshot-v1-8k"
+			_current_node.router_model = "moonshot-v1-8k"
+			_current_node.technician_model = "moonshot-v1-8k"
+			_current_node.analyst_model = "moonshot-v1-8k"
+			_current_node.preserve_thinking_in_history = true
+			
+	# Reset dropdown back to the action prompt
+	_provider_preset_button.selected = 0
+	
+	_status_label.text = "Status: Preset applied to local node"
+	_status_label.add_theme_color_override("font_color", _get_status_color("success"))
+	print("AIChatPanel: Preset applied. Endpoint: ", _current_node.api_endpoint)
+
 
 
 func _on_file_selected(path: String) -> void:
