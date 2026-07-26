@@ -1,3 +1,4 @@
+# REQ-TOOL-0013: search_web tool
 extends AITool
 
 func _init() -> void:

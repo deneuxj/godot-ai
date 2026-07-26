@@ -16,6 +16,8 @@ var _chat_dock: Control = null
 var _logger: Logger = null
 
 
+# REQ-PLGN-0001: Integrate a coding agent AI with Godot 4
+# REQ-EDITOR-0001: Register a new dock panel named AI Assistant.
 func _enter_tree() -> void:
 	# Register custom logger for AI validation errors.
 	_logger = CUSTOM_LOGGER.new()

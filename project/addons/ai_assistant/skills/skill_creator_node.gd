@@ -14,7 +14,8 @@ To create a new skill, follow this two-step workflow:
    ```gdscript
    @tool
    class_name YourSkillName
-   extends AISkillNode
+   # REQ-SKILL-0006: Provide a built-in "skill-creator" meta-skill
+extends AISkillNode
 
    func _init() -> void:
        description = \"Brief summary for discovery.\"

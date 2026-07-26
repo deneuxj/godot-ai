@@ -292,6 +292,7 @@ Formatting:
 
 
 ## System prompt for Analyst model (complex planning).
+# REQ-AIINTG-0009: Analyst Mode System Prompt
 const ANALYST_SYSTEM_PROMPT := """\
 You are a Godot 4 Architectural Analyst.
 Your goal is to understand complex user requests and design a robust implementation plan.
@@ -331,6 +332,7 @@ Formatting:
 
 
 ## System prompt for Technician model (implementation and tool use).
+# REQ-AIINTG-0010: Technician Mode System Prompt
 const TECHNICIAN_SYSTEM_PROMPT := """\
 You are a Godot 4 Implementation Technician.
 Your goal is to execute specific technical tasks and tool calls.
@@ -574,6 +576,7 @@ static func get_tool_definitions(enable_docs: bool, enable_resources: bool, enab
 
 ## Returns a string listing available skills for the discovery phase.
 ## [param discovered_skills] is an array of Dictionaries: {"name": String, "description": String}
+# REQ-SKILL-0005: Optimize context usage by listing skills.
 static func get_skills_discovery_context(discovered_skills: Array[Dictionary]) -> String:
 	if discovered_skills.is_empty():
 		return ""
@@ -629,6 +632,7 @@ static func _texture_to_image(texture: Texture2D) -> Image:
 
 
 ## Get the system prompt, checking the project setting override first.
+# REQ-AIINTG-0003: Prompt Builder logic for Mode-specific output
 static func _get_system_prompt(mode: int, discovered_skills: Array[Dictionary] = [], todo_list: Array[Dictionary] = [], remaining_turns: int = -1) -> String:
 	var custom: String = AISettings.get_string(AISettings.GEN, "system_prompt")
 	var base_prompt := ""
@@ -674,6 +678,7 @@ static func _get_todo_context(list: Array[Dictionary]) -> String:
 
 
 ## Returns a string describing the current execution environment.
+# REQ-AIINTG-0008: Context Injection (Environment)
 static func get_environment_context() -> String:
 	return "\n\nENVIRONMENT: You are currently running within the Godot Editor. You have access to Editor-only APIs and the edited scene tree." if Engine.is_editor_hint() else "\n\nENVIRONMENT: You are currently running in the Game/Runtime. Editor-only APIs are NOT available."
 

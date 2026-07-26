@@ -3,9 +3,11 @@
 ## Maintains conversational history and provides a simple API to send prompts
 ## and receive responses via signals. Usable in both editor and game.
 
+# REQ-CHAT-0006: The node shall be usable both in the Godot editor (`@tool`) and during gameplay.
 @tool
 extends Node
 
+# REQ-CHAT-0001: Provide a new node type: `AIChat` that extends `Node`.
 class_name AIChat
 
 
@@ -15,6 +17,7 @@ const AISkillNode = preload("res://addons/ai_assistant/skills/ai_skill_node.gd")
 const AIClient = preload("res://addons/ai_assistant/ai_client/ai_client.gd")
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
 
+# REQ-CHAT-0004: Emit signals for chat events.
 signal chat_started()
 signal progress(chunks: Array[String])
 signal chat_finished(full_response: String)
@@ -33,6 +36,7 @@ signal todo_list_updated(list: Array[Dictionary])
 signal request_handler_created(handler: AIRequestHandler)
 
 
+# REQ-CHAT-0007: API overrides.
 @export_group("API Overrides (Advanced)")
 
 ## System prompt to prepend to the conversation.
@@ -84,6 +88,8 @@ var preserve_thinking_in_history: bool = false
 @export_group("Tools")
 
 @export
+# REQ-TOOL-0004: Properties to enable/disable specific tools
+@export
 var enable_godot_docs: bool = true
 
 @export
@@ -99,6 +105,7 @@ var enable_validate_resources: bool = false
 var enable_execute_script: bool = true
 
 @export
+# REQ-PERSIST-0001: Session save for scene
 var enable_capture_view: bool = true
 
 @export
@@ -148,6 +155,7 @@ var editor_interface: EditorInterface = null
 
 ## Current conversation history as an array of message dictionaries:
 ## [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+# REQ-CHAT-0002: Conversational history persisted via property.
 @export
 var chat_history: Array[Dictionary] = []
 
@@ -180,6 +188,7 @@ var _active_handler: AIRequestHandler = null
 var mock_client: AIClient = null
 
 
+# REQ-EDITOR-0011: Debug section
 @export_group("Debug / Testing")
 
 ## A prompt to send for testing purposes.
@@ -223,6 +232,7 @@ var last_tools: Array[Dictionary] = []
 ## Send a message to the AI and trigger a streaming response.
 ## The [param prompt] is appended to the [member chat_history] as a user message.
 ## Optional [param attachments] can be a list of resource paths (e.g. textures) to include.
+# REQ-CHAT-0003, REQ-CHAT-0010: send_message method with attachments.
 func send_message(prompt: String, attachments: Array[String] = []) -> void:
 	if chat_status == ChatStatus.BUSY:
 		push_warning("AIChat: A request is already in progress. Cancel it first or wait for completion.")
@@ -272,6 +282,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 					tex = ImageTexture.create_from_image(img)
 			
 			if tex:
+				# REQ-CHAT-0011: content extracted and base64 encoded.
 				var b64 = PromptBuilder._encode_texture(tex)
 				if b64:
 					content_array.append({
@@ -503,6 +514,7 @@ func send_message(prompt: String, attachments: Array[String] = []) -> void:
 		_cleanup_after_cancel(handler)
 		return
 		
+	# REQ-CHAT-0005: AI response automatically appended to history.
 	# Append all new messages (tool calls, tool results, and final assistant text)
 	for msg in handler.new_messages:
 		chat_history.append(msg)
@@ -586,6 +598,7 @@ func _cleanup_after_cancel(handler: AIRequestHandler = null) -> void:
 
 
 ## Interrupt the ongoing AI request.
+# REQ-CHAT-0009: interruptible via `cancel()`.
 func cancel() -> void:
 	if chat_status == ChatStatus.BUSY:
 		chat_status = ChatStatus.CANCELLED
@@ -611,6 +624,7 @@ func unload_model(model_id: String = "") -> void:
 
 
 ## Reset the conversation history and all session state (including skills).
+# REQ-CHAT-0008: `clear_history()` method.
 func clear_history() -> void:
 	chat_history.clear()
 	routing_history.clear()
@@ -621,6 +635,7 @@ func clear_history() -> void:
 	history_changed.emit(true)
 
 ## Removes the message at the given index from the chat history.
+# REQ-CHAT-0017: `delete_message(index: int)`
 func delete_message(index: int) -> void:
 	if index >= 0 and index < chat_history.size():
 		chat_history.remove_at(index)
@@ -628,6 +643,7 @@ func delete_message(index: int) -> void:
 		history_changed.emit(false)
 
 ## Removes the message at the given index and all subsequent messages.
+# REQ-CHAT-0018: `delete_messages_from(index: int)`
 func delete_messages_from(index: int) -> void:
 	if index >= 0 and index < chat_history.size():
 		chat_history.resize(index)
@@ -675,6 +691,7 @@ func dump_context_to_file() -> void:
 
 
 ## Explicitly activate a skill for this session.
+# REQ-SKILL-0004: Explicit Skill Activation
 func activate_skill(skill_name: String) -> String:
 	if not _active_handler:
 		_active_handler = AIRequestHandler.new(self, api_endpoint, api_key, model)
@@ -715,6 +732,7 @@ func get_current_tool_definitions() -> Array[Dictionary]:
 
 ## Returns the current conversational context length.
 ## Returns a dictionary with "tokens" (estimate) and "characters" keys.
+# REQ-CHAT-0012: retrieve current conversational history length
 func get_context_length() -> Dictionary:
 	var total_chars := 0
 	
@@ -890,6 +908,7 @@ func _discover_active_skills() -> Array[Dictionary]:
 	return result
 
 
+# REQ-SKILL-0003: Dynamic Skill Discovery
 func _scan_for_skills(node: Node, result: Array[Dictionary]) -> void:
 	for child in node.get_children():
 		if child is AISkillNode and child.is_active:
@@ -903,6 +922,7 @@ func _scan_for_skills(node: Node, result: Array[Dictionary]) -> void:
 			})
 		_scan_for_skills(child, result)
 
+# REQ-PERSIST-0003: Restore context and active skills
 func _restore_skills_from_history() -> void:
 	if chat_history.is_empty():
 		return

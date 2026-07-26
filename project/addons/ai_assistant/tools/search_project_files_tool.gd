@@ -1,5 +1,7 @@
 ## SearchProjectFilesTool - Allows the AI to search for strings or regex within project files
+# REQ-TOOL-0012: search_project_files tool
 class_name SearchProjectFilesTool
+# REQ-TOOL-0012: search_project_files tool
 extends AITool
 
 func _init() -> void:

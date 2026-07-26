@@ -1,7 +1,9 @@
 ## CaptureEditorViewTool - Capture the current editor viewport (2D or 3D).
 @tool
+# REQ-TOOL-0009: capture_editor_view tool
 extends AITool
 
+# REQ-TOOL-0009: capture_editor_view tool
 class_name CaptureEditorViewTool
 
 

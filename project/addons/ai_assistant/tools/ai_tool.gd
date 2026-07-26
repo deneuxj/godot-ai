@@ -2,6 +2,7 @@
 ##
 ## Each tool defines its schema (for the AI) and the execution logic.
 
+# REQ-TOOL-0001: Extensible tool/function calling system for the AI.
 class_name AITool
 extends RefCounted
 

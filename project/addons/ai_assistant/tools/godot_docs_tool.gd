@@ -1,6 +1,8 @@
 ## GodotDocsTool - Allows the AI to explore Godot engine documentation.
 
+# REQ-TOOL-0002: explore_godot_docs tool
 class_name GodotDocsTool
+# REQ-TOOL-0002: explore_godot_docs tool
 extends AITool
 
 

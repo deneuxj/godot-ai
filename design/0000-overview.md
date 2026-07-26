@@ -83,3 +83,7 @@ res://
 | Requirement | Covered In |
 |---|---|
 | REQ-PLGN-0001 | This overview document defines the architecture, file structure, and implementation order for integrating the AI coding agent with Godot 4. |
+| REQ-FUTURE-0001 | Out of scope for current architecture. |
+| REQ-FUTURE-0002 | Out of scope for current architecture. |
+| REQ-FUTURE-0003 | Out of scope for current architecture. |
+| REQ-FUTURE-0004 | Out of scope for current architecture. |

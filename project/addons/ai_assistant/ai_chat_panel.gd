@@ -5,6 +5,7 @@
 ## conversational context.
 
 @tool
+# REQ-EDITOR-0002, REQ-EDITOR-0004: Unified view and state persistence
 extends "res://addons/ai_assistant/ai_base_panel.gd"
 
 
@@ -173,6 +174,7 @@ func _on_clear_pressed() -> void:
 		_update_display()
 
 
+# REQ-EDITOR-0005: Attach project resources
 func _on_attach_pressed() -> void:
 	if _attachment_dialog:
 		_attachment_dialog.popup_file_dialog()
@@ -226,6 +228,8 @@ func _update_attachments_ui() -> void:
 
 # --- Node Signals ---
 
+# REQ-EDITOR-0008: Granular status feedback
+# REQ-TOOL-0005: Tool execution transparent to user (and status updates)
 func _on_chat_started() -> void:
 	_update_status()
 
@@ -246,12 +250,14 @@ func _on_chat_finished(_response: String) -> void:
 	_update_status()
 
 
+# REQ-EDITOR-0009: Interrupt/Cancel
 func _on_chat_cancelled() -> void:
 	_status_label.text = "Status: Cancelled"
 	_update_display()
 	_update_status()
 
 
+# REQ-EDITOR-0006: Restore prompt on error
 func _on_chat_error(err: String) -> void:
 	_status_label.text = "Status: Error - " + err
 	
@@ -269,10 +275,12 @@ func _on_status_updated(status: String) -> void:
 	_update_status()
 
 
+# REQ-EDITOR-0007: Display context length
 func _on_context_length_updated(tokens: int, chars: int) -> void:
 	_context_label.text = "Context: %d tokens (%d chars)" % [tokens, chars]
 
 
+# REQ-EDITOR-0010: Display TODO list status
 func _on_todo_list_updated(list: Array[Dictionary]) -> void:
 	if list.is_empty():
 		_todo_label.text = ""

@@ -8,6 +8,7 @@
 extends Node3D
 
 
+# REQ-NODE3D-0001: Provide a new 3D node type: `AIAgentAssisted3D`.
 class_name AIAgentAssisted3D
 
 const AISettings = preload("res://addons/ai_assistant/settings/ai_settings.gd")
@@ -41,12 +42,14 @@ signal todo_list_updated(list: Array[Dictionary])
 
 @export_group("Input")
 
+# REQ-NODE3D-0002: The node shall accept a natural language prompt for scene generation.
 @export_multiline
 var prompt: String = "":
 	set(value):
 		prompt = value
 		_mark_dirty()
 
+# REQ-NODE3D-0003: The node shall support attaching multiple textures/images as visual references for the AI.
 @export
 var texture_attachments: Array[Texture2D] = []:
 	set(value):
@@ -55,6 +58,7 @@ var texture_attachments: Array[Texture2D] = []:
 
 @export_group("Settings")
 
+# REQ-NODE3D-0011: Scripted Scene vs Node Script Mode
 @export
 var generation_mode: GenerationMode = GenerationMode.SCRIPTED_SCENE:
 	set(value):
@@ -198,6 +202,7 @@ func _ready() -> void:
 
 # --- Generation pipeline ---
 
+# REQ-NODE3D-0004: Generation Flow with Error Correction Loop
 func generate() -> void:
 	if _active_handler and _active_handler.is_busy():
 		push_warning("AIAgentAssisted3D: A generation is already in progress. Cancel it first or wait for completion.")
@@ -264,6 +269,7 @@ func generate() -> void:
 		status_message = "Validating... (attempt %d/%d)" % [attempt + 1, max_retries]
 
 		# 3. Validate output (Async)
+		# REQ-AIINTG-0005: Error correction loop intercepts compilation/load errors.
 		var error_result := await ScriptExecutor.validate_output(extracted_code, generation_mode)
 
 		if error_result.error == null:
@@ -297,7 +303,7 @@ func generate() -> void:
 		messages = PromptBuilder.build_error_correction(messages, error_result, content)
 
 	if success:
-		# 5. Save and Apply
+		# 5. Save and Apply (REQ-NODE3D-0005)
 		var path := _save_generated_output(generated_code, generation_mode)
 		_apply_generated_output(path, generation_mode)
 		
@@ -310,6 +316,7 @@ func generate() -> void:
 	generation_finished.emit()
 
 
+# REQ-NODE3D-0010: Interruption
 func cancel_generation() -> void:
 	if _active_handler:
 		_active_handler.cancel()

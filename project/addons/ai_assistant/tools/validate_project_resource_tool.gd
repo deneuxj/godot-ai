@@ -1,6 +1,8 @@
 ## ValidateProjectResourceTool - Allows the AI to validate project resources.
 
+# REQ-TOOL-0007: validate_project_resource tool
 class_name ValidateProjectResourceTool
+# REQ-TOOL-0007: validate_project_resource tool
 extends AITool
 
 const ScriptExecutor = preload("res://addons/ai_assistant/generator/script_executor.gd")

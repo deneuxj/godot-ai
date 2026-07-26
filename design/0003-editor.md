@@ -95,7 +95,9 @@
 
 | Requirement | Covered By |
 |---|---|
+| REQ-EDITOR-0001 | `status_updated` signal driving progress UI updates in editor docks |
 | REQ-EDITOR-0002 | `agent_assisted_3d_panel.tscn` dock UI |
+| REQ-EDITOR-0003 | `generation_status` and `status_message` exposed as node properties |
 | REQ-NODE3D-0011 | Generation mode selector in the dock |
 | REQ-NODE3D-0010 | "Cancel" button and `_on_cancel_pressed` controller logic |
 | REQ-EDITOR-0004 | TabContainer with `Generated Output` and `Error Log` |
@@ -103,4 +105,6 @@
 | REQ-EDITOR-0006 | State restoration in `ai_chat_panel._on_chat_error` |
 | REQ-EDITOR-0007 | Context length label in `ai_chat_panel` UI |
 | REQ-EDITOR-0008 | Granular status feedback label in `ai_chat_panel` UI |
+| REQ-EDITOR-0009 | `AIChat` runs tasks on background threads persistent independent of scene tree dock focus |
+| REQ-EDITOR-0010 | "TODO" UI panel syncing with `todo_list_updated` signal |
 | REQ-EDITOR-0011 | `HistoryDisplay` as a list of widgets with delete actions |

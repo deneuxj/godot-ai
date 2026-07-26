@@ -2,7 +2,9 @@
 ##
 ## The script MUST define a 'static func execute(node: Node)'.
 
+# REQ-TOOL-0008: build_dynamic_scene (execute_script) tool
 class_name ExecuteScriptTool
+# REQ-TOOL-0008: build_dynamic_scene (execute_script) tool
 extends AITool
 
 const ScriptExecutor = preload("res://addons/ai_assistant/generator/script_executor.gd")

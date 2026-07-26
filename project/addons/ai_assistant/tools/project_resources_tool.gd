@@ -1,6 +1,8 @@
 ## ProjectResourcesTool - Allows the AI to explore the project's resources.
 
+# REQ-TOOL-0003: explore_project_resources tool
 class_name ProjectResourcesTool
+# REQ-TOOL-0003: explore_project_resources tool
 extends AITool
 
 

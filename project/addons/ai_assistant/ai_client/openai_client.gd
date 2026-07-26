@@ -4,6 +4,7 @@
 ## Configured via [member AIClient.endpoint], [member AIClient.api_key],
 ## [member AIClient.model], and [member AIClient.max_tokens].
 
+# REQ-AIINTG-0001, REQ-AIINTG-0002: Support local/remote via OpenAI-compatible protocol.
 class_name OpenAIClient
 extends AIClient
 
@@ -50,6 +51,7 @@ func cancel() -> void:
 
 ## Non-streaming chat: sends [param messages] and returns the full response.
 ## [param tools] is an optional array of tool definition dictionaries.
+# REQ-LMSTUDIO-0001, REQ-LMSTUDIO-0002, REQ-LMSTUDIO-0003: Standard chat endpoints with base64 and max tokens limits
 func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
 	
@@ -184,6 +186,7 @@ func chat(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant
 
 ## Streaming chat: sends [param messages] and emits [signal progress] per chunk.
 ## [param tools] is an optional array of tool definition dictionaries.
+# REQ-LMSTUDIO-0005: Stream API support
 func chat_stream(messages: Array[Dictionary], tools: Array[Dictionary] = []) -> Variant:
 	_ensure_http_request()
 	hit_token_limit = false

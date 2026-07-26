@@ -1,6 +1,8 @@
 ## ModifyProjectResourceTool - Allows the AI to create or patch project files.
 
+# REQ-TOOL-0006: modify_project_resource tool
 class_name ModifyProjectResourceTool
+# REQ-TOOL-0006: modify_project_resource tool
 extends AITool
 
 

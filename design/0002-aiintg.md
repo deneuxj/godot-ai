@@ -104,6 +104,7 @@ When an error occurs, the conversation history is updated as follows:
 | Requirement | Covered By |
 |---|---|
 | REQ-AIINTG-0001 | `AIClient` abstract class + `OpenAIClient` implementation |
+| REQ-AIINTG-0002 | `OpenAIClient` implements standard OpenAI API REST calls |
 | REQ-AIINTG-0003 | `PromptBuilder` logic for Mode-specific output |
 | REQ-AIINTG-0005 | `AIAgentAssisted3D` validation loop and `PromptBuilder.build_error_correction()` |
 | REQ-AIINTG-0004 | `AISettings` manages configuration under `ai/connection/` and `ai/generation/` |

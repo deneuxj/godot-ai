@@ -197,6 +197,7 @@ These skills will expose specific tools to interact with the underlying Godot ob
 | REQ-SKILL-0001 | Base Skill Architecture leveraging nodes |
 | REQ-SKILL-0002 | AISkill Node Structure and properties |
 | REQ-SKILL-0003 | Skill Discovery via Scene Tree |
+| REQ-SKILL-0004 | Handled natively by `AIChat` and `AIAgentAssisted3D` performing recursive node traversal for `AISkill` class instances |
 | REQ-SKILL-0005 | Lazy Loading & Activation |
 | REQ-SKILL-0006 | The Skill-Creator (Node Generator) |
 | REQ-SKILL-0007 | Wall-Adjuster Skill implementation handling CSG and non-CSG without transform changes |

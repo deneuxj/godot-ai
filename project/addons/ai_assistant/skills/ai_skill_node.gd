@@ -12,6 +12,7 @@
 ##    to see the full two-step workflow).
 
 @tool
+# REQ-SKILL-0001, REQ-SKILL-0002: Skill System and AISkill Node Structure
 class_name AISkillNode
 extends Node
 

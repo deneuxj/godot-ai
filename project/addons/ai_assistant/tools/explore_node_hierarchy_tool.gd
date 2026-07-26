@@ -2,7 +2,9 @@
 ##
 ## Allows the AI to navigate the hierarchy and check node properties.
 
+# REQ-TOOL-0010: explore_node_hierarchy tool
 class_name ExploreNodeHierarchyTool
+# REQ-TOOL-0010: explore_node_hierarchy tool
 extends AITool
 
 

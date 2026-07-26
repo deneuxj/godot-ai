@@ -3,6 +3,7 @@
 ## Encapsulates the lifecycle of an AI request, including client creation,
 ## configuration (with overrides), signal forwarding, and cleanup.
 
+# REQ-AIINTG-0007: Workload router
 class_name AIRequestHandler
 extends RefCounted
 
